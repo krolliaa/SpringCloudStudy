@@ -8,4 +8,5 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
     public abstract List<User> selectAllUsers();
+    public abstract User selectUserById(int id);
 }

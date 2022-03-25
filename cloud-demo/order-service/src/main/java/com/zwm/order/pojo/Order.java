@@ -11,6 +11,7 @@ public class Order {
     private String name;
     private Integer num;
     private Long userId;
+    private User user;
 
     @Override
     public String toString() {
@@ -20,6 +21,7 @@ public class Order {
                 ", name='" + name + '\'' +
                 ", num=" + num +
                 ", userId=" + userId +
+                ", user=" + user +
                 '}';
     }
 }
