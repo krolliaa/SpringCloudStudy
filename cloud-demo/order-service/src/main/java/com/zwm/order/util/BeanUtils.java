@@ -2,12 +2,14 @@ package com.zwm.order.util;
 
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootConfiguration
 public class BeanUtils {
     @Bean
+    @LoadBalanced
     public RestTemplate getRestTemplate() {
         return new RestTemplate();
     }

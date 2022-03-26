@@ -173,7 +173,7 @@
 
 【注：`eureka`也是一个微服务，需要注册`eureka`自己本身】
 
-动手实践：
+### 8.1 搭建`eureka-server`
 
 1. 创建项目，配置`spring-cloud-starter-netflix-eureka-server`依赖
 
@@ -217,3 +217,67 @@
 4. 点击`IDEA`端口可以直接跳转到`eureka`管理页面
 
    ![](https://img-blog.csdnimg.cn/fb33d846a96e4292a1855a60b8785267.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+### 8.2 搭建`eureka-client`
+
+将`user-service`和`order-service`服务注册到`EurakaServer`：
+
+1. 在`user-service`的`pom.xml`中引入依赖：`spring-cloud-starter-netflix-eureka-client`
+
+   ```xml
+   <dependency>
+       <groupId>org.springframework.cloud</groupId>
+   	<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+   </dependency>
+   ```
+
+2. 在`application.properties`配置注册服务：
+
+   ```properties
+   spring.application.name=user-service
+   eureka.client.service-url.defaultZone=http://127.0.0.1:10086/eureka
+   ```
+
+- 按照上述步骤可以注册`order-service`，这里不再赘述
+
+`IDEA`可以模拟启动多个服务：`ctrl+D`或者右键服务选择`	Copy Configuration`然后配置一下`VM options: -Dserver.port=8082` ---> `apply` ---> `ok`
+
+![](https://img-blog.csdnimg.cn/57c02b3dbf9d43fba47d870f62418b4f.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+完成后`eureka-service`显示：
+
+![](https://img-blog.csdnimg.cn/87a5506f10994a8f8274f1740c500cc0.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+到这里就完成了将服务注册到`eureka`
+
+## 9. `Eureka` 服务发现
+
+1. 修改源代码，将其改为`spring.application.name`的名称，这个服务已经在注册中心`eureka`中注册好了，所以直接调用消费即可
+
+   ![](https://img-blog.csdnimg.cn/a5909ac5b9f3400a9af7e04f64eabb9d.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+   ```java
+   public List<Order> findAllOrders() {
+       List<Order> orderList = orderMapper.selectAllOrders();
+       for (Order order : orderList) {
+           //String url = "http://localhost:8081/getUserById?id=" + order.getUserId();
+           String url = "http://user-service/getUserById?id=" + order.getUserId();
+           order.setUser(restTemplate.getForObject(url, User.class));
+       }
+       return orderList;
+   }
+   ```
+
+2. 给`RestTemplate`上加入`@LoadBanlanced`引入负载均衡
+
+   ```java
+   @Bean
+   @LoadBalanced
+   public RestTemplate getRestTemplate() {
+       return new RestTemplate();
+   }
+   ```
+
+重启服务，成功实现`order-service`通过注册中心拉取`user-service`注册到`eureka`的服务信息，并引入负载均衡，通过在`application.properties`中配置`mybatis.configuration.log-impl=org.apache.ibatis.logging.stdout.StdOutImpl`可以发现`UserApplication:8081`和`UserApplication:8082`都被调用了
+
+![](https://img-blog.csdnimg.cn/538bea1b57aa4349b884e8ed4234278d.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)

@@ -25,7 +25,8 @@ public class OrderService {
     public List<Order> findAllOrders() {
         List<Order> orderList = orderMapper.selectAllOrders();
         for (Order order : orderList) {
-            String url = "http://localhost:8081/getUserById?id=" + order.getUserId();
+            //String url = "http://localhost:8081/getUserById?id=" + order.getUserId();
+            String url = "http://user-service/getUserById?id=" + order.getUserId();
             order.setUser(restTemplate.getForObject(url, User.class));
         }
         return orderList;
