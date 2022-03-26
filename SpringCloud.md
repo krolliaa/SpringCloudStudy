@@ -131,3 +131,89 @@
 上述代码已放置`github`仓库：
 
 ![](https://img-blog.csdnimg.cn/ee944eb5299c44b58cb304e97d74053d.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+## 7. 服务提供者和服务消费者
+
+- 服务提供者：一次业务中，被其它微服务调用的服务（暴露接口给其它微服务调用）
+- 服务消费者：一次业务中，调用其它微服务的服务（调用其它微服务提供的接口）
+- 一个服务既可以是提供者也可以是消费者
+
+## 8. `Eureka`注册中心
+
+之前我们的`order`服务去调用`user`服务的时候采用的是硬编码的方式即直接写代码的方式：试想这种会造成什么问题？
+
+![](https://img-blog.csdnimg.cn/a5909ac5b9f3400a9af7e04f64eabb9d.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+1. 项目创建过程中有许多环境，生产环境测试环境开发环境，这些个`URL`地址肯定不一样，难道每换一个环境就要更改一次代码吗？这显然非常的麻烦
+
+2. 现在这里只有一个`user-service`，端口是`8081`，试想如果`user-service`做了集群，除了`8081`还有`8082 8083`等等端口，那难道每次调用的时候都去更改代码吗？如果更改了代码，做集群还有意义吗？显然是没有的。而且万一挑选的那一台服务是不健康的挂了的呢？你如何确保可以准确的调用该接口呢？
+
+那要怎么解决呢？`Eureka`注册中心解决这种硬编码带来的大问题：
+
+1. `Eureka`注册中心将自身称为**<font color="red">`eureka-server`注册中心服务端</font>**，将其余的像`order-service`和`user-service`这些统称为是**<font color="red">`eureka-client`注册中心客户端</font>**。
+2. 秉承一个服务既可能是服务调用者也可能是服务提供者的理念，所有的服务只要存在都会将自己的注册服务信息注册到`eureka-server`注册中心服务端中，该动作叫做**<font color="red">注册服务信息</font>**
+3. 那如果一个服务挂了怎么办？不用担心，因为`eureka-server`有**<font color="red">心跳检测</font>**，每隔`30s`，`eureka-client`注册中心客户端需要发送1次心跳，注册中心服务端会更新注册服务列表，对不正常的服务信息进行删除，服务调用者可以拉取到最新的服务信息
+4. 当某个服务调用者需要某个服务的时候就会从`eureka-server`注册中心服务端中调用服务，比如这里做了集群有三个`user-service`，都会拉取过来，该动作叫做**<font color="red">拉取服务提供者的信息</font>**
+5. 拉取过来具体选哪个服务调用需要使用到**<font color="red">负载均衡技术</font>**
+6. 确定了哪个服务之后`order-service`就会通过**<font color="red">远程调用</font>**调用某个端口的服务提供者`user-service`
+
+​	![](https://img-blog.csdnimg.cn/90213662777c4cc2b6b6fa27816f4f72.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+问题描述及解答：
+
+1. **<font color="deepskyblue">消费者该如何获取服务提供者的具体信息？</font>**
+   - 服务【无论是服务提供者还是服务调用者`eureka-client`】启动时都会向注册中心服务端`eureka-server`注册服务信息，注册中心服务端会保存这些信息
+   - 服务调用者即消费者会从注册中心服务端`eureka-server`拉取服务信息
+2. **<font color="deepskyblue">如果有多个服务提供者，消费者该如何选择？</font>**
+   - 消费者即服务调用者会通过负载均衡技术，从从注册中心服务端拉取过来的服务选择一个
+3. **<font color="deepskyblue">消费者如何感知提供者健康状态？</font>**
+   - 每隔`30s`服务提供者就会向`eureka-server`注册中心服务端发送心跳请求，报告当前健康状态
+   - 对于不正常的服务信息，注册中心服务端`eureka-server`会将其从服务信息列表中删除
+   - 服务调用者即消费者可以从注册中心服务端中拉取到最新的服务信息
+
+【注：`eureka`也是一个微服务，需要注册`eureka`自己本身】
+
+动手实践：
+
+1. 创建项目，配置`spring-cloud-starter-netflix-eureka-server`依赖
+
+   ```xml
+   <!--版本可以不写，因为在父pom已经编写好-->
+   <dependency>
+       <groupId>org.springframework.cloud</groupId>
+       <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+   </dependency>
+   ```
+
+2. 编写启动类，添加`@EnableEurekaServer`注解
+
+   ```java
+   package com.zwm.eureka;
+   
+   import org.springframework.boot.SpringApplication;
+   import org.springframework.boot.autoconfigure.SpringBootApplication;
+   import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
+   
+   @SpringBootApplication
+   @EnableEurekaServer
+   public class EurekaServiceApplication {
+       public static void main(String[] args) {
+           SpringApplication.run(EurekaServiceApplication.class, args);
+       }
+   }
+   ```
+
+3. 添加`application.properties`文件，编写该配置文件
+
+   ```properties
+   # 服务端口[任意]
+   server.port=10086
+   # 服务名称 - 微服务名称[为了做服务注册]
+   spring.application.name=eureka-server
+   # 配置eureka地址信息[eureka 也是一个微服务，把自己也注册在eureka身上][为了做服务注册]
+   eureka.client.service-url.defaultZone=http://127.0.0.1:10086/eureka
+   ```
+
+4. 点击`IDEA`端口可以直接跳转到`eureka`管理页面
+
+   ![](https://img-blog.csdnimg.cn/fb33d846a96e4292a1855a60b8785267.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
