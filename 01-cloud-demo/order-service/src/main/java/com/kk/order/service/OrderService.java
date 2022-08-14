@@ -17,7 +17,7 @@ public class OrderService {
 
     public Order queryOrderById(Long id) {
         Order order = orderMapper.findById(id);
-        String url = "http://userservice/user/" + order.getUserId();
+        String url = "http://user-service/user/" + order.getUserId();
         User user = restTemplate.getForObject(url, User.class);
         order.setUser(user);
         System.out.println(user);
