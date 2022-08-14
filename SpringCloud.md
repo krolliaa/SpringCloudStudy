@@ -490,3 +490,144 @@ ribbon.eager-load.clients=user-service
 
 ### 9.4 `Nacos`配置集群
 
+```properties
+spring.cloud.nacos.discovery.cluster-name: Beijing
+```
+
+直接复制多份`user-service`，将其加入到不同的集群 ---> `VM Options`：[三个集群 ---> 北京 深圳 杭州]
+
+```java
+-Dserver.port=8082 -Dspring.cloud.nacos.discovery.cluster-name=Beijing
+-Dserver.port=8083 -Dspring.cloud.nacos.discovery.cluster-name=Shenzhen
+-Dserver.port=8084 -Dspring.cloud.nacos.discovery.cluster-name=Shenzhen
+-Dserver.port=8085 -Dspring.cloud.nacos.discovery.cluster-name=Hangzhou
+-Dserver.port=8086 -Dspring.cloud.nacos.discovery.cluster-name=Hangzhou    
+```
+
+然后将`order-service`分别拉入到`Beijing Shenzhen Hangzhou`的集群中并分别访问`URL`，观察`IDEA`中显示的信息，可以发现都是访问集群里的服务，只有在集群中的服务挂掉的时候才去跨集群访问。【记得把上次设置的`RandomRule`给注释掉否则负载均衡策略会选择随机负载均衡。】
+
+![](https://img-blog.csdnimg.cn/2ec0ce78a7d4438ea4d71f71cef81d95.png)
+
+### 9.5 `Nacos`配置负载均衡规则
+
+第一种情况：`order-service`位于`Beijing`集群，访问`http://localhost:8080/order/103`，可以看到只会访问同时`Beijing`集群的两个`user-service`
+
+![](https://img-blog.csdnimg.cn/635ed404649c4d609f147ecf7027ed99.png)
+
+![](https://img-blog.csdnimg.cn/4740ff18f3874282b86f69194b36d8ff.png)
+
+第二种情况：`order-service`位于`Shenzhen`集群，可以看到同样的效果，但是还访问了其它的
+
+![](https://img-blog.csdnimg.cn/e6073e8d15e14d1183a7d6c2496208b6.png)
+
+第三种情况：`order-service`位于`Hangzhou`集群【跟上述一致】也是还访问了其它的
+
+第四种情况：`order-service`位于`Hangzhou`集群，但是集群中的`user-service:8085 8086`挂掉了，也是访问了多个。
+
+为什么会这样呢？原因是`Nacos`的默认负载均衡的策略就是轮询，如果我们要配置按地区查找，我们可以看到是一个个接着顺序访问的，如果要按地区轮询我们应该修改下配置类中的`Bean`。 ---> `order-service.configuration.MyConfiguration ---> NacosRule`并且是在集群中随机选择服务。
+
+```java
+@Bean
+public IRule nacosRule() {
+    return new NacosRule();
+}
+```
+
+此时再去访问就是按照就近集群来访问，如果某个集群中所有服务都挂了，再去访问其它的集群服务，而且可以在日志中看到发生了跨集群访问。
+
+**除了使用配置类还可以在配置文件中直接配置负载均衡规则：**
+
+```properties
+user-service:
+  ribbon:
+    NFLoadBalancerRuleClassName: spring.cloud.nacos.ribbon.NacosRule
+```
+
+### 9.6 `Nacos`配置负载均衡权重配置【服务平滑升级】
+
+1. `Nacos`控制台可以设置实例的权重值，值在`0-1`之间
+2. 同个集群内的多个实例，权重越高被访问的频率越高
+3. 权重设置为`0`的时候则该服务将完全不被访问
+
+![](https://cdn.xn2001.com/img/2021/20210901092020.png)
+
+![](https://cdn.xn2001.com/img/2021/20210901092026.png)
+
+**合理配置权重可以做到平滑升级，比如：先把`user-service:8080`的权重调节为`0`让用户流向`user-service:8081`，等`user-service:8080`升级完成之后再将权重从`0`更改为`0.1`让一部分用户先体验升级版本，若稳定，再将权重上调。这就可以做到平滑升级。**
+
+### 9.7 `Nacos`环境隔离`namespace`
+
+![](https://cdn.xn2001.com/img/2021/20210901092032.png)
+
+首先想明白一个问题：为什么有了集群还要有`namespace`这样的东西呢？是不是觉得多此一举？其实不然。集群/服务都是针对业务来进行划分的，而`namespace`命名空间是针对注入开发环境生产环境测试环境这样不同环境下诞生的产物。
+
+这样我们就可以在不同环境下使用不同的集群、实例了。
+
+而`Group`，就是不同环境下相关度比较高的业务，比如订单业务和支付业务是高度相关的，是概念上的划分，就可以把这两个业务都放到同一个`Group`中去，你可以使用也可以不使用。而`Service/Data`就是服务，再往下就是各个集群再往下就是实例了。
+
+创建命名空间的步骤如下：
+
+![](https://cdn.xn2001.com/img/2021/20210901092038.png)
+
+![](https://cdn.xn2001.com/img/2021/20210901092050.png)
+
+![](https://cdn.xn2001.com/img/2021/20210901092059.png)
+
+![](https://cdn.xn2001.com/img/2021/20210901092114.png)
+
+如何指定服务实例的命名空间？以`order-service`为例：
+
+```yaml
+spring:
+  cloud:
+    nacos:
+      server-addr: 192.168.0.105:8848
+      discovery:
+        cluster-name: Beijing
+        namespace: xxxxxx
+```
+
+**<font color="red">每个`namespace`都有不同的唯一`id`，并且·不同`namespace`之间相互隔离即不同`namespace`的服务互不可见。</font>**
+
+访问结果如下：
+
+```json
+{
+    "timestamp": "2022-08-14T12:34:04.243+00:00",
+    "status": 500,
+    "error": "Internal Server Error",
+    "message": "",
+    "path": "/order/103"
+}
+```
+
+### 9.8 `Nacos`注册中心的细节
+
+相同点：
+
+- **`Nacos`和`Eureka`都支持服务注册和服务拉取**
+- **都支持服务提供者心跳方式做检测**
+
+不同点：
+
+- **`Nacos`存在临时和非临时实例**
+
+  - **临时实例：**
+
+    所有的实例在没有配置的时候都是临时实例，这个可以在控制台看到临时实例是`true`。每隔一段时间，临时实例需要主动去向注册中心报告我还活着，否则心跳检测不通过，`Nacos`会直接剔除掉该项服务。
+
+    对于临时实例，消费者是定时主动拉取服务。
+
+  - **非临时实例：**
+
+    `Nacos`主动去询问生产者【非临时实例】，并且主动推送变更消息到消费者。告诉消费者服务更新了，让其赶紧去更新。并且当非临时实例宕机的时候，也不会从服务列表中剔除。
+
+    ```yaml
+    spring:
+      cloud:
+        nacos:
+          discovery:
+            ephemeral: false #设置为非临时实例
+    ```
+
+- 学过`Zookeeper`的应该知道`CAP`不可能三角，`Nacos`集群**默认采用AP方式(可用性)**，当集群中存在非临时实例时，**采用`CP`模式(一致性)**；而**`Eureka`只采用`AP`方式**，不可切换。

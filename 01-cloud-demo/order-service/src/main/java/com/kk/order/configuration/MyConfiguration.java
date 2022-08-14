@@ -1,7 +1,9 @@
 package com.kk.order.configuration;
 
+import com.alibaba.cloud.nacos.ribbon.NacosRule;
 import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.RandomRule;
+import com.netflix.loadbalancer.ZoneAvoidanceRule;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +17,13 @@ public class MyConfiguration {
         return new RestTemplate();
     }
 
-    @Bean
+    /*@Bean
     public IRule randomRule() {
         return new RandomRule();
+    }*/
+
+    @Bean
+    public IRule nacosRule() {
+        return new NacosRule();
     }
 }
