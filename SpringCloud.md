@@ -250,7 +250,7 @@
 
 到这里就完成了将服务注册到`eureka`
 
-## 9. `Eureka` 服务发现
+### 8.3. `Eureka` 服务发现
 
 1. 修改源代码，将其改为`spring.application.name`的名称，这个服务已经在注册中心`eureka`中注册好了，所以直接调用消费即可
 
@@ -283,7 +283,7 @@
 
 ![](https://img-blog.csdnimg.cn/538bea1b57aa4349b884e8ed4234278d.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
 
-## 10. `@LoadBalanced`注解原理 ---> `Ribbon`负载均衡流程
+### 8.4. `@LoadBalanced`注解原理 ---> `Ribbon`负载均衡流程
 
 为什么我们在`RestTemplate`加入了`@LoadBalanced`就可以完成负载均衡？中途到底发生了什么事情？这就引出了我们要学习`SpringCloud`的第二个组件 ---> `Ribbon`，它是用来完成负载均衡的！
 
@@ -366,7 +366,7 @@
 
 ![](https://img-blog.csdnimg.cn/8973eaf72e254a68b03226ef976783fb.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
 
-## 11. `Ribbon`负载均衡策略
+### 8.5.`Eureka`注册中心拉取服务列表的`Robbin` --->  负载均衡策略
 
 `Ribbon`完成负载均衡靠得是一套规则，规则由`Rule`接口来定义，`Rule`接口的每一个子接口都是一种规则：
 
@@ -404,7 +404,7 @@ public IRule randomRule() {
 user-service.ribbon.NFLoadBalancerRuleClassName=com.netflix.loadbalancer.RandomRule
 ```
 
-## 12. `Ribbon`饥饿加载
+### 8.6 `Ribbon`饥饿加载
 
 `Ribbon`默认使用的是懒加载，什么是懒加载呢？就是客户端第一次访问的时候才会去创建`RobbinLoadBalancerClient`对象，所以第一访问的时间都会非常的漫长，如下图，可以看到足足达到`715ms`之久：
 
@@ -425,7 +425,9 @@ ribbon.eager-load.clients=user-service
 
 ![](https://img-blog.csdnimg.cn/8b634ff21d894df6831e2c5141907563.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
 
-## 13. `Nacos`注册中心安装
+## 9. `Nacos`注册中心
+
+### 9.1 `Nacos`注册中心安装
 
 `Nacos`是阿里巴巴开发的一个产品，现在是`SpringCloud`的一个组件。比`Eureka`的功能更多一点，在国内`Nacos`更受欢迎，所以学习`Nacos`还是有必要的。而且`Nacos`是`Java`语言实现的。
 
@@ -437,7 +439,7 @@ ribbon.eager-load.clients=user-service
 
 ![](https://img-blog.csdnimg.cn/d5d5f511c23142d2a3c890b8a1964384.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
 
-## 14. `Nacos`实现注册与发现
+### 9.2. `Nacos`实现注册与发现
 
 【`Nacos`和`Eureka`一个是需要你自己手动配置服务端，例外一个直接就是安装包安装好了使用命令打开就是服务端，所以在`Nacos`只需要配置客户端即可】
 
