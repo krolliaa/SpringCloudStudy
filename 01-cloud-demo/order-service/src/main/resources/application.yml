@@ -8,19 +8,22 @@ spring:
     password: 123456
   application:
     name: order-service
+  cloud:
+    nacos:
+      server-addr: 192.168.0.105:8848
 mybatis:
   type-aliases-package: com.kk.order.pojo
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:10086/eureka
-user-service:
-  ribbon:
-    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule
-ribbon:
-  eager-load:
-    enabled: true
-    clients: user-service
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:10086/eureka
+#user-service:
+#  ribbon:
+#    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule
+#ribbon:
+#  eager-load:
+#    enabled: true
+#    clients: user-service

@@ -8,6 +8,9 @@ spring:
     password: 123456
   application:
     name: user-service
+  cloud:
+    nacos:
+      server-addr: 192.168.0.105:8848
 mybatis:
   type-aliases-package: com.kk.user.pojo
   map-underscore-to-camel-case: true
@@ -16,7 +19,7 @@ logging:
     com.kk: debug
   pattern:
     dateformat: MM-dd HH:mm:ss:SSS
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:10086/eureka
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:10086/eureka
