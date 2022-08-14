@@ -214,7 +214,7 @@
    eureka.client.service-url.defaultZone=http://127.0.0.1:10086/eureka
    ```
 
-4. 点击`IDEA`端口可以直接跳转到`eureka`管理页面
+4. 点击`IDEA`端口可以直接跳转到`eureka`管理页面，访问：`http://localhost:10086`[没有后缀]
 
    ![](https://img-blog.csdnimg.cn/fb33d846a96e4292a1855a60b8785267.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
 

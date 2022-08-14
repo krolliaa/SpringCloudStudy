@@ -5,6 +5,7 @@
     <modules>
         <module>order-service</module>
         <module>user-service</module>
+        <module>eureka-service</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
