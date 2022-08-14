@@ -283,9 +283,11 @@
 
 ![](https://img-blog.csdnimg.cn/538bea1b57aa4349b884e8ed4234278d.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQ3JBY0tlUi0x,size_20,color_FFFFFF,t_70,g_se,x_16)
 
-## 10. `Ribbon`负载均衡流程
+## 10. `@LoadBalanced`注解原理 ---> `Ribbon`负载均衡流程
 
 为什么我们在`RestTemplate`加入了`@LoadBalanced`就可以完成负载均衡？中途到底发生了什么事情？这就引出了我们要学习`SpringCloud`的第二个组件 ---> `Ribbon`，它是用来完成负载均衡的！
+
+
 
 之前我们是将`order-service`中的`OrderService`的`URL`地址改成了：`http://user-service/getUserById?id=1`，我们直接访问这个`URL`地址，发现根本无法访问，说明这个地址被拦截了：
 
@@ -383,6 +385,11 @@
 ```java
 @Bean
 public RandomRule randomRule() {
+    return new RandomRule();
+}
+或者
+@Bean
+public IRule randomRule() {
     return new RandomRule();
 }
 ```
