@@ -14,3 +14,7 @@ logging:
     com.kk: debug
   pattern:
     dateformat: MM-dd HH:mm:ss:SSS
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:10086/eureka
