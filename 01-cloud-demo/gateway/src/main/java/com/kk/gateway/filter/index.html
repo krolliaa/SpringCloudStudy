@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+<script>
+    axios.get("http://localhost:10010/user/1?authorization=admin")
+    .then(resp => console.log(resp.data))
+    .catch(err => console.log(err))
+</script>
+</body>
+</html>
