@@ -631,3 +631,97 @@ spring:
     ```
 
 - 学过`Zookeeper`的应该知道`CAP`不可能三角，`Nacos`集群**默认采用AP方式(可用性)**，当集群中存在非临时实例时，**采用`CP`模式(一致性)**；而**`Eureka`只采用`AP`方式**，不可切换。
+
+<hr/>
+
+## 10. 配置中心
+
+当微服务部署的实例越来越多的时候，达到上百上千个的时候，你自己去一个个的修改并且还需要重启服务器或是啥的，就非常令人感到恶心了。所以需要一种可以统一管理配置的地方，它不仅可以统一配置集中管理还可以实现更改配置后热更新。而这，正是配置中心所能完成的
+
+## 11. `Nacos`配置中心
+
+`Nacos`非常强大，此前我们看到它可以作为注册中心使用，现在，你将再一次看到它的强大 —— 它可以作为配置中心使用。一方面：**`Nacos`可以配置集中管**理，另一方面：**可以在配置变更的时候及时通知微服务并实现配置的热更新**。
+
+### 11.1 `Nacos`创建配置
+
+![](https://cdn.xn2001.com/img/2021/20210901092159.png)
+
+![](https://cdn.xn2001.com/img/2021/20210901092206.png)
+
+默认直接就是热更新的，要实现热更新的配置才放到`Nacos`，否则还是放到本地中会比较好【比如数据库连接信息】。
+
+### 11.2 微服务读取配置中心配置
+
+在没有配置中心的情况下，微服务读取配置的流程如下：读取本地的配置文件然后根据配置信息创建`Spring`容器，最后加载`Bean`：
+
+![](https://cdn.xn2001.com/img/2021/20210901092215.png)
+
+而当加入了诸如`Nacos`的配置中心之后，微服务会先去读取配置中心的配置，然后再读取本地的配置文件：
+
+![](https://cdn.xn2001.com/img/2021/20210901092223.png)
+
+正因为读取`Nacos`配置中心的配置文件在本地配置文件之前，如果你在本地配置文件中配置要读取配置中心的配置文件，那这样的配置根本不起效果。所以我们需要在别的地方做功夫。那就是比`Nacos`配置中心读取配置文件的优先级还要高的地方 —— `bootstrap.yml`文件【存放于本地】。
+
+![](https://cdn.xn2001.com/img/2021/20210901092228.png)
+
+知道了微服务读取配置中心的配置流程，就可以做具体工作了：
+
+1. 在需要读取配置中心的微服务中，引入`Nacos`配置中心依赖：【注意该版本有漏洞】
+
+   ```xml
+   <dependency>
+       <groupId>com.alibaba.cloud</groupId>
+       <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+       <version>2.2.5.RELEASE</version>
+   </dependency>
+   ```
+
+2. 创建`bootstrap.yml`文件：
+
+   ```yaml
+   spring:
+     application:
+       name: order-service
+     profiles:
+       active: dev
+     cloud:
+       nacos:
+         server-addr: 192.168.0.105:8848
+         config:
+           file-extension: yml
+   ```
+
+本地微服务会先读取：`${spring.cloud.nacos.server-addr}`中`Nacos`配置中心的地址，然后再通过读取`${spring.application.name}`+`${spring.profiles.active}`+`${spring.cloud.nacos.config.file-extension}`形成文件名：`${spring.application.name}-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}`。将其作为`id`读取配置中心的配置。
+
+在这里就会去读取在配置中心的：`order-service-dev.yml`。验证是否读取成功，验证如下:
+
+```java
+package com.kk.order.controller;
+
+import com.kk.order.pojo.Order;
+import com.kk.order.service.OrderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+@RestController
+@RequestMapping("/order")
+public class OrderController {
+    @Value(value = "${pattern.dateformat}")
+    private String patternFormat;
+
+    @GetMapping(value = "/now")
+    public String getNow() {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern(patternFormat));
+    }
+}
+```
+
+![](https://img-blog.csdnimg.cn/3938485837dc42aebebe38a013725d5c.png)
+
