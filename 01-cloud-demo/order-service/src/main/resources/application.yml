@@ -11,12 +11,15 @@ spring:
   cloud:
     nacos:
       #server-addr: 192.168.0.105:8848
-      #server-addr: 116.25.152.11:8848
-      server-addr: 116.25.152.11:80
+      server-addr: 116.25.152.11:8848
+      #server-addr: 116.25.152.11:80
       #discovery:
       #  cluster-name: Beijing
       #  namespace: 4c07af9d-44c0-4058-8798-e071bcde4c27
       #  ephemeral: true
+logging:
+  level:
+    com.kk: debug
 mybatis:
   type-aliases-package: com.kk.order.pojo
   configuration:
@@ -33,3 +36,12 @@ mybatis:
 #  eager-load:
 #    enabled: true
 #    clients: user-service
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: BASIC
+  httpclient:
+    enabled: true
+    max-connections: 200
+    max-connections-per-route: 50

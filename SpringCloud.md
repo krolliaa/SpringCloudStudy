@@ -1279,7 +1279,9 @@ User user = restTemplate.getForObject(url, User.class);
 
 为了更好用更方便更直观的调用想调用，所以我们决定采用`Feign`：其作用就是帮助我们**<font color="red">优雅的实现`http`请求的发送</font>**，解决上面提到的问题。![img](https://img-blog.csdnimg.cn/3cfd43ee11ea41f2ba33656ae801c5a0.png)
 
-## 14. `Feign`实现远程调用
+## 14.`Feign`
+
+### 14.1 `Feign`实现远程调用
 
 1. `order-service`引入依赖
 
@@ -1292,7 +1294,7 @@ User user = restTemplate.getForObject(url, User.class);
    </dependency>
    ```
 
-2. 修改配置，这里直接使用注解即可
+2. 修改配置，这里直接使用注解`@EnableFeignClients`即可
 
    ```java
    package com.kk.order;
@@ -1313,6 +1315,314 @@ User user = restTemplate.getForObject(url, User.class);
 3. 新建要远程调用的接口：`order.client.UserClient`
 
    ```java
+   package com.kk.order.client;
+   
+   import com.kk.user.pojo.User;
+   import org.springframework.cloud.openfeign.FeignClient;
+   import org.springframework.web.bind.annotation.GetMapping;
+   import org.springframework.web.bind.annotation.PathVariable;
+   
+   @FeignClient(value = "user-service")
+   public interface UserClient {
+       @GetMapping("/user/{id}")
+       User findById(@PathVariable(value = "id") Long id);
+   }
+   ```
+
+4. 使用`UserClient`即可直接进行远程调用
+
+   ```java
+   package com.kk.order.service;
+   
+   import com.kk.order.client.UserClient;
+   import com.kk.order.mapper.OrderMapper;
+   import com.kk.order.pojo.Order;
+   import com.kk.order.pojo.User;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.stereotype.Service;
+   
+   @Service
+   public class OrderServiceFeign {
+       @Autowired
+       private OrderMapper orderMapper;
+   
+       @Autowired
+       private UserClient userClient;
+   
+       public Order queryOrderById(Long id) {
+           Order order = orderMapper.findById(id);
+           User user = userClient.findById(order.getUserId());
+           order.setUser(user);
+           return order;
+       }
+   }
+   ```
+
+5. 新建`Controller`进行验证：
+
+   ```java
+   package com.kk.order.controller;
+   
+   import com.kk.order.pojo.Order;
+   import com.kk.order.service.OrderService;
+   import com.kk.order.service.OrderServiceFeign;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.web.bind.annotation.GetMapping;
+   import org.springframework.web.bind.annotation.PathVariable;
+   import org.springframework.web.bind.annotation.RequestMapping;
+   import org.springframework.web.bind.annotation.RestController;
+   
+   @RestController
+   @RequestMapping("/order")
+   public class OrderController1 {
+       @Autowired
+       private OrderServiceFeign orderServiceFeign;
+   
+       @GetMapping(value = "/{orderId}")
+       public Order queryOrderByUserId(@PathVariable("orderId") Long orderId) {
+           return orderServiceFeign.queryOrderById(orderId);
+       }
+   }
+
+这样看来，`Feign`可比使用`RestTemplate`干净优雅多了。
+
+### 14.2 `Feign`自定义配置
+
+`Feign`可以支持很多的自定义配置，如下表所示：
+
+| 类型                     | 作用             | 说明                                                         |
+| :----------------------- | :--------------- | :----------------------------------------------------------- |
+| **`feign.Logger.Level`** | 修改日志级别     | 包含四种不同的级别：`NONE`、`BASIC`、`HEADERS`、`FULL`       |
+| `feign.codec.Decoder`    | 响应结果的解析器 | `http`远程调用的结果做解析，例如解析`json`字符串为`java`对象 |
+| `feign.codec.Encoder`    | 请求参数编码     | 将请求参数编码，便于通过`http`请求发送                       |
+| `feign.Contract`         | 支持的注解格式   | 默认是`SpringMVC`的注解                                      |
+| `feign.Retryer`          | 失败重试机制     | 请求失败的重试机制，默认是没有，不过会使用`Ribbon`的重试     |
+
+一般需要配置的就是：`fegin.Logger.Level`日志，**默认的为`NONE`**。
+
+- **`NONE`：不记录任何日志信息，这是默认值。**
+- **`BASIC`：仅记录请求的方法，`URL`以及响应状态码和执行时间**
+- **`HEADERS`：在`BASIC`的基础上，额外记录了请求和响应的头信息**
+- **`FULL`：记录所有请求和响应的明细，包括头信息、请求体、元数据**
+
+通过配置文件`application.yml`进行配置：【注意得先有配置信息：`logging.level.com.kk: debug`否则无效】
+
+1. 可以针对某一个远程调用的服务进行配置
+
+   ```yaml
+   feign:
+     client:
+       config:
+         user-service:
+           loggerLevel: FULL
+   ```
+
+2. 也可以对所有要远程调用的服务进行配置
+
+   ```yaml
+   feign:
+     client:
+       config:
+         default:
+           loggerLevel: FULL
+   ```
+
+通过代码进行自定义配置，同样分为全局和局部：
+
+1. 声明一个`MyFeignConfiguration`类
+
+   ```java
+   package com.kk.order.configuration;
+   
+   import feign.Logger;
+   import org.springframework.context.annotation.Bean;
+   
+   public class MyFeignConfiguration {
+       @Bean
+       public Logger.Level feignLoggerLevel() {
+           return Logger.Level.BASIC;
+       }
+   }
+   ```
+
+2. 全局配置 ---> `OrderApplication.java`
+
+   ```java
+   package com.kk.order;
+   
+   import com.kk.order.configuration.MyFeignConfiguration;
+   import org.springframework.boot.SpringApplication;
+   import org.springframework.boot.autoconfigure.SpringBootApplication;
+   import org.springframework.cloud.openfeign.EnableFeignClients;
+   
+   @SpringBootApplication
+   @EnableFeignClients(defaultConfiguration = {MyFeignConfiguration.class})
+   public class OrderApplication {
+       public static void main(String[] args) {
+           SpringApplication.run(OrderApplication.class, args);
+       }
+   }
+   ```
+
+3. 局部配置 ---> `UserClient.interface`
+
+   ```java
+   package com.kk.order.client;
+   
+   import com.kk.order.configuration.MyFeignConfiguration;
+   import com.kk.order.pojo.User;
+   import org.springframework.cloud.openfeign.FeignClient;
+   import org.springframework.web.bind.annotation.GetMapping;
+   import org.springframework.web.bind.annotation.PathVariable;
+   
+   @FeignClient(value = "user-service", configuration = {MyFeignConfiguration.class})
+   public interface UserClient {
+       @GetMapping("/user/{id}")
+       User findById(@PathVariable(value = "id") Long id);
+   }
+   ```
+
+### 14.3 `Feign`性能优化
+
+首先了解下为什么要对`Feign`做性能优化？这就涉及到`Feign`的底层客户端是实现：默认采用`URLConnection`，但是它不支持连接池
+
+其余还有两种：
+
+- `Apache HttpClient`：支持连接池
+- `OKHttp`：支持连接池
+
+此外还有就是在上节学习到的日志，使用`NONE BASIC`即可，再往上`FULL HEADER`内容太多会影响性能。
+
+这里使用`Apache HttpClient`作为更改客户端演示。
+
+1. 引入依赖：
+
+   ```xml
+   <!--httpClient的依赖 -->
+   <dependency>
+       <groupId>io.github.openfeign</groupId>
+       <artifactId>feign-httpclient</artifactId>
+   </dependency>
+   ```
+
+2. 修改配置：
+
+   ```yaml
+   feign:
+     client:
+       config:
+         default:
+           loggerLevel: BASIC #日志级别为 BASIC
+     httpclient:
+       enabled: true #使用httpclient作为客户端
+       max-connections: 200 #连接池最大连接数量
+       max-connections-per-route: 50 #每个路径的最大连接数
+   ```
+
+3. 找到`feign-core`核心包找到`FeignClientFactoryBean`中的`loadBalance`方法，打断点然后`Deubg`模式启动`order-service`
+
+   ![img](https://img-blog.csdnimg.cn/3c8e61894ca54c649ba978ba2195ae7a.png)
+
+   ![img](https://img-blog.csdnimg.cn/2e3e6afc87db467d906b205a89454058.png)
+
+   可以看到此时`Feign`底层使用的就是`HttpClient`。
+
+### 14.4 `Feign`最佳实践
+
+最佳实践：指的是企业经常会用到的一些方式
+
+- 继承方式：一样的代码可以通过继承来共享
+
+  1. 定义一个 API 接口，利用定义方法，并基于 SpringMVC 注解做声明
+  2. Feign 客户端、Controller 都集成该接口
+
+  优点
+
+  - 简单
+  - 实现了代码共享
+
+  缺点
+
+  - 服务提供方、服务消费方紧耦合
+  - 参数列表中的注解映射并不会继承，因此 Controller 中必须再次声明方法、参数列表、注解
+
+  ![img](https://cdn.xn2001.com/img/2021/20210901092803.png)
+
+- 抽取方式：将 FeignClient 抽取为独立模块，并且把接口有关的 pojo、默认的 Feign 配置都放到这个模块中，提供给所有消费者使用。
+
+  例如：将 UserClient、User、Feign 的默认配置都抽取到一个 feign-api 包中，所有微服务引用该依赖包，即可直接使用。
+
+  ![img](https://cdn.xn2001.com/img/2021/20210901092811.png)
+
+这里使用第二种方式做一个演示：
+
+1. 创建`feign-api`模块，引入依赖：
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <project xmlns="http://maven.apache.org/POM/4.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+       <parent>
+           <artifactId>01-cloud-demo</artifactId>
+           <groupId>com.kk</groupId>
+           <version>1.0</version>
+       </parent>
+       <modelVersion>4.0.0</modelVersion>
+   
+       <artifactId>feign-api</artifactId>
+   
+       <properties>
+           <maven.compiler.source>8</maven.compiler.source>
+           <maven.compiler.target>8</maven.compiler.target>
+       </properties>
+   
+       <dependencies>
+           <dependency>
+               <groupId>org.springframework.cloud</groupId>
+               <artifactId>spring-cloud-starter-openfeign</artifactId>
+           </dependency>
+       </dependencies>
+   </project>
+   ```
+
+2. 创建`com.kk.pojo.User com.kk.clients.UserClient`
+
+   ```java
+   package com.kk.pojo;
+   
+   import lombok.AllArgsConstructor;
+   import lombok.Data;
+   import lombok.NoArgsConstructor;
+   
+   @Data
+   @NoArgsConstructor
+   @AllArgsConstructor
+   public class User {
+       private Long id;
+       private String username;
+       private String address;
+   }
+   ```
+
+   ```java
+   package com.kk.clients;
+   
+   import com.kk.pojo.User;
+   import org.springframework.cloud.openfeign.FeignClient;
+   import org.springframework.web.bind.annotation.GetMapping;
+   import org.springframework.web.bind.annotation.PathVariable;
+   
+   @FeignClient(value = "user-service")
+   public interface UserClient {
+       @GetMapping("/user/{id}")
+       User findById(@PathVariable Long id);
+   }
+   ```
+
+3. 此时`feign-api`模块就创建好了，我们将在`order-service`的`User`以及`UserClient`删除，然后导入`feign-api`依赖：
+
+   ```xml
    ```
 
    

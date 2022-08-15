@@ -8,6 +8,7 @@
         <module>eureka-service</module>
         <module>nacos-service</module>
         <module>nacos-service</module>
+        <module>feign-api</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
