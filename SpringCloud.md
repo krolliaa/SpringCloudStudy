@@ -650,7 +650,7 @@ spring:
 
 默认直接就是热更新的，要实现热更新的配置才放到`Nacos`，否则还是放到本地中会比较好【比如数据库连接信息】。
 
-### 11.2 微服务读取配置中心配置
+### 11.2 微服务读取`Nacos`配置中心配置
 
 在没有配置中心的情况下，微服务读取配置的流程如下：读取本地的配置文件然后根据配置信息创建`Spring`容器，最后加载`Bean`：
 
@@ -725,3 +725,9 @@ public class OrderController {
 
 ![](https://img-blog.csdnimg.cn/3938485837dc42aebebe38a013725d5c.png)
 
+### 11.3 `Nacos`配置中心实现热更新
+
+实现热更新有两种方式，其原理我猜正是隔段时间自动去访问配置中心的配置：
+
+1. 使用`@Value`读取配置时，搭配`@RefreshScope`
+2. 使用`@ConfigurationProperties`读取配置文件
