@@ -676,7 +676,7 @@ spring:
    </dependency>
    ```
 
-2. 创建`bootstrap.yml`文件：
+2. 创建`bootstrap.yml`文件：【**<font color="red">注意，这里的`spring.profiles.active`不是必须的，你只要`spring.application.name`对得上也是完全可以的</font>**】
 
    ```yaml
    spring:
@@ -824,4 +824,153 @@ public class OrderController {
    }
    ```
 
+### 11.4 `Nacos`配置中心环境共享
+
+前面有提到过说是`dev`环境即`spring.profile.active`不是必须的，那有跟没有的区别在于什么呢？就在于没有`dev`的不仅可以在`dev`环境中使用还可以在`product`生产环境中以及`test`测试环境中使用，**这就形成了环境共享**。
+
+1. 修改表现层代码：
+
+   ```java
+   package com.kk.order.controller;
    
+   import com.kk.order.configuration.MyConfigurationProperties;
+   import com.kk.order.pojo.Order;
+   import com.kk.order.service.OrderService;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.beans.factory.annotation.Value;
+   import org.springframework.boot.context.properties.EnableConfigurationProperties;
+   import org.springframework.cloud.context.config.annotation.RefreshScope;
+   import org.springframework.web.bind.annotation.GetMapping;
+   import org.springframework.web.bind.annotation.PathVariable;
+   import org.springframework.web.bind.annotation.RequestMapping;
+   import org.springframework.web.bind.annotation.RestController;
+   
+   import java.time.LocalDateTime;
+   import java.time.format.DateTimeFormatter;
+   
+   @RestController
+   @RequestMapping("/order")
+   @EnableConfigurationProperties(value = {MyConfigurationProperties.class})
+   public class OrderController {
+       
+       @Autowired
+       private MyConfigurationProperties myConfigurationProperties;
+   
+       @GetMapping(value = "/testShare")
+       public Object getShare() {
+           return myConfigurationProperties;
+       }
+   }
+   ```
+
+2. 更改配置类代码：
+
+   ```java
+   package com.kk.order.configuration;
+   
+   import lombok.Data;
+   import org.springframework.boot.context.properties.ConfigurationProperties;
+   
+   @Data
+   @ConfigurationProperties(prefix = "pattern")
+   public class MyConfigurationProperties {
+       private String dateformat;
+       private String sharedvalue;
+   }
+   ```
+
+3. 控制台添加：`order-service.yml`
+
+   ```yaml
+   pattern:
+    sharedvalue: "共享环境"
+   ```
+
+4. 使用`copy configuration`复制一份服务器，修改`Profile Active`以及`VM Options: -Dserver.port=8081`然后启动服务器
+
+   分别查询：`http://localhost:8080/order/testShare`和`http://localhost:8081/order/testShare`获取到：
+
+   ![](https://img-blog.csdnimg.cn/5eeb3f828fb74e1092732ea160db0257.png)
+
+   ![](https://img-blog.csdnimg.cn/fad7eea538164619ad86af6fe714e9b8.png)
+
+   可以发现在`test`环境中无法获取到`order-service-dev.yml`配置文件中的`dateformat`，但是可以获取到`order-service.yml`配置文件中的配置信息。而`dev`环境二者都可以获取。这就说明了配置文件是可以指定环境，也可以不指定的，你说这是共享也行。
+
+- 不用想也知道，`Nacos`配置中心配置的指定环境配置文件优先级是最高的，其次是无指定环境最后是本地。
+
+  ![](https://cdn.xn2001.com/img/2021/20210901092501.png)
+
+- 那么问题来了？不同微服务之间是否也可以共享在`Nacos`配置中心的配置文件，当然可以，只需要更换名称，然后在不同的微服务之间的`bootstrap.yml`做个声明即可，该声明有两种方式：
+
+  1. 使用`extensionc-configs`
+  2. 使用`shared-configs`
+
+  比如：
+
+  在`order-service`中使用：`extension-configs`
+
+  ```yaml
+  spring:
+    application:
+      name: order-service
+    cloud:
+      nacos:
+        server-addr: 116.25.152.11:8848
+        config:
+          file-extension: yml
+          extension-configs:
+            - dataId: diffrentserviceshare.yml
+  ```
+
+  在`user-service`中使用：`shared-configs`
+
+  ```yaml
+  spring:
+    application:
+      name: user-service
+    cloud:
+      nacos:
+        server-addr: 116.25.152.11:8848
+        config:
+          file-extension: yml
+          shared-configs:
+            - dataId: diffrentserviceshare.yml
+  ```
+
+  在`Nacos`控制台中创建配置文件以及配置信息：
+
+  ![](https://img-blog.csdnimg.cn/27cb8d0aad5548ccbf143b6260af466b.png)
+
+  然后更改`order-service`跟`user-service`中的`MyConfigurationProperties.java`【没有就创建】：
+
+  ```java
+  package com.kk.user.coniguration;
+  
+  import lombok.Data;
+  import org.springframework.boot.context.properties.ConfigurationProperties;
+  
+  @Data
+  @ConfigurationProperties(prefix = "pattern")
+  public class MyConfigurationProperties {
+      private String dateformat;
+      private String sharedvalue;
+      private String sharedservice;
+  }
+  ```
+
+  然后在表现层中读取即可：
+
+  ```java
+  @GetMapping("/testShare")
+  public Object getShare() {
+      return myConfigurationProperties;
+  }
+  ```
+
+  最后直接使用`Postman`进行验证：
+
+  ![](https://img-blog.csdnimg.cn/9b06d1636f784f21ad7ba6a22dbdb858.png)
+
+  ![](https://img-blog.csdnimg.cn/a8d9a9a91d454f21850b0759b52413ee.png)
+
+  可以看到两个不同服务之间通过`Nacos`以及在`bootstrap.yml`做的配置实现了数据共享。

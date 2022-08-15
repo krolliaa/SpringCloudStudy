@@ -1,4 +1,4 @@
-package com.kk.order.configuration;
+package com.kk.user.coniguration;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -31,16 +31,22 @@ public class OrderController {
         return orderService.queryOrderById(orderId);
     }
 
-    @Value(value = "${pattern.dateformat}")
-    private String patternFormat;
+    //@Value(value = "${pattern.dateformat}")
+    //private String patternFormat;
 
     @GetMapping(value = "/now")
     public String getNow() {
-        return LocalDateTime.now().format(DateTimeFormatter.ofPattern(patternFormat));
+        //return LocalDateTime.now().format(DateTimeFormatter.ofPattern(patternFormat));
+        return "";
     }
 
     @GetMapping(value = "/now2")
     public String getNow2() {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern(myConfigurationProperties.getDateformat()));
+    }
+
+    @GetMapping(value = "/testShare")
+    public Object getShare() {
+        return myConfigurationProperties;
     }
 }
