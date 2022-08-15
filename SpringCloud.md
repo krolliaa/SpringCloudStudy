@@ -1623,6 +1623,73 @@ User user = restTemplate.getForObject(url, User.class);
 3. 此时`feign-api`模块就创建好了，我们将在`order-service`的`User`以及`UserClient`删除，然后导入`feign-api`依赖：
 
    ```xml
+   <dependency>
+       <groupId>com.kk</groupId>
+       <artifactId>feign-api</artifactId>
+       <version>1.0</version>
+   </dependency>
+   ```
+
+4. 标红的地方导入包
+
+5. 当所需要的包不在`SpringApplication`扫描范围之内，这些`FeignClient`就不能使用。所以需要添加包在哪个位置：【否则服务无法正常启动】：`@EnableFeignClients(basePackages = "com.kk.clients")`
+
+   ```java
+   package com.kk.order;
+   
+   import org.springframework.boot.SpringApplication;
+   import org.springframework.boot.autoconfigure.SpringBootApplication;
+   import org.springframework.cloud.openfeign.EnableFeignClients;
+   
+   @SpringBootApplication
+   @EnableFeignClients(basePackages = "com.kk.clients")
+   public class OrderApplication {
+       public static void main(String[] args) {
+           SpringApplication.run(OrderApplication.class, args);
+       }
+   }
+   ```
+
+   除此之外还可以指定字节码文件：`@EnableFeignClients(clients = UserClient.class)`
+
+   ```java
+   package com.kk.order;
+   
+   import com.kk.clients.UserClient;
+   import org.springframework.boot.SpringApplication;
+   import org.springframework.boot.autoconfigure.SpringBootApplication;
+   import org.springframework.cloud.openfeign.EnableFeignClients;
+   
+   @SpringBootApplication
+   @EnableFeignClients(clients = UserClient.class)
+   public class OrderApplication {
+       public static void main(String[] args) {
+           SpringApplication.run(OrderApplication.class, args);
+       }
+   }
+   ```
+
+## 15. `Gateway`网关
+
+有了服务集群，还晓得了注册中心、配置中心、远程调用。可是还有个大问题，就是你内部的许多服务有时候只对一些内部人员访问，并不是所有人都可以访问的，所以就需要有样东西可以给所有来访问服务的请求把把关。这就需要使用到`Getway`网关兄弟了。
+
+![img](https://cdn.xn2001.com/img/2021/20210901092857.png)
+
+### 15.1 网关可以干什么
+
+网关的核心功能特性【可以干什么】？
+
+- **身份验证，权限校验**
+- **服务路由，负载均衡**
+- **请求限流**
+
+在`SpringCloud`中网关的实现包括两种：`Gateway`和`Zuul`。`Zuul`是基于`Servlet`实现的，属于阻塞式编程。而`Spring Cloud Gateway`则是基于`Spring5`中提供的`WebFlux`，属于响应式编程的实现，具备更好的性能。
+
+### 15.2 网关初步使用
+
+1. 创建`Gateway`模块，引入依赖
+
+   ```xml
    ```
 
    

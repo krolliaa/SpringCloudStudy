@@ -9,6 +9,7 @@
         <module>nacos-service</module>
         <module>nacos-service</module>
         <module>feign-api</module>
+        <module>gateway</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

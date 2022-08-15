@@ -1,5 +1,6 @@
 package com.kk.order.pojo;
 
+import com.kk.pojo.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
