@@ -11,9 +11,10 @@ spring:
   cloud:
     nacos:
       #server-addr: 192.168.0.105:8848
-      server-addr: 116.25.152.11:8848
-      discovery:
-        cluster-name: Beijing
+      #server-addr: 116.25.152.11:8848
+      server-addr: 116.25.152.11:80
+      #discovery:
+      #  cluster-name: Beijing
 mybatis:
   type-aliases-package: com.kk.user.pojo
   map-underscore-to-camel-case: true

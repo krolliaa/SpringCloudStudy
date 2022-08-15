@@ -15,16 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@RestController
-@RequestMapping("/order")
+//@RestController
+//@RequestMapping("/order")
 //@RefreshScope
-@EnableConfigurationProperties(value = {MyConfigurationProperties.class})
+//@EnableConfigurationProperties(value = {MyConfigurationProperties.class})
 public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @Autowired
-    private MyConfigurationProperties myConfigurationProperties;
+    //@Autowired
+    //private MyConfigurationProperties myConfigurationProperties;
 
     @GetMapping(value = "/{orderId}")
     public Order queryOrderByUserId(@PathVariable("orderId") Long orderId) {
@@ -40,13 +40,13 @@ public class OrderController {
         return "";
     }
 
-    @GetMapping(value = "/now2")
+    /*@GetMapping(value = "/now2")
     public String getNow2() {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern(myConfigurationProperties.getDateformat()));
-    }
+    }*/
 
-    @GetMapping(value = "/testShare")
+    /*@GetMapping(value = "/testShare")
     public Object getShare() {
         return myConfigurationProperties;
-    }
+    }*/
 }

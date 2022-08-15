@@ -8,16 +8,15 @@ spring:
     password: 123456
   application:
     name: order-service
-  profiles:
-    active: dev
   cloud:
     nacos:
       #server-addr: 192.168.0.105:8848
-      server-addr: 116.25.152.11:8848
-      discovery:
-        cluster-name: Beijing
-        namespace: 4c07af9d-44c0-4058-8798-e071bcde4c27
-        ephemeral: true
+      #server-addr: 116.25.152.11:8848
+      server-addr: 116.25.152.11:80
+      #discovery:
+      #  cluster-name: Beijing
+      #  namespace: 4c07af9d-44c0-4058-8798-e071bcde4c27
+      #  ephemeral: true
 mybatis:
   type-aliases-package: com.kk.order.pojo
   configuration:
