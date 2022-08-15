@@ -730,4 +730,98 @@ public class OrderController {
 实现热更新有两种方式，其原理我猜正是隔段时间自动去访问配置中心的配置：
 
 1. 使用`@Value`读取配置时，搭配`@RefreshScope`
+
+   ```java
+   package com.kk.order.controller;
+   
+   import com.kk.order.configuration.MyConfigurationProperties;
+   import com.kk.order.pojo.Order;
+   import com.kk.order.service.OrderService;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.beans.factory.annotation.Value;
+   import org.springframework.boot.context.properties.EnableConfigurationProperties;
+   import org.springframework.cloud.context.config.annotation.RefreshScope;
+   import org.springframework.web.bind.annotation.GetMapping;
+   import org.springframework.web.bind.annotation.PathVariable;
+   import org.springframework.web.bind.annotation.RequestMapping;
+   import org.springframework.web.bind.annotation.RestController;
+   
+   import java.time.LocalDateTime;
+   import java.time.format.DateTimeFormatter;
+   
+   @RestController
+   @RequestMapping("/order")
+   @RefreshScope
+   public class OrderController {
+       @Autowired
+       private OrderService orderService;
+   
+       @Autowired
+       private MyConfigurationProperties myConfigurationProperties;
+   
+       @GetMapping(value = "/{orderId}")
+       public Order queryOrderByUserId(@PathVariable("orderId") Long orderId) {
+           return orderService.queryOrderById(orderId);
+       }
+   
+       @Value(value = "${pattern.dateformat}")
+       private String patternFormat;
+   
+       @GetMapping(value = "/now")
+       public String getNow() {
+           return LocalDateTime.now().format(DateTimeFormatter.ofPattern(patternFormat));
+       }
+   }
+   ```
+
 2. 使用`@ConfigurationProperties`读取配置文件
+
+   ```java
+   package com.kk.order.controller;
+   
+   import com.kk.order.configuration.MyConfigurationProperties;
+   import com.kk.order.pojo.Order;
+   import com.kk.order.service.OrderService;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.beans.factory.annotation.Value;
+   import org.springframework.boot.context.properties.EnableConfigurationProperties;
+   import org.springframework.cloud.context.config.annotation.RefreshScope;
+   import org.springframework.web.bind.annotation.GetMapping;
+   import org.springframework.web.bind.annotation.PathVariable;
+   import org.springframework.web.bind.annotation.RequestMapping;
+   import org.springframework.web.bind.annotation.RestController;
+   
+   import java.time.LocalDateTime;
+   import java.time.format.DateTimeFormatter;
+   
+   @RestController
+   @RequestMapping("/order")
+   @EnableConfigurationProperties(value = {MyConfigurationProperties.class})
+   public class OrderController {
+       @Autowired
+       private OrderService orderService;
+   
+       @Autowired
+       private MyConfigurationProperties myConfigurationProperties;
+   
+       @GetMapping(value = "/now2")
+       public String getNow2() {
+           return LocalDateTime.now().format(DateTimeFormatter.ofPattern(myConfigurationProperties.getDateformat()));
+       }
+   }
+   ```
+
+   ```java
+   package com.kk.order.configuration;
+   
+   import lombok.Data;
+   import org.springframework.boot.context.properties.ConfigurationProperties;
+   
+   @Data
+   @ConfigurationProperties(prefix = "pattern")
+   public class MyConfigurationProperties {
+       private String dateformat;
+   }
+   ```
+
+   
