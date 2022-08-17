@@ -2662,7 +2662,200 @@ spring:
 
 #### 17.8.4 `Direct`
 
+在`Fanout`模式中，一条消息，会被所有订阅的队列都消费。但是，在某些场景下，我们希望不同的消息被不同的队列消费。这时就要用到`DirectExchange`
 
+![img](https://cdn.xn2001.com/img/2021/20210912182822.png)
+
+在`Direct`模型下：
+
+- 队列与交换机的绑定，不能是任意绑定了，而是要指定一个`RoutingKey`（路由`key`）
+- 消息的发送方向`Exchange`发送消息时，也必须指定消息的 `RoutingKey`。
+- `Exchange`不再把消息交给每一个绑定的队列，而是根据消息的`Routing Key`进行判断，只有队列的`Routingkey`与消息的 `Routing key`完全一致，才会接收到消息
+
+1. 声明直连交换机、3个队列、绑定交换机跟队列
+
+   ```java
+   package com.kk.consumer.config;
+   
+   import org.springframework.amqp.core.Binding;
+   import org.springframework.amqp.core.BindingBuilder;
+   import org.springframework.amqp.core.DirectExchange;
+   import org.springframework.amqp.core.Queue;
+   import org.springframework.context.annotation.Bean;
+   import org.springframework.context.annotation.Configuration;
+   
+   @Configuration
+   public class RabbitMQConfiguration2 {
+       @Bean
+       public DirectExchange directExchange() {
+           return new DirectExchange("direct.exchange");
+       }
+   
+       @Bean
+       public Queue directQueue1() {
+           return new Queue("direct.queue1");
+       }
+   
+       @Bean
+       public Queue directQueue2() {
+           return new Queue("direct.queue2");
+       }
+   
+       @Bean
+       public Queue directQueue3() {
+           return new Queue("direct.queue3");
+       }
+   
+       @Bean
+       public Binding bindingDirectQueue1() {
+           return BindingBuilder.bind(directQueue1()).to(directExchange()).with("cold.coffee");
+       }
+   
+       @Bean
+       public Binding bindingDirectQueue2() {
+           return BindingBuilder.bind(directQueue2()).to(directExchange()).with("hot.coffee");
+       }
+   
+       @Bean
+       public Binding bindingDirectQueue3() {
+           return BindingBuilder.bind(directQueue3()).to(directExchange()).with("spicy.coffee");
+       }
+   }
+   ```
+
+2. 创建生产者发送消息
+
+   ```java
+    @Test
+    public void testDirect() {
+        String message = "Direct Cold Coffee Message";
+        rabbitTemplate.convertAndSend("direct.exchange", "cold.coffee", message.getBytes());
+    }
+   ```
+
+3. 创建消费者消费消息
+
+   ```java
+   package com.kk.consumer;
+   
+   import org.springframework.amqp.rabbit.annotation.Exchange;
+   import org.springframework.amqp.rabbit.annotation.Queue;
+   import org.springframework.amqp.rabbit.annotation.QueueBinding;
+   import org.springframework.amqp.rabbit.annotation.RabbitListener;
+   import org.springframework.stereotype.Component;
+   
+   @Component
+   public class MyDirectConsumer {
+   
+       @RabbitListener(queues = {"direct.queue1"})
+       public void testDirect1(String message) {
+           System.out.println("消费者 ① 消费消息 冷咖啡：" + message);
+       }
+   
+       @RabbitListener(queues = {"direct.queue2"})
+       public void testDirect2(String message) {
+           System.out.println("消费者 ② 消费消息 热咖啡：" + message);
+       }
+   
+       @RabbitListener(queues = {"direct.queue3"})
+       public void testDirect3(String message) {
+           System.out.println("消费者 ③ 消费消息 辣咖啡：" + message);
+       }
+   }
+   ```
+
+4. 运行项目，可以发现只有消费者`1`消费了消息，因为生产者发送的`Routing Key ---> cold.coffee`，而绑定关系也是`cold.coffee`，所以就只有消费者`1`消费了消息
+
+   ```java
+   直连模式 Direct 消费消息 冷咖啡：Direct Cold Coffee Message
+   ```
+
+   可以尝试改成`hot.coffee`，那就只有消费者`2`消费了消息
+
+   ```java
+   直连模式 Direct 消费消息 冷咖啡：Direct Cold Coffee Message
+   直连模式 Direct 消费消息 热咖啡：Direct Hot Coffee Message
+   ```
+
+5. 使用注解创建第四个队列并与`direct.exchange`交换机绑定，绑定关系有两个`sweet.coffee`和`hot.coffee`，所以当发送的路由键为`hot.coffee`，理应第二个队列跟第四个队列都收得到其余队列收不到，而为`sweet.coffee`时只有第四个队列消费得了消息。
+
+   ```java
+   @RabbitListener(bindings = {@QueueBinding(value = @Queue(value = "direct.queue4"), exchange = @Exchange(value = "direct.exchange", type = "direct"), key = {"sweet.coffee", "hot.coffee"})})
+   public void testDirect4(String message) {
+       System.out.println("消费者 ④ 消费消息 热咖啡和甜咖啡：" + message);
+   }
+   ```
+
+6. 运行项目，结果与预期一致：
+
+   ```java
+   消费者 ④ 消费消息 热咖啡和甜咖啡：Direct Hot Coffee Message
+   消费者 ② 消费消息 热咖啡：Direct Hot Coffee Message
+   ```
 
 #### 17.8.5 `Topic`
+
+`Topic ` 与 `Direct`相比，都是可以根据`RoutingKey`把消息路由到不同的队列。只不过`Topic `类型可以让队列在绑定`Routing key` 的时候使用通配符！
+
+![img](https://cdn.xn2001.com/img/2021/20210912194016.png)
+
+通配符规则：
+
+`#`：匹配一个或多个词
+
+`*`：只能匹配一个词
+
+```
+item.#`：能够匹配 item.spu.insert 或者 item.spu
+item.*`：只能匹配 item.spu
+```
+
+将上述图例转化为代码，全部使用注解：
+
+```java
+package com.kk.consumer;
+
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MyTopicConsumer {
+
+    @RabbitListener(bindings = {@QueueBinding(value = @Queue(value = "topic.queue1"), exchange = @Exchange(value = "topic.exchange", type = "topic"), key = {"china.#"})})
+    public void testTopic1(String message) {
+        System.out.println("消费者...1...消费消息：" + message);
+    }
+
+    @RabbitListener(bindings = {@QueueBinding(value = @Queue(value = "topic.queue2"), exchange = @Exchange(value = "topic.exchange", type = "topic"), key = {"japan.#"})})
+    public void testTopic2(String message) {
+        System.out.println("消费者...2...消费消息：" + message);
+    }
+
+    @RabbitListener(bindings = {@QueueBinding(value = @Queue(value = "topic.queue3"), exchange = @Exchange(value = "topic.exchange", type = "topic"), key = {"#.weather"})})
+    public void testTopic3(String message) {
+        System.out.println("消费者...3...消费消息：" + message);
+    }
+
+    @RabbitListener(bindings = {@QueueBinding(value = @Queue(value = "topic.queue4"), exchange = @Exchange(value = "topic.exchange", type = "topic"), key = {"#.news"})})
+    public void testTopic4(String message) {
+        System.out.println("消费者...4...消费消息：" + message);
+    }
+}
+```
+
+```java
+@Test
+public void testTopic() {
+    String message = "Direct china.weather.news Message";
+    rabbitTemplate.convertAndSend("topic.exchange", "china.weather.news", message.getBytes());
+}
+```
+
+```java
+消费者...1...消费消息：Direct china.weather.news Message
+消费者...4...消费消息：Direct china.weather.news Message
+```
 

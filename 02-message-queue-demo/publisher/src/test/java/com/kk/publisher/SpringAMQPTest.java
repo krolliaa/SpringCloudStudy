@@ -34,4 +34,15 @@ public class SpringAMQPTest {
         rabbitTemplate.convertAndSend("fanout.exchange", "", message.getBytes());
     }
 
+    @Test
+    public void testDirect() {
+        String message = "Direct Hot Coffee Message";
+        rabbitTemplate.convertAndSend("direct.exchange", "hot.coffee", message.getBytes());
+    }
+
+    @Test
+    public void testTopic() {
+        String message = "Direct china.weather.news Message";
+        rabbitTemplate.convertAndSend("topic.exchange", "china.weather.news", message.getBytes());
+    }
 }
