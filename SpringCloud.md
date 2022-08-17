@@ -2518,3 +2518,151 @@ spring:
 ......
 ```
 
+这样的消费者轮询消费并没有考虑到不同消费者可能存在不同的处理能力。`RabbitMQ`默认有一个消息预取机制，还没消费就会预取下一个消息到下一个消费者手中，通过`prefetch`可以实现限制每次只能取1条消息，消费完毕后才能取下一个消息。
+
+```yaml
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        prefetch: 1
+```
+
+`Work`模型的使用：
+
+- 多个消费者绑定到一个队列，同一条消息只会被一个消费者处理
+- 通过设置`prefetch`来控制消费者预取的消息数量
+
+#### 17.8.3 `Fanout`
+
+![img](https://cdn.xn2001.com/img/2021/20210904213455.png)
+
+图中可以看到，在订阅模型中，多了一个`exchange`角色，而且过程略有变化
+
+- `Publisher`：生产者，也就是要发送消息的程序，但是不再发送到队列中，**而是发给`exchange`（交换机）**
+- `Consumer`：消费者，与以前一样，订阅队列，没有变化
+- `Queue`：消息队列也与以前一样，接收消息、缓存消息
+- `Exchange`：交换机，一方面，接收生产者发送的消息；另一方面，知道如何处理消息，例如递交给某个特别队列、递交给所有队列、或是将消息丢弃。到底如何操作，取决于`Exchange`的类型。`Exchange`有以下`3`种类型：
+  - `Fanout`：广播，将消息交给所有绑定到交换机的队列
+  - `Direct`：定向，把消息交给符合指定`routing key`的队列
+  - `Topic`：通配符，把消息交给符合`routing pattern`（路由模式） 的队列
+
+**`Exchange`（交换机）只负责转发消息，不具备存储消息的能力**，因此如果没有任何队列与`Exchange`绑定，或者没有符合路由规则的队列，那么消息会丢失！
+
+`Fanout`，英文翻译是扇出，在`MQ`中我们也可以称为广播。
+
+![img](https://cdn.xn2001.com/img/2021/20210912160350.png)
+
+在广播模式下，消息发送流程是这样的：
+
+- 可以有多个队列
+- 每个队列都要绑定到`Exchange`（交换机）
+- 生产者发送的消息，只能发送到交换机，交换机来决定要发给哪个队列，生产者无法决定
+- 交换机把消息发送给绑定过的所有队列
+- 订阅队列的消费者都能拿到消息
+
+1. 声明一个广播类型的交换机以及三个队列
+
+   ```java
+   @Bean
+   public FanoutExchange fanoutExchange() {
+       return new FanoutExchange("fanout.exchange");
+   }
+   
+   @Bean
+   public Queue fanoutQueue1() {
+       return new Queue("fanout.queue1");
+   }
+   @Bean
+   public Queue fanoutQueue2() {
+       return new Queue("fanout2.queue2");
+   }
+   @Bean
+   public Queue fanoutQueue3() {
+       return new Queue("fanout.queue3");
+   }
+   ```
+
+2. 绑定交换机跟队列
+
+   ```java
+   @Bean
+   public Binding bindingFanoutQueue1() {
+       return BindingBuilder.bind(fanoutQueue1()).to(fanoutExchange());
+   }
+   @Bean
+   public Binding bindingFanoutQueue2() {
+       return BindingBuilder.bind(fanoutQueue2()).to(fanoutExchange());
+   }
+   @Bean
+   public Binding bindingFanoutQueue3() {
+       return BindingBuilder.bind(fanoutQueue3()).to(fanoutExchange());
+   }
+   ```
+   
+3. 运行项目，可以查看到交换机绑定了三个队列：
+
+   ![img](https://img-blog.csdnimg.cn/938201a6be6b450dad10196d7c2b779b.png)
+
+4. 消费者监听三个队列，实时消费：[创建三个消费者]
+
+   ```java
+   package com.kk.consumer;
+   
+   import org.springframework.amqp.rabbit.annotation.RabbitListener;
+   import org.springframework.stereotype.Component;
+   
+   @Component
+   public class MyFanoutConsumer {
+       @RabbitListener(queues = {"fanout.queue1"})
+       public void testFanout1(String message) {
+           System.out.println("广播模式...消费者...1...消费消息：" + message);
+       }
+   
+       @RabbitListener(queues = {"fanout.queue2"})
+       public void testFanout2(String message) {
+           System.out.println("广播模式...消费者...2...消费消息：" + message);
+       }
+   
+       @RabbitListener(queues = {"fanout.queue3"})
+       public void testFanout3(String message) {
+           System.out.println("广播模式...消费者...3...消费消息：" + message);
+       }
+   }
+   ```
+
+5. 生产者发布消息：
+
+   ```java
+   @Test
+   public void testFanout() {
+       String message = "Fanout Message";
+       rabbitTemplate.convertAndSend("fanout.exchange", "", message.getBytes());
+   }
+   ```
+
+6. 运行项目，查看结果：可以看到虽然只生产了`1`条消息，但是在广播模式下，发送给了3个队列，丝毫不用理会`Routing Key`，这就是广播模式
+
+   ```java
+   广播模式...消费者...1...消费消息：Fanout Message
+   广播模式...消费者...3...消费消息：Fanout Message
+   广播模式...消费者...2...消费消息：Fanout Message
+   ```
+
+7. 除了使用配置类的方式配置绑定关系，还可以使用注解的方式配置绑定关系，声明新的队列
+
+   这里的`type = "fanout"`是一定要写的，因为默认是`direct`直连模式类型。
+
+   ```java
+   @RabbitListener(bindings = {@QueueBinding(value = @Queue(value = "fanout.queue4"), exchange = @Exchange(value = "fanout.exchange", type = "fanout"))})
+   public void testFanout4(String message) {
+       System.out.println("广播模式...消费者...4...消费消息：" + message);
+   }
+   ```
+
+#### 17.8.4 `Direct`
+
+
+
+#### 17.8.5 `Topic`
+

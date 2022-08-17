@@ -5,3 +5,6 @@ spring:
     virtual-host: /
     username: admin
     password: 123456
+    listener:
+      simple:
+        prefetch: 1
