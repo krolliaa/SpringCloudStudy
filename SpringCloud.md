@@ -1,3 +1,12 @@
+---
+title: SpringCloud Study
+categories: 
+- Framework
+tags: 
+- 框架
+- SpringCloud
+---
+
 # `SpringCloud`
 
 ## 1. 微服务
@@ -45,16 +54,18 @@
 ## 3. 微服务架构的演变
 
 > -  单体架构：将业务所有的功能集中在一个项目中开发，打包部署即可
->   - 优点：架构简单 + 部署成本低
->   - 缺点：耦合度高 + 一旦项目很大打包时间也将非常长
+>    - 优点：架构简单 + 部署成本低
+>    - 缺点：耦合度高 + 一旦项目很大打包时间也将非常长
 >
 > <hr>
+>
 >
 > - 分布式架构：根据业务功能对系统进行拆分，每个业务模块作为独立项目开发，称为一个服务
 >   - 优点：降低服务耦合 + 有利于服务升级扩展
 >   - 问题：分布式需要考虑许多问题，比如访问量大的时候并且放置服务器故障你得做个集群然后你得做远程过程调用`RPC`，服务拆分粒度如何？服务集群地址如何维护？服务之间如何实现远程调用`RPC`？服务健康状态如何感知？
 >
 > <hr>
+>
 >
 > - 如何解决分布式上面所阐述的问题，当前最好的解决方案就是 ---> 微服务【还是分布式架构】
 >   - 微服务是一种经过良好架构设计的分布式架构方案，微服务机构特征：
@@ -1383,6 +1394,7 @@ User user = restTemplate.getForObject(url, User.class);
            return orderServiceFeign.queryOrderById(orderId);
        }
    }
+   ```
 
 这样看来，`Feign`可比使用`RestTemplate`干净优雅多了。
 
@@ -2069,3 +2081,440 @@ spring:
    ```
 
 4. 再访问时就可以解决跨域问题了，这个会`CV`大法即可
+
+## 16. `Docker`
+
+## 17. `MessageQueue`
+
+### 17.1 同步通讯和异步通讯
+
+- 同步通讯：就像打电话，需要实时响应。
+
+- 异步通讯：就像发邮件，不需要马上回复。
+
+![img](https://cdn.xn2001.com/img/2021/20210904133345.png)
+
+两种方式各有优劣，打电话可以立即得到响应，但是你却不能跟多个人同时通话。发送邮件可以同时与多个人收发邮件，但是往往响应会有延迟。
+
+之前学习的`Feign`调用就属于同步方式，虽然调用可以实时得到结果，但是存在以下问题：**耦合度高、性能下降、资源浪费、级联失败**。![img](https://cdn.xn2001.com/img/2021/20210904133517.png)
+
+**同步调用的优点**：时效性较强，可以实时得到结果。
+
+**同步调用的缺点**：业务代码**耦合度高**、一旦某个业务出现错误则整个系统都出现错误【**级联失败**】，需要等待调用业务完成才可以完成业务等待时间长【**性能下降**】，等待的时间业务仍然占用着`CPU`资源这就肯定会造成【**资源浪费**】。同步调用的缺点即有：**耦合度高、性能下降、资源浪费、级联失败**。
+
+**<font color="deepskyblue">所以为了解决同步调用：耦合度高、级联失败、性能下降、资源浪费的问题，异步调用方案就出现了。</font>**
+
+以购买商品为例，用户支付后需要调用订单服务完成订单状态修改，调用物流服务，从仓库分配响应的库存并准备发货。在事件模式中，支付服务是事件发布者`publisher`，在支付完成之后只需要发布一个支付成功的事件`event`，事件中带上订单`id`。订单服务和物流服务是事件订阅者`Consumer`，订阅支付成功的事件，监听到事件后完成自己的业务即可。最开始是当发布者发布消息的时候，直接从线程池中拿线程来用，但是如果流量爆满，线程池中的线程总有不够用的一天，这会导致内存爆满。
+
+这就是异步调用，于是为了解决异步调用线程池数量问题，就引出了**<font color="red">消息队列</font>**。
+
+![img](https://cdn.xn2001.com/img/2021/20210904145001.png)
+
+就是说为了解决发布者和订阅者之间的耦合度以及异步处理。中间搞了一个`Broker`，这就大大降低了系统耦合度。除了拥有**系统解耦**、**异步处理**，除此之外，`Broker`即`MQ`它还可以对过往流量进行监控，并且适当的削峰，即**流量削峰**、**流量监控**，并且对来去的消息进行**消息收集**和**消息广播**，而且还满足**最终一致性**即不管发布者发来什么，要消费的订阅者都会从消息队列中取数据，生产者无需管也无需担心自己发的消息没有被消费的问题。
+
+总结下就是：**异步处理、系统解耦、流量削峰、流量监控、消息广播、消息收集、最终一致性**。
+
+**但很明显，这样的架构变复杂了，而且你的消息队列必须做得非常安全可靠，并且支持高并发高可用。**
+
+![img](https://cdn.xn2001.com/img/2021/20210904144714.png)
+
+**大多数时候，我们并不需要多线程异步处理的需求，而是追求时效性，所以大多数还是使用的是同步通讯。**
+
+### 17.2 消息队列
+
+比较常见的`MQ`实现：`ActiveMQ`、`RabbitMQ`、`RocketMQ`、`Kafka`。若是有海量数据不太关心数据安全性的果断选择`Kafka`。若需要自己做定制可以使用`RokcetMQ`大多数时候选择`RabbitMQ`即可。
+
+| **`RabbitMQ`** | **`ActiveMQ`**            | **`RocketMQ`**                      | **`Kafka`** |              |
+| :------------- | :------------------------ | :---------------------------------- | :---------- | ------------ |
+| 公司/社区      | `Rabbit`                  | `Apache`                            | 阿里        | `Apache`     |
+| 开发语言       | `Erlang`                  | `Java`                              | `Java`      | `Scala&Java` |
+| 协议支持       | `AMQP、XMPP、SMTP、STOMP` | `OpenWire、STOMP、REST、XMPP、AMQP` | 自定义协议  | 自定义协议   |
+| 可用性         | 高                        | 一般                                | 高          | 高           |
+| 单机吞吐量     | 一般                      | 差                                  | 高          | 非常高       |
+| 消息延迟       | 微秒级                    | 毫秒级                              | 毫秒级      | 毫秒以内     |
+| 消息可靠性     | 高                        | 一般                                | 高          | 一般         |
+
+有没想过为什么`RabbitMQ`的消息延迟可以做到微秒级？这正是因为`RabbitMQ`是基于`Erlang`语言开发的。
+
+- 它是 一款专门为交换机软件开发的语言，而且是分布式的面向并发的。
+- `Erlang`可以做到进程间上下文切换效率远高于`C`语言。
+- `Erlang`还有者跟原生`Socket`一样的延迟。
+- `Erlang`是虚拟机解释运行的语言所以可以跨平台部署`RabbitMQ`。
+
+### 17.3 使用`Docker`安装`RabbitMQ`
+
+1. 拉取`RabbitMQ`镜像：
+
+   ```shell
+   docker pull rabbitmq:3-management
+   ```
+
+2. 运行`RabbitMQ`容器，用户名：`admin`，密码：`123456`，容器名：`RabbitmqContainer`，服务端口`5672`，`web`管理端口`15672`，主机名：`mq1`
+
+   ```shell
+   docker run -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=123456 --name RabbitMQContainer --hostname rabbitmq -p 15672:15672 -p 5672:5672 -d rabbitmq:3-management
+   ```
+
+3. `VirtualBox`配置端口映射`15672`然后访问地址：`http://192.168.56.1:15672`即可
+
+### 17.4 `RabbitMQ`中的角色及其基本结构
+
+- `publisher`：生产者【寄件人】
+- `consumer`：消费者【收件人】
+- `exchange`：交换机，负责消息路由【快件分拨中心】
+- `queue`：队列，存储消息【丰巢快递柜】
+- `virtualHost`：虚拟主机，**隔离不同租户**的`exchange`、`queue`、消息隔离
+
+![img](https://cdn.xn2001.com/img/2021/20210904172912.png)
+
+### 17.5 `RabbitMQ`的底层实现原理：`AMQP`协议
+
+- 协议就是规范，而`AMQP`协议就是`RabbitMQ`的规范，规定了`RabbitMQ`的对外接口。
+- 学习`RabbitMQ`本质就是学习`AMQP`协议。
+
+> 1. 生产者生产消息然后贴上`Routing Key`路由键，这个路由键就相当于快递的收件地址`Queue`。
+> 2. 这个快递到快递分拨中心的路程我们称其为`Connection`连接。因为去往快递分拨中心肯定不止一个快递，也许有好多好多个快递正在赶往快递分拨中心，这一条条到快递分拨中心的我们称其为`Channel`叫做一条条信道。
+> 3. 然后快递就到快递分拨中心这里，快递分拨中心在消息中间件里头叫做`exchange`就是交换机的意思。
+> 4. 到了快递分拨中心以后，快递分拨中心要将快递分拨中心跟收件地址进行绑定不然快递员不知道从哪里拿快递，然后快递员就可以快递到收件地址`Queue`可以是蜂巢，也可以是菜鸟驿站。
+> 5. 随后消费者就可以从菜鸟驿站中取出快递拿来消费使用了。
+> 6. 消费者拿快递的通道跟生产者的一样，去往队列的路有好多条，而且此时肯定同时也有好多消费者正在前往拿快递的路上，所以就会有多个信道，这些信道放到一块就组成了连接。【连接其实使用的就是`TCP`连接】
+> 7. 整个快递系统起主导作用的就是消息中间件，这里称呼为`Message Broker`用于接收和分发快递。
+> 8. 因为一个`Broker`快递系统忙不过来，所以这个大大的`Message Broker`就创建了好多`Virtual Host`，就是虚拟`Broker`，将多个单元隔开。
+
+整个快递系统最核心的组件就是：快递分拨中心 ---> `Exchange`交换机 ---> 它承担了非常重要的功能即`RabbitMQ`的核心功能 ---> **路由转发**：`Exchange`根据路由键`Routing Key`和绑定关系`Binding Key`为消息提供路由，将消息转发至相应队列。
+
+![](https://img-blog.csdnimg.cn/9f0e5d464ed5452a89cf95226dd8ad50.png)
+
+### 17.6 `RabbitMQ`官方模型介绍
+
+`RabbitMQ`官方提供了`5`个不同的`Demo`示例，对应了不同的消息模型。
+
+![img](https://cdn.xn2001.com/img/2021/20210904173739.png)
+
+### 17.7 `RabbitMQ`官方`API`实现`HelloWorld`模型
+
+非常非常简单的发布订阅模型，就是发布者将消息发布到队列中然后消费者从队列中取出消息进行消费。
+
+![img](https://cdn.xn2001.com/img/2021/20210904200637.png)
+
+官方的`HelloWorld`是基于最基础的消息队列模型来实现的，只包括三个角色：
+
+- `publisher`：消息发布者，将消息发送到队列`queue`
+- `queue`：消息队列，负责接受并缓存消息
+- `consumer`：订阅队列，处理队列中的消息
+
+使用`RabbitMQ`官方提供的`API`即可实现这一模型：
+
+1. 引入依赖主要就是`spring-boot-starter-amqp`
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+       <modelVersion>4.0.0</modelVersion>
+       <parent>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-parent</artifactId>
+           <version>2.7.2</version>
+           <relativePath/> <!-- lookup parent from repository -->
+       </parent>
+       <groupId>com.kk</groupId>
+       <artifactId>message-queue-demo</artifactId>
+       <version>0.0.1-SNAPSHOT</version>
+       <name>02-message-queue-demo</name>
+       <description>02-message-queue-demo</description>
+       <properties>
+           <java.version>1.8</java.version>
+       </properties>
+       <dependencies>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>com.fasterxml.jackson.dataformat</groupId>
+               <artifactId>jackson-dataformat-xml</artifactId>
+               <version>2.9.10</version>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-amqp</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>org.projectlombok</groupId>
+               <artifactId>lombok</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-test</artifactId>
+               <scope>test</scope>
+           </dependency>
+       </dependencies>
+   
+       <build>
+           <plugins>
+               <plugin>
+                   <groupId>org.springframework.boot</groupId>
+                   <artifactId>spring-boot-maven-plugin</artifactId>
+               </plugin>
+           </plugins>
+       </build>
+   
+   </project>
+   ```
+
+2. 创建发布者测试类：
+
+   ```java
+   package com.kk.publisher;
+   
+   import com.rabbitmq.client.Channel;
+   import com.rabbitmq.client.Connection;
+   import com.rabbitmq.client.ConnectionFactory;
+   import org.junit.jupiter.api.Test;
+   import org.springframework.boot.test.context.SpringBootTest;
+   
+   import java.io.IOException;
+   import java.util.concurrent.TimeoutException;
+   
+   @SpringBootTest()
+   public class PCTest {
+       @Test
+       public void HelloWorldTest() throws IOException, TimeoutException {
+           //1.创建连接工厂
+           ConnectionFactory connectionFactory = new ConnectionFactory();
+           connectionFactory.setHost("192.168.56.1");
+           connectionFactory.setPort(5672);
+           connectionFactory.setUsername("admin");
+           connectionFactory.setPassword("123456");
+           //2.创建连接
+           Connection connection = connectionFactory.newConnection();
+           //3.创建连接通道
+           Channel channel = connection.createChannel();
+           //4.创建队列
+           String queueName = "hello.world.queue";
+           channel.queueDeclare(queueName, true, false, false, null);
+           //5.发布消息
+           String message = "Hello World Type RabbitMQ";
+           channel.basicPublish("", queueName, null, message.getBytes());
+           //6.关闭通道，关闭连接
+           channel.close();
+           connection.close();
+       }
+   }
+   ```
+
+   启动测试类，然后观察`http://192.168.56.1:15672/#/queues`中的队列情况。
+
+3. 创建消费者测试类：
+
+   ```java
+   package com.kk.publisher;
+   
+   import com.rabbitmq.client.Channel;
+   import com.rabbitmq.client.Connection;
+   import com.rabbitmq.client.ConnectionFactory;
+   import org.junit.jupiter.api.Test;
+   import org.springframework.boot.test.context.SpringBootTest;
+   
+   import java.io.IOException;
+   import java.util.concurrent.TimeoutException;
+   
+   @SpringBootTest()
+   public class PCTest {
+       @Test
+       public void HelloWorldTest() throws IOException, TimeoutException {
+           //1.创建连接工厂
+           ConnectionFactory connectionFactory = new ConnectionFactory();
+           connectionFactory.setHost("192.168.56.1");
+           connectionFactory.setPort(5672);
+           connectionFactory.setUsername("admin");
+           connectionFactory.setPassword("123456");
+           //2.创建连接
+           Connection connection = connectionFactory.newConnection();
+           //3.创建连接通道
+           Channel channel = connection.createChannel();
+           //4.创建队列
+           String queueName = "hello.world.queue";
+           channel.queueDeclare(queueName, true, false, false, null);
+           //5.发布消息
+           String message = "Hello World Type RabbitMQ";
+           channel.basicPublish("", queueName, null, message.getBytes());
+           //6.关闭通道，关闭连接
+           channel.close();
+           connection.close();
+       }
+   }
+   ```
+
+   启动测试类，然后观察`http://192.168.56.1:15672/#/queues`中的队列情况以及控制台消息，可以看到控制台中打印了消息并且消息队列中的消息被消费了。
+
+### 17.8 `SpringAMQP`实现发布订阅模型
+
+`SpringAMQP`是基于`RabbitMQ`封装的一套模板，并且还利用 `SpringBoot`对其实现了自动装配，使用起来非常方便。`SpringAMQP`的官方地址：https://spring.io/projects/spring-amqp。
+
+![img](https://cdn.xn2001.com/img/2021/20210904202046.png)
+
+![img](https://cdn.xn2001.com/img/2021/20210904202056.png)
+
+`SpringAMQP`提供了三个功能：
+
+- 自动声明队列、交换机及其绑定关系
+- 基于注解的监听器模式，异步接收消息
+- 封装了`RabbitTemplate`工具，用于发送消息
+
+#### 17.8.1 `Hello-World`
+
+使用`Spring AMQP`实现`Hello-World`发布订阅模型：
+
+![img](https://cdn.xn2001.com/img/2021/20210904211238.png)
+
+1. 消费者和生产者都需要引入依赖：
+
+   ```xml
+   <!--AMQP依赖，包含RabbitMQ-->
+   <dependency>
+       <groupId>org.springframework.boot</groupId>
+       <artifactId>spring-boot-starter-amqp</artifactId>
+   </dependency>
+   ```
+
+2. 消费者和生产者都需要修改配置：
+
+   ```yaml
+   spring:
+     rabbitmq:
+       host: 192.168.56.1
+       port: 5672
+       virtual-host: /
+       username: admin
+       password: 123456
+   ```
+
+3. 生产者使用`RabbitTemplate`发送消息：
+
+   ```java
+   package com.kk.publisher;
+   
+   import org.junit.jupiter.api.Test;
+   import org.springframework.amqp.rabbit.core.RabbitTemplate;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.boot.test.context.SpringBootTest;
+   
+   @SpringBootTest
+   public class SpringAMQPTest {
+   
+       @Autowired
+       private RabbitTemplate rabbitTemplate;
+   
+       @Test
+       public void testSimple() {
+           String queueName = "hello.world.queue";
+           String message = "人类毁于傲慢。";
+           rabbitTemplate.convertAndSend(queueName, message);
+       }
+   }
+   ```
+
+   消费者监听消费：
+
+   ```java
+   package com.kk.consumer;
+   
+   import org.springframework.amqp.rabbit.annotation.RabbitListener;
+   import org.springframework.stereotype.Component;
+   
+   @Component
+   public class MyConsumer {
+       @RabbitListener(queues = {"hello.world.queue"})
+       public void testSimple(String message) {
+           System.out.println("消费者消费消息：" + message);
+       }
+   }
+   ```
+
+#### 17.8.2 `Work-Queue`
+
+![img](https://cdn.xn2001.com/img/2021/20210904211238.png)
+
+使用`Spring AMQP`实现`Work-Queue`发布订阅模型：
+
+`Work queues`，也被称为`（Task queues）`，任务模型。简单来说就是**让多个消费者绑定到一个队列，共同消费队列中的消息【轮询消费】**。
+
+当消息处理比较耗时的时候，可能生产消息的速度会远远大于消息的消费速度。长此以往，消息就会堆积越来越多，无法及时处理。此时就可以使用`work`模型，多个消费者共同处理消息处理，速度就能大大提高了。
+
+1. 声明一个队列：
+
+   ```java
+   package com.kk.consumer.config;
+   
+   import org.springframework.amqp.core.Queue;
+   import org.springframework.context.annotation.Bean;
+   import org.springframework.context.annotation.Configuration;
+   
+   @Configuration
+   public class RabbitMQConfiguration {
+       @Bean
+       public Queue workQueue() {
+           return new Queue("work.queue");
+       }
+   }
+   ```
+
+2. 创建生产者：
+
+   ```java
+   @Test
+   public void testWork() throws InterruptedException {
+       String queueName = "work.queue";
+       String message = "世界人民 --- ";
+       for (int i = 0; i < 50; i++) {
+           rabbitTemplate.convertAndSend(queueName, (message + i));
+           Thread.sleep(20);
+       }
+   }
+
+3. 创建消费者：
+
+   ```java
+   package com.kk.consumer;
+   
+   import org.springframework.amqp.rabbit.annotation.RabbitListener;
+   import org.springframework.stereotype.Component;
+   
+   @Component
+   public class MyConsumer {
+       @RabbitListener(queues = {"hello.world.queue"})
+       public void testSimple(String message) {
+           System.out.println("消费者消费消息：" + message);
+       }
+   
+       @RabbitListener(queues = {"work.queue"})
+       public void testWork1(String message) {
+           System.out.println("消费者...1...消费消息：" + message);
+       }
+   
+       @RabbitListener(queues = {"work.queue"})
+       public void testWork2(String message) {
+           System.out.println("消费者...2...消费消息：" + message);
+       }
+   }
+   ```
+
+启动测试、消费者项目，可以看到不同的消费者轮询消费队列中的消息：
+
+```shell
+消费者...2...消费消息：世界人民 --- 0
+消费者...1...消费消息：世界人民 --- 1
+消费者...2...消费消息：世界人民 --- 2
+消费者...1...消费消息：世界人民 --- 3
+消费者...2...消费消息：世界人民 --- 4
+消费者...1...消费消息：世界人民 --- 5
+消费者...2...消费消息：世界人民 --- 6
+消费者...1...消费消息：世界人民 --- 7
+消费者...2...消费消息：世界人民 --- 8
+消费者...1...消费消息：世界人民 --- 9
+消费者...2...消费消息：世界人民 --- 10
+......
+```
+
