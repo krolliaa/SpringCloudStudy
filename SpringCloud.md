@@ -2859,3 +2859,69 @@ public void testTopic() {
 消费者...4...消费消息：Direct china.weather.news Message
 ```
 
+### 17.9 消息转换器
+
+`Spring`会把你发送的消息序列化为字节发送给`MQ`，接收消息的时候，还会把字节反序列化为`Java`对象。
+
+**默认情况下`Spring`采用的序列化方式是`JDK`序列化。**
+
+我们可以去试一下效果：直接发送一个`Map`类型的数据给`object.queue`
+
+```java
+package com.kk.consumer;
+
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
+
+@Component
+public class MyObjectConsumer {
+
+    @RabbitListener(queuesToDeclare = {@Queue(value = "object.queue")})
+    public void testTopic1(Map<String, String> map) {
+        System.out.println("接收 Map 消息：" + map);
+    }
+}
+```
+
+先停止消费者【先启动消费者是为了创建队列】，然后生产者发送消息：
+
+```java
+@Test
+public void testObject() {
+    Map<String, String> map = new HashMap<>();
+    map.put("name", "张麻子");
+    rabbitTemplate.convertAndSend("object.queue", map);
+}
+```
+
+![img](https://img-blog.csdnimg.cn/535f76d79afb4f5d8b80785fcaf09f64.png)
+
+可以看到发送的消息体积非常大，可读性很差，所以推荐使用`JSON`格式进行序列化和反序列化。
+
+1. 生产者和消费者均引入：`jackson`依赖
+
+2. 生产者和消费者均添加配置类，修改消息转换器
+
+   ```java
+   package com.kk.consumer.config;
+   
+   import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+   import org.springframework.amqp.support.converter.MessageConverter;
+   import org.springframework.context.annotation.Bean;
+   import org.springframework.context.annotation.Configuration;
+   
+   @Configuration
+   public class MyConfiguration {
+       @Bean
+       public MessageConverter jsonMessageConverter(){
+           return new Jackson2JsonMessageConverter();
+       }
+   }
+   ```
+
+3. 此时再发送和接收消息就靠的是`jackson`来进行消息转换了。
+
+   ![img](https://img-blog.csdnimg.cn/86f249d02d9a44d19731c695645c1354.png)
