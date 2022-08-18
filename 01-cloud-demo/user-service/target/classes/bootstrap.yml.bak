@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: user-service
+  cloud:
+    nacos:
+      server-addr: 116.25.152.11:8848
+      config:
+        file-extension: yml
+        shared-configs:
+          - dataId: diffrentserviceshare.yml

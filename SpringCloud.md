@@ -2925,3 +2925,1277 @@ public void testObject() {
 3. 此时再发送和接收消息就靠的是`jackson`来进行消息转换了。
 
    ![img](https://img-blog.csdnimg.cn/86f249d02d9a44d19731c695645c1354.png)
+
+## 18. `ElasticSearch`
+
+`ELasticsearch`是一款非常强大的开源搜索引擎，具备非常多强大功能，可以帮助我们从海量数据中快速找到需要的内容，可以用来实现搜索、日志统计、分析、系统监控等功能。
+
+`Kibana Logstash Beats`都是可替代的，只有`ElasticSearch`是不可替代的，它是`elastic stack`的核心，负责存储、搜索、分析数据。`ElasticSearch`的核心技术就是倒排索引。
+
+![img](https://cdn.xn2001.com/img/2021/20210918202359.png)
+
+### 18.1 `ElasticSearch`核心技术 —— 倒排索引
+
+了解倒排索引之前，首先得了解下正向索引，因为倒排索引就是相较于正向索引而言的，而`MySQL`的查询就是基于正向索引。
+
+下表`tb_goods`中，`id`为索引，若是根据`id`查询，在`MySQL`中直接走索引则查询速度是非常快的，但是许多情况下，我们需要做的是模糊查询，对于正向索引来所只能是逐行对数据进行扫描，扫描流程如下：
+
+1. 用户搜索数据，搜索出所有`title`含有`手机`的记录
+2. 逐行获取数据，比如`id`为`1`的数据
+3. 判断该记录中的`title`是否符合用户搜索条件
+4. 如果符合则将记录放入结果集，不符合则丢弃。
+
+逐行扫描，也就是全表扫描，随着数据量增加，其查询效率也会越来越低。当数据量达到数百万时，其效率可想而知。所以就引出了倒排索引这种技术。
+
+![img](https://cdn.xn2001.com/img/2021/20210918202527.png)
+
+倒排所以有两个非常重要的概念：
+
+1. **<font color="red">文档`document`</font>**：用来搜索的数据，其中的每一条数据就是一个文档。例如一个网页、一个商品信息
+2. **<font color="red">词条`term`</font>**：对文档数据，利用某种分词算法对数据进行分词，得到的具备含义的词语就是词条，比如说：”我是中国人“这样一条数据，就可以划分为：`我`，`是`，`中国人`，`中国`，`国人`这样的几个词条。
+
+**创建倒排索引**其实就是对正向索引的一种特殊处理，流程如下：
+
+- 将每一个文档的数据利用算法进行分词，得到一个个词条
+- 创建表，每行数据包括词条、词条所在的文档`id`、位置等信息
+- 因为词条唯一性，可以给词条创建所以，例如`hash`表结构索引
+
+**说得简单点就是：词条 ---> 包含词条的文档`id`**
+
+![img](https://cdn.xn2001.com/img/2021/20210918203514.png)
+
+**倒排索引的搜索流程**如下（以搜索"华为手机"为例）
+
+1. 用户输入条件`"华为手机"`进行搜索
+2. 对用户输入内容**分词**，得到词条：`华为`、`手机`
+3. 拿着词条在倒排索引中查找，可以得到包含词条的文档`id`有`1、2、3`
+4. 拿着文档`id`到正向索引中查找具体文档
+
+![img](https://cdn.xn2001.com/img/2021/20210918203815.png)
+
+**虽然要先查询倒排索引，再查询正向索引，但是词条和文档`id`都建立了索引，查询速度非常快！无需全表扫描。**
+
+> - 为什么一个叫做正向索引，一个叫做倒排索引呢？
+>
+>   - **正向索引**是最传统的，根据`id`索引的方式，但根据词条查询时需要先逐个获取每一个文档，然后判断文档中是否包含所需要的词条，**是根据文档找词条的过程**。
+>
+>   - **倒排索引**则相反，是先找到用户要搜索的词条，根据得到的文档`id`获取该文档，**是根据词条找文档的过程**。
+
+### 18.2 `ElasticSearch`文档和字段
+
+`ElasticSearch`是面向文档`Document`存储的，可以是数据库中的一条商品数据，一个订单信息。文档数据会被序列化`JSON`格式然后存储在`ElasticSearch`中。而`JSON`文档中往往包含着很多的字段，其实就是类似数据库中的列。
+
+![img](https://cdn.xn2001.com/img/2021/20210918212707.png)
+
+### 18.3 `ElasticSearch`索引和映射
+
+**索引`Index`**其实就是相同类型的文档的集合，所以可以把索引看作是数据库里面的表。例如：
+
+- 所有用户文档，就可以组织在一起，称为用户的索引
+- 所有商品的文档，可以组织在一起，称为商品的索引
+- 所有订单的文档，可以组织在一起，称为订单的索引
+
+![img](https://cdn.xn2001.com/img/2021/20210918213357.png)
+
+**在`18.2`学习了文档跟字段，现在又学习了索引，就可以整合以下，索引里面包含着文档，文档里面有字段。跟以前学习的`MySQL`对比以下就是：索引相当于数据库表而文档相当于记录也就是行而字段就相当于列也就是属性。**
+
+除此之外，我们知道数据库中会有一些约束信息，用来定义表的结构、字段名称、类型等信息。`ElasticSearch`也有这样的概念，在索引库中用映射`mapping`的概念来表示，映射是用于索引中文档的字段约束信息的。
+
+### 18.4 `ElasticSearch`和`MySQL`
+
+| **`MySQL`** | **`Elasticsearch`** | **说明**                                                     |
+| :---------- | :------------------ | :----------------------------------------------------------- |
+| `Table`     | `Index`             | 索引`(index)`，就是文档的集合，类似数据库的表`(table)`       |
+| `Row`       | `Document`          | 文档`（Document）`，就是一条条的数据，类似数据库中的行`（Row）`，文档都是`JSON`格式 |
+| `Column`    | `Field`             | 字段`（Field）`，就是`JSON`文档中的字段，类似数据库中的列`（Column）` |
+| `Schema`    | `Mapping`           | 映射`（Mapping）`是索引中文档的约束，例如字段类型约束。类似数据库的表结构`（Schema）` |
+| `SQL`       | `DSL`               | `DSL`是`ElasticSearch`提供的`JSON`风格的请求语句，用来操作`ElasticSearch`，实现`CRUD` |
+
+- `Mysql`：擅长事务类型操作，可以确保数据的安全和一致性
+- `ElasticSearch`：擅长海量数据的搜索、分析、计算
+
+因此在企业中，往往是两者结合使用：
+
+- 如果是对安全性要求较高的写操作，应交由`MySQL`
+- 如果是对查询性能要求较高的搜索需求，应交由`ElasticSearch`
+- 两者再基于某种方式，实现数据的同步，保证一致性
+
+![img](https://cdn.xn2001.com/img/2021/20210918213631.png)
+
+### 18.5 安装`ElasticSearch`
+
+**添加网络：**
+
+因为想使用`kibana`容器实现数据可视化，所以需要让`ElasticSearch`和`kibana`容器互联 ---> 形成一个互联网。
+
+```sh
+docker network create es-net
+```
+
+**加载镜像：**
+
+这里我们采用`elasticsearch的7.12.1`版本的镜像，这个镜像体积非常大，接近`1G`。资料提供了镜像的`tar`包：上传到虚拟机中，然后运行命令加载即可：同理还有`kibana`的tar包也需要这样做。
+
+```sh
+docker load -i es.tar
+docker load -i kibana.tar
+```
+
+**运行：**
+
+运行`docker`命令，部署单点`elasticsearch`：
+
+```sh
+docker run -d \
+	--name es \
+    -e "ES_JAVA_OPTS=-Xms512m -Xmx512m" \
+    -e "discovery.type=single-node" \
+    -v es-data:/usr/share/elasticsearch/data \
+    -v es-plugins:/usr/share/elasticsearch/plugins \
+    --privileged \
+    --network es-net \
+    -p 9200:9200 \
+    -p 9300:9300 \
+elasticsearch:7.12.1
+```
+
+命令解释：
+
+- `-e "cluster.name=es-docker-cluster"`：设置集群名称
+- `-e "http.host=0.0.0.0"`：监听的地址，可以外网访问
+- `-e "ES_JAVA_OPTS=-Xms512m -Xmx512m"`：内存大小
+- `-e "discovery.type=single-node"`：非集群模式
+- `-v es-data:/usr/share/elasticsearch/data`：挂载逻辑卷，绑定`es`的数据目录
+- `-v es-logs:/usr/share/elasticsearch/logs`：挂载逻辑卷，绑定`es`的日志目录
+- `-v es-plugins:/usr/share/elasticsearch/plugins`：挂载逻辑卷，绑定`es`的插件目录
+- `--privileged`：授予逻辑卷访问权
+- `--network es-net` ：加入一个名为`es-net`的网络中
+- `-p 9200:9200`：端口映射配置
+
+这里我用的是`Virtual Box NAT`所以需要做一个端口映射然后，在浏览器中输入：http://192.168.56.1:9200 即可看到`elasticsearch`的响应结果：
+
+![img](https://cdn.xn2001.com/img/2021/20210918214620.png)
+
+### 18.6 安装`Kibana`
+
+`kibana`可以给我们提供一个`elasticsearch`的可视化界面，便于我们学习。运行`docker`命令，部署`kibana`：
+
+```sh
+docker run -d \
+--name kibana \
+-e ELASTICSEARCH_HOSTS=http://es:9200 \
+--network=es-net \
+-p 5601:5601  \
+kibana:7.12.1
+```
+
+- `--network es-net` ：加入一个名为`es-net`的网络中，与`elasticsearch`在同一个网络中
+- `-e ELASTICSEARCH_HOSTS=http://es:9200"`：设置`elasticsearch`的地址，因为`kibana`已经与`elasticsearch`在一个网络，因此可以用容器名直接访问`elasticsearch`
+- `-p 5601:5601`：端口映射配置
+
+`kibana`启动一般比较慢，需要多等待一会，可以通过命令追踪启动日志：
+
+```sh
+docker logs -f kibana
+```
+
+接着在浏览器输入地址访问：http://192.168.56.1:5601即可看到结果：
+
+![img](https://cdn.xn2001.com/img/2021/20210918214722.png)
+
+`kibana`中提供了一个`DevTools`界面，这个界面中可以编写`DSL`来操作`ElasticSearch`。并且对`DSL`语句有自动补全功能。
+
+访问http://192.168.56.1:5601/app/dev_tools#/console即可进入控制台界面。
+
+### 18.7 安装`ik`分词插件
+
+**在线安装`ik`分词插件：**
+
+直接从`github`上下载的速度非常非常慢，推荐使用离线安装`ik`分词插件的方式：
+
+```shell
+# 进入容器内部
+docker exec -it 36a9abb17b70 /bin/bash
+
+# 在线下载并安装
+./bin/elasticsearch-plugin  install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.12.1/elasticsearch-analysis-ik-7.12.1.zip
+
+#退出
+exit
+#重启容器
+docker restart elasticsearch
+```
+
+**离线安装`ik`分词插件：**
+
+此前我们在运行`ElasticSearch`容器的时候就已经将数据卷挂在好了，可以看到我们将挂载点挂在到了`/usr/share/elasticsearch/data`和`/usr/share/elasticsearch/plugins`两个目录中：
+
+```shell
+docker run -d \
+	--name es \
+    -e "ES_JAVA_OPTS=-Xms512m -Xmx512m" \
+    -e "discovery.type=single-node" \
+    -v es-data:/usr/share/elasticsearch/data \
+    -v es-plugins:/usr/share/elasticsearch/plugins \
+    --privileged \
+    --network es-net \
+    -p 9200:9200 \
+    -p 9300:9300 \
+elasticsearch:7.12.1
+```
+
+当然我们还可以使用`inspect`查看下插件挂载的数据卷位置：
+
+```sh
+docker volume inspect es-plugins
+```
+
+```json
+[
+    {
+        "CreatedAt": "2022-05-06T10:06:34+08:00",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/es-plugins/_data",
+        "Name": "es-plugins",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+```
+
+**解压缩分词器安装包：**
+
+进入到`/var/lib/docker/volumes/es-plugins/_data`中，将资料中的`ik`分词器解压缩，重命名为`ik`，然后使用`xftp`将资料上传到该目录：
+
+![img](https://cdn.xn2001.com/img/2021/20210918215615.png)
+
+进入到`ElasticSearch`容器，可以看到挂载没问题，上传也没问题：
+
+```shell
+docker ps
+docker exec -it 36a9abb17b70 bash
+cd plugins/
+ls
+```
+
+![img](https://img-blog.csdnimg.cn/c7ef4aa2e78048839031824fb01b9986.png)
+
+**重启容器：**
+
+```shell
+docker restart es
+docker logs -f es
+```
+
+**测试分词器分词：**
+
+`ik`分词器包含两种模式：
+
+* `ik_smart`：最少切分
+* `ik_max_word`：最细切分
+
+使用`ik_max_word`：
+
+```json
+GET /_analyze
+{
+  "analyzer":"ik_max_word",
+  "text":"恰同学少年，风华正茂"
+}
+```
+
+```json
+{
+  "tokens" : [
+    {
+      "token" : "恰",
+      "start_offset" : 0,
+      "end_offset" : 1,
+      "type" : "CN_CHAR",
+      "position" : 0
+    },
+    {
+      "token" : "同学",
+      "start_offset" : 1,
+      "end_offset" : 3,
+      "type" : "CN_WORD",
+      "position" : 1
+    },
+    {
+      "token" : "少年",
+      "start_offset" : 3,
+      "end_offset" : 5,
+      "type" : "CN_WORD",
+      "position" : 2
+    },
+    {
+      "token" : "风华正茂",
+      "start_offset" : 6,
+      "end_offset" : 10,
+      "type" : "CN_WORD",
+      "position" : 3
+    },
+    {
+      "token" : "风华",
+      "start_offset" : 6,
+      "end_offset" : 8,
+      "type" : "CN_WORD",
+      "position" : 4
+    },
+    {
+      "token" : "正",
+      "start_offset" : 8,
+      "end_offset" : 9,
+      "type" : "CN_CHAR",
+      "position" : 5
+    },
+    {
+      "token" : "茂",
+      "start_offset" : 9,
+      "end_offset" : 10,
+      "type" : "CN_CHAR",
+      "position" : 6
+    }
+  ]
+}
+```
+
+使用`ik_smart`：
+
+```shell
+GET /_analyze
+{
+  "analyzer":"ik_smart",
+  "text":"恰同学少年，风华正茂"
+}
+```
+
+```shell
+{
+  "tokens" : [
+    {
+      "token" : "恰",
+      "start_offset" : 0,
+      "end_offset" : 1,
+      "type" : "CN_CHAR",
+      "position" : 0
+    },
+    {
+      "token" : "同学",
+      "start_offset" : 1,
+      "end_offset" : 3,
+      "type" : "CN_WORD",
+      "position" : 1
+    },
+    {
+      "token" : "少年",
+      "start_offset" : 3,
+      "end_offset" : 5,
+      "type" : "CN_WORD",
+      "position" : 2
+    },
+    {
+      "token" : "风华正茂",
+      "start_offset" : 6,
+      "end_offset" : 10,
+      "type" : "CN_WORD",
+      "position" : 3
+    }
+  ]
+}
+```
+
+**扩展词词典：**
+
+随着互联网的发展，“造词运动”也越发的频繁。出现了很多新的词语，在原有的词汇列表中并不存在。比如：“奥力给”，“传智播客” 等。
+
+所以我们的词汇也需要不断的更新，`ik`分词器提供了扩展词汇的功能。
+
+1. 打开`ik`分词器`config`目录，在`IKAnalyzer.cfg.xml`配置文件内容添加：
+
+
+![img](https://cdn.xn2001.com/img/2021/20210918221159.png)
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+        <comment>IK Analyzer 扩展配置</comment>
+        <!--用户可以在这里配置自己的扩展字典 *** 添加扩展词典-->
+        <entry key="ext_dict">ext.dic</entry>
+</properties>
+```
+
+2. 新建一个`ext.dic`，可以参考`config`目录下复制一个配置文件进行修改
+
+```properties
+奥力给
+麦乐鸡侠
+```
+
+3. 重启`ElasticSearch`
+
+```sh
+docker restart es
+docker logs -f elasticsearch
+```
+
+4. 测试效果：
+
+```json
+GET /_analyze
+{
+  "analyzer":"ik_max_word",
+  "text":"麦乐鸡侠奥力给！"
+}
+```
+
+```shell
+{
+  "tokens" : [
+    {
+      "token" : "麦乐鸡侠",
+      "start_offset" : 0,
+      "end_offset" : 4,
+      "type" : "CN_WORD",
+      "position" : 0
+    },
+    {
+      "token" : "奥力给",
+      "start_offset" : 4,
+      "end_offset" : 7,
+      "type" : "CN_WORD",
+      "position" : 1
+    }
+  ]
+}
+```
+
+> 注意当前文件的编码必须是`UTF-8`格式，严禁使用`Windows`记事本编辑
+
+**禁用词词典：**
+
+在互联网项目中，在网络间传输的速度很快，所以很多语言是不允许在网络上传递的，如：关于宗教、政治等敏感词语，那么我们在搜索时也应该忽略当前词汇。
+
+`ik`分词器也提供了强大的停用词功能，让我们在索引时就直接忽略当前的停用词汇表中的内容。
+
+1. `IKAnalyzer.cfg.xml`配置文件内容添加：
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+   <properties>
+           <comment>IK Analyzer 扩展配置</comment>
+           <!--用户可以在这里配置自己的扩展字典-->
+           <entry key="ext_dict">ext.dic</entry>
+            <!--用户可以在这里配置自己的扩展停止词字典  *** 添加停用词词典-->
+           <entry key="ext_stopwords">stopword.dic</entry>
+   </properties>
+   ```
+
+2. 在`stopword.dic`添加停用词
+
+   ```xml
+   习大大
+   ```
+
+3. 重启`ElasticSearch `
+
+   ```shell
+   # 重启服务
+   docker restart elasticsearch
+   docker restart kibana
+   
+   # 查看 日志
+   docker logs -f elasticsearch
+   ```
+
+4. 测试效果：
+
+   ```shell
+   GET /_analyze
+   {
+     "analyzer":"ik_max_word",
+     "text":"习大大奥力给！"
+   }
+   ```
+
+   ```shell
+   {
+     "tokens" : [
+       {
+         "token" : "奥力给",
+         "start_offset" : 3,
+         "end_offset" : 6,
+         "type" : "CN_WORD",
+         "position" : 0
+       }
+     ]
+   }
+   ```
+
+### 18.8 操作索引库之`Mapping`
+
+索引库我们之前学习过就相当于`MySQL`数据库中的表，而`Mapping`映射就相当于是表结构`schema`，所以操作映射就是在操作`ES`的索引结构：
+
+`mapping`是对索引库中文档的约束，常见的`mapping`属性包括：
+
+- `type`：字段数据类型，常见的简单类型有
+  - 字符串：`text`（可分词的文本）、`keyword`（精确值，例如：品牌、国家、`ip`地址）
+  - 数值：`long、integer、short、byte、double、float`
+  - 布尔：`boolean`
+  - 日期：`date`
+  - 对象：`object`
+
+- `index`：是否创建索引，默认为`true`
+- `analyzer`：使用哪种分词器，可以是`ik_max_word`也可以是`ik_smart`
+- `properties`：该字段的子字段
+
+```json
+{
+    "age": 21,
+    "weight": 52.1,
+    "isMarried": false,
+    "info": "小桥流水人家",
+    "email": "abcdefg@163.com",
+    "score": [99.1, 99.5, 98.9],
+    "name": {
+        "firstName": "李",
+        "lastName": "德"
+    }
+}
+```
+
+对应德每个字段映射`mapping`如下：
+
+- `age`：类型为`integer`，`index`为`true`所以参与搜索，无需分词器
+- `weight`：类型为`float`，`index`为`true`所以参与搜索，无需分词器
+- `isMarried`：类型为`boolean`，`index`为`true`所以参与搜索，无需分词器
+- `info`：类型为字符串，需要分词，因此是`text`，参与搜索，`index`为`true`，分词器可以用`ik_smart`
+- `email`：类型为字符串，但是不需要分词，因此是`keyword`，不参与搜索，因此设置`index`为`false`，无需分词器
+- `score`：虽然是数组，**但是我们只看元素的类型**，类型为`float`，参与搜索，`index`为`true`，无需分词器
+- `name`：类型为`object`，需要定义多个子属性
+  - `name.firstName`：类型为字符串，不需要分词，`keyword`；参与搜索，`index`为`true`；无需分词器
+  - `name.lastName`：类型为字符串，不需要分词，`keyword`；参与搜索，`index`为`true`；无需分词器
+
+下面的`value`是我自己添加的不用理会：
+
+```json
+{
+    "age": {
+        "type":"integer",
+        "index":"true",
+        "value":"21"
+    }
+    "weight": {
+    	"type":"float",
+    	"index":"true",
+    	"value":"52.1"
+	},
+    "isMarried": {
+        "type":"boolean",
+        "index":"true",
+        "value":"false"
+    },
+    "info": {
+        "type":"text",
+        "index":"true",
+        "analyzer":"ik_max_word"
+        "value":"小桥流水人家"  
+    },
+    "email": {
+        "index":"false",
+        "value":"abcdefg@163.com"
+    },
+    "score": {
+        "type":"float",
+        "index":"true",
+        "value":[99.1, 99.5, 98.9]
+    }
+    "name": {
+        "type":"text"
+        "properties":{
+    		"firstName": {
+        		"type":"keyword"
+        		"value":"李"
+    		}
+	        "lastName": "德"   
+         }
+    }
+}
+```
+
+### 18.9 增删改查索引库
+
+了解了`mapping`是怎么一回事就可以创建索引库和映射了，创建索引库和映射的示例如下：**索引库**就相当于表，**映射**相当于表结构，这里面的`properties`就相当于一个个的属性即列在这里表示**字段**，合在一起形成了行也就是记录在这里表示的是**文档**。
+
+**`index mapping document term`就是`ElasticSearch`最重要的四要素。**
+
+```json
+PUT /索引库名称
+{
+  "mappings": {
+    "properties": {
+      "字段名":{
+        "type": "text",
+        "analyzer": "ik_smart"
+      },
+      "字段名2":{
+        "type": "keyword",
+        "index": "false"
+      },
+      "字段名3":{
+        "properties": {
+          "子字段": {
+            "type": "keyword"
+          }
+        }
+      }
+      // ...略
+    }
+  }
+}
+```
+
+需求：创建一张名为`/kk`的索引，要求有：`info email name`三个字段，`info`参与搜索和分词且类型为`text`，`email`不参与搜索类型为关键字`keyword`，`name`有两个子字段一个为`firstName`另一个为`lastName`，类型均为`keyword`：
+
+```json
+PUT /kk
+{
+    "mappings":{
+        "properties":{
+            "info":{
+                "type":"text",
+                "index":"true",
+                "analyzer":"ik_smart"
+            },
+            "email":{
+                "type":"keyword",
+                "index":"false"
+            },
+            "name":{
+                "properties":{
+                    "firstName":{
+                        "type":"keyword"
+                    },
+                    "lastName":{
+                        "type":"keyword"
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+执行，可以看到索引创建成功：
+
+![img](https://img-blog.csdnimg.cn/383f52d086a64ab3b0353f1f9878afc2.png)
+
+我们使用一个真实的数据库来创建一个索引库：
+
+![img](https://cdn.xn2001.com/img/2021/20210919164626.png)
+
+可以看到表名为：`tb_hotel`对应着索引名`/hotel`，字段数据类型可以参考表结构`schema`的名称和类型，不参与搜索的比如经纬度还有酒店图片这些都不用参与搜索，分不分词看内容，内容是一个整体比如`id`就不用分词，分词器我们可以选择`ik_max_word`：
+
+```json
+PUT /hotel
+{
+  "mappings":{
+    "properties":{
+      "id":{
+        "type":"keyword",
+        "index":"true"
+      },
+      "name":{
+        "type":"text",
+        "index":"true",
+        "analyzer":"ik_max_word"
+      },
+      "address":{
+        "type":"keyword",
+        "index":"false"
+      },
+      "price":{
+        "type":"integer"
+      },
+      "score":{
+        "type":"integer"
+      },
+      "brand":{
+        "type":"keyword",
+        "copy_to":"all"
+      },
+      "city":{
+        "type":"keyword",
+        "copy_to":"all"
+      },
+      "starName":{
+        "type":"keyword"
+      },
+      "business":{
+        "type":"keyword"
+      },
+      "location":{
+        "type":"geo_point"
+      },
+      "pic":{
+        "type":"keyword",
+        "index":"false"
+      },
+      "all":{
+        "type":"text",
+        "analyzer":"ik_max_word"
+      }
+    }
+  }
+}
+```
+
+特殊字段说明：
+
+- `location`：地理坐标，里面包含精度、纬度
+- `all`：一个组合字段，其目的是将多字段的值利用 `copy_to` 合并，提供给用户搜索，这样一来就只需要搜索一个字段就可以得到结果，性能更好。
+
+> ES中支持两种地理坐标数据类型：
+>
+> - `geo_point`：由纬度`（latitude）`和经度`（longitude）`确定的一个点。例如：`"32.8752345, 120.2981576"`
+> - `geo_shape`：有多个`geo_point`组成的复杂几何图形。例如一条直线，`"LINESTRING (-77.03653 38.897676, -77.009051 38.889939)"`
+
+**修改索引库：**
+
+**<font color="red">索引库一旦创建就无法修改</font>**，但是允许添加新的字段到`mapping`中。添加字段的语句如下：
+
+```json
+PUT /索引库名/_mapping
+{
+  "properties": {
+    "新字段名":{
+      "type": "integer"
+    }
+  }
+}
+```
+
+比如往`/kk`索引添加字段`age`：
+
+```json
+PUT /kk/_mapping
+{
+  "properties":{
+    "age":{
+      "type":"keyword"
+    }
+  }
+}
+```
+
+**删除索引库：**
+
+```json
+DELETE /索引库名
+```
+
+**查询索引库：**
+
+```json
+GET /索引库名
+```
+
+### 18.10 `ElasticSearch`文档操作
+
+这些操作就是`DSL`语句，类似于`SQL`语句：
+
+**增添文档：**
+
+文档`Document`相当于数据库中的一条条记录，创建文档的结构如下：
+
+```json
+POST /索引库名/_doc/文档id
+{
+    "字段1": "值1",
+    "字段2": "值2",
+    "字段3": {
+        "子属性1": "值3",
+        "子属性2": "值4"
+    }
+    // ...
+}
+```
+
+比如往`/kk`索引库中添加一个文档：
+
+```json
+POST /kk/_doc/1
+{
+  "info":"我不会Java",
+  "email":"java@qq.com",
+  "name":{
+    "firstname":"张",
+    "lastname":"三"
+  }
+}
+```
+
+执行，结果如下：
+
+```json
+{
+  "_index" : "kk",
+  "_type" : "_doc",
+  "_id" : "1",
+  "_version" : 1,
+  "result" : "created",
+  "_shards" : {
+    "total" : 2,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 0,
+  "_primary_term" : 1
+}
+```
+
+**修改文档：**
+
+修改文档有两种方式，一种是全量修改，另外一种是增量修改。
+
+- 全量修改：删除原来的文档，然后新增一个相同`id`的修改后的文档
+
+  ```json
+  PUT /{索引库名}/_doc/id
+  {
+      "字段1": "值1",
+      "字段2": "值2",
+      // ... 略
+  }
+  ```
+
+  ```json
+  PUT /kk/_doc/1
+  {
+    "info":"我不会program",
+    "email":"c@qq.com",
+    "name":{
+      "firstname":"李",
+      "lastname":"四"
+    }
+  }
+  ```
+
+- 增量修改：只修改匹配`id`文档中的部分字段
+
+  ```json
+  POST /{索引库名}/_update/文档id
+  {
+      "doc": {
+           "字段名": "新的值",
+      }
+  }
+  ```
+
+  ```json
+  POST /kk/_update/1
+  {
+    "doc":{
+      "name":{
+        "firstname":"王",
+        "lastname":"五"
+      }
+    }
+  }
+  ```
+
+**删除文档：**
+
+```json
+DELETE /{索引库名}/_doc/{id}
+```
+
+**查询文档：**
+
+```json
+GET /{索引库名称}/_doc/{id}
+```
+
+### 18.11 使用`RestClient`操作`ElasticSearch`
+
+`ES`官方提供了各种不同语言的客户端，用来操作`ES`。这些客户端的本质就是组装 `DSL`语句，通过`http`请求发送给`ES`。官方文档地址：https://www.elastic.co/guide/en/elasticsearch/client/index.html。
+
+`ElasticSearchRestHighLevel`需要引入版本号，在`8.x`的`ElasticSearch`中已经被弃用了，新版本使用的是`ElasticSearch Java API Client`。这里由于`ElasticSearch`的版本是`7.12.1`的所以还是可以使用`Java Rest Client`。
+
+![img](https://cdn.xn2001.com/img/2021/20210919234405.png)
+
+后面将使用 `Java HighLevel Rest Client`操作`ElasticSearch`。
+
+1. 首先得在`mysql`中创建数据库和表，将酒店表的数据拉进去【资料有】
+
+2. 创建`hotel-demo`，`pom.xml`如下：
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <project xmlns="http://maven.apache.org/POM/4.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+       <modelVersion>4.0.0</modelVersion>
+       <parent>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-parent</artifactId>
+           <version>2.7.2</version>
+           <relativePath/> <!-- lookup parent from repository -->
+       </parent>
+       <groupId>com.kk</groupId>
+       <artifactId>03-hotel-demo</artifactId>
+       <version>1.0</version>
+   
+       <properties>
+           <java.version>1.8</java.version>
+           <elasticsearch.version>7.12.1</elasticsearch.version>
+       </properties>
+   
+       <dependencies>
+           <!--amqp-->
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-amqp</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>org.elasticsearch.client</groupId>
+               <artifactId>elasticsearch-rest-high-level-client</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-web</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>com.baomidou</groupId>
+               <artifactId>mybatis-plus-boot-starter</artifactId>
+               <version>3.4.2</version>
+           </dependency>
+           <dependency>
+               <groupId>mysql</groupId>
+               <artifactId>mysql-connector-java</artifactId>
+               <version>8.0.28</version>
+           </dependency>
+           <dependency>
+               <groupId>org.projectlombok</groupId>
+               <artifactId>lombok</artifactId>
+               <optional>true</optional>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-test</artifactId>
+               <scope>test</scope>
+               <exclusions>
+                   <exclusion>
+                       <groupId>org.junit.vintage</groupId>
+                       <artifactId>junit-vintage-engine</artifactId>
+                   </exclusion>
+               </exclusions>
+           </dependency>
+           <!--FastJson-->
+           <dependency>
+               <groupId>com.alibaba</groupId>
+               <artifactId>fastjson</artifactId>
+               <version>1.2.71</version>
+           </dependency>
+           <dependency>
+               <groupId>org.apache.commons</groupId>
+               <artifactId>commons-lang3</artifactId>
+           </dependency>
+       </dependencies>
+   
+       <build>
+           <plugins>
+               <plugin>
+                   <groupId>org.springframework.boot</groupId>
+                   <artifactId>spring-boot-maven-plugin</artifactId>
+                   <configuration>
+                       <excludes>
+                           <exclude>
+                               <groupId>org.projectlombok</groupId>
+                               <artifactId>lombok</artifactId>
+                           </exclude>
+                       </excludes>
+                   </configuration>
+               </plugin>
+           </plugins>
+       </build>
+   </project>
+
+3. 修改配置文件`application.yml`：
+
+   ```yaml
+   server:
+     port: 80
+   spring:
+     datasource:
+       driver-class-name: com.mysql.cj.jdbc.Driver
+       url: jdbc:mysql://localhost:3306/es?useSSL=false&serverTimezone=Asia/Shanghai
+       username: root
+       password: 123456
+     rabbitmq:
+       host: 192.168.56.1
+       port: 5672
+       username: admin
+       password: 123456
+       virtual-host: /
+   logging:
+     level:
+       com.kk.hotel: debug
+     pattern:
+       dateformat: yyyy-MM-dd HH:mm:ss
+   mybatis-plus:
+     configuration:
+       map-underscore-to-camel-case: true
+     type-aliases-package: com.kk.hotel.pojo
+   ```
+
+4. 创建`pojo.Hotel`实体类
+
+   ```java
+   package com.kk.hotel.pojo;
+   
+   import com.baomidou.mybatisplus.annotation.IdType;
+   import com.baomidou.mybatisplus.annotation.TableId;
+   import com.baomidou.mybatisplus.annotation.TableName;
+   import lombok.AllArgsConstructor;
+   import lombok.Data;
+   import lombok.NoArgsConstructor;
+   
+   @Data
+   @NoArgsConstructor
+   @AllArgsConstructor
+   //解决实体名和表名映射问题
+   @TableName(value = "tb_hotel")
+   public class Hotel {
+       //解决主键自动生成问题，IdType.INPUT 表示用户自定义输入类型
+       @TableId(value = "id", type = IdType.INPUT)
+       private Long id;
+       private String name;
+       private String address;
+       private Integer price;
+       private Integer score;
+       private String brand;
+       private String city;
+       private String starName;
+       private String business;
+       private String longitude;
+       private String latitude;
+       private String pic;
+   }
+   ```
+
+5. 创建`HotelMapper`接口继承`BaseMapper`
+
+   ```java
+   package com.kk.hotel.mapper;
+   
+   import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+   import com.kk.hotel.pojo.Hotel;
+   import org.apache.ibatis.annotations.Mapper;
+   
+   @Mapper
+   public interface HotelMapper extends BaseMapper<Hotel> {
+   }
+   ```
+
+6. 创建`HotelService`接口以及实现类`HotelServiceImpl`
+
+   ```java
+   package com.kk.hotel.service;
+   
+   import com.baomidou.mybatisplus.extension.service.IService;
+   import com.kk.hotel.pojo.Hotel;
+   
+   public interface HotelService extends IService<Hotel>  {
+   }
+   ```
+
+   ```java
+   package com.kk.hotel.service.impl;
+   
+   import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+   import com.kk.hotel.mapper.HotelMapper;
+   import com.kk.hotel.pojo.Hotel;
+   import com.kk.hotel.service.HotelService;
+   import org.springframework.stereotype.Service;
+   
+   @Service
+   public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements HotelService {
+   }
+
+7. 创建`Web`层：`HotelController`
+
+   ```java
+   package com.kk.hotel.controller;
+   
+   import com.kk.hotel.service.HotelService;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.web.bind.annotation.RequestMapping;
+   import org.springframework.web.bind.annotation.RestController;
+   
+   @RestController
+   @RequestMapping(value = "/hotel")
+   public class HotelController {
+       @Autowired
+       private HotelService hotelService;
+   }
+   ```
+
+8. 创建启动类：
+
+   ```java
+   package com.kk.hotel;
+   
+   import org.springframework.boot.SpringApplication;
+   import org.springframework.boot.autoconfigure.SpringBootApplication;
+   
+   @SpringBootApplication
+   public class HotelApplication {
+       public static void main(String[] args) {
+           SpringApplication.run(HotelApplication.class, args);
+       }
+   }
+   ```
+
+9. 因为该项目是用来练习操作`ElasticSearch`的所以需要再创建一个文档实体类，该文档中所有的字段都根据`Hotel`实体类生成：
+
+   ```java
+   package com.kk.hotel.pojo;
+   
+   import lombok.Data;
+   import lombok.NoArgsConstructor;
+   
+   @Data
+   @NoArgsConstructor
+   public class HotelDoc {
+       private Long id;
+       private String name;
+       private String address;
+       private Integer price;
+       private Integer score;
+       private String brand;
+       private String city;
+       private String starName;
+       private String business;
+       private String location;
+       private String pic;
+   
+       public HotelDoc(Hotel hotel) {
+           this.id = hotel.getId();
+           this.name = hotel.getName();
+           this.address = hotel.getAddress();
+           this.price = hotel.getPrice();
+           this.score = hotel.getScore();
+           this.brand = hotel.getBrand();
+           this.city = hotel.getCity();
+           this.starName = hotel.getStarName();
+           this.business = hotel.getBusiness();
+           this.location = hotel.getLatitude() + ", " + hotel.getLongitude();
+           this.pic = hotel.getPic();
+       }
+   }
+   ```
+
+10. 
+
+
+
+
+
+
+
+
+
+
+
+# 4.部署es集群
+
+部署es集群可以直接使用docker-compose来完成，不过要求你的Linux虚拟机至少有**4G**的内存空间
+
+
+
+首先编写一个docker-compose文件，内容如下：
+
+```sh
+version: '2.2'
+services:
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - elastic
+  es02:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+    container_name: es02
+    environment:
+      - node.name=es02
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data02:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+  es03:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+    container_name: es03
+    environment:
+      - node.name=es03
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data03:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+
+volumes:
+  data01:
+    driver: local
+  data02:
+    driver: local
+  data03:
+    driver: local
+
+networks:
+  elastic:
+    driver: bridge
+```
+
+
+
+Run `docker-compose` to bring up the cluster:
+
+```sh
+docker-compose up
+```

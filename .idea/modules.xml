@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/01-cloud-demo/01-cloud-demo.iml" filepath="$PROJECT_DIR$/01-cloud-demo/01-cloud-demo.iml" />
       <module fileurl="file://$PROJECT_DIR$/02-message-queue-demo/02-message-queue-demo.iml" filepath="$PROJECT_DIR$/02-message-queue-demo/02-message-queue-demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/03-hotel-demo/03-hotel-demo.iml" filepath="$PROJECT_DIR$/03-hotel-demo/03-hotel-demo.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/SpringCloudStudy.iml" filepath="$PROJECT_DIR$/.idea/SpringCloudStudy.iml" />
       <module fileurl="file://$PROJECT_DIR$/02-message-queue-demo/consumer/consumer.iml" filepath="$PROJECT_DIR$/02-message-queue-demo/consumer/consumer.iml" />
       <module fileurl="file://$PROJECT_DIR$/01-cloud-demo/eureka-service/eureka-service.iml" filepath="$PROJECT_DIR$/01-cloud-demo/eureka-service/eureka-service.iml" />

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="eureka-service" />
+        <module name="nacos-service" />
+        <module name="publisher" />
+        <module name="03-hotel-demo" />
+        <module name="order-service" />
+        <module name="user-service" />
+        <module name="feign-api" />
+        <module name="gateway" />
+        <module name="consumer" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="01-cloud-demo" target="1.8" />
+      <module name="02-message-queue-demo" target="1.8" />
+      <module name="03-hotel-demo" target="1.8" />
+      <module name="consumer" target="8" />
+      <module name="eureka-service" target="8" />
+      <module name="feign-api" target="8" />
+      <module name="gateway" target="8" />
+      <module name="nacos-service" target="8" />
+      <module name="order-service" target="1.8" />
+      <module name="publisher" target="8" />
+      <module name="user-service" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="02-message-queue-demo" options="-parameters" />
+      <module name="03-hotel-demo" options="-parameters" />
+      <module name="consumer" options="-parameters" />
+      <module name="eureka-service" options="-parameters" />
+      <module name="feign-api" options="-parameters" />
+      <module name="gateway" options="-parameters" />
+      <module name="nacos-service" options="-parameters" />
+      <module name="order-service" options="-parameters" />
+      <module name="publisher" options="-parameters" />
+      <module name="user-service" options="-parameters" />
+    </option>
+  </component>
+</project>

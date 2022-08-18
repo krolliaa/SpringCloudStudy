@@ -1,0 +1,41 @@
+server:
+  #网关端口
+  port: 10010
+spring:
+  application:
+    #网关名称
+    name: gateway
+  cloud:
+    nacos:
+      #Nacos 地址
+      server-addr: 192.168.0.104:8848
+    gateway:
+      globalcors: # 全局的跨域处理
+        add-to-simple-url-handler-mapping: true # 网关特有，解决options请求被拦截问题，询问让不让访问
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: # 允许哪些网站的跨域请求 allowedOrigins: “*” 允许所有网站
+              - "http://localhost:5500"
+            allowedMethods: # 允许的跨域ajax的请求方式
+              - "GET"
+              - "POST"
+              - "DELETE"
+              - "PUT"
+              - "OPTIONS"
+            allowedHeaders: "*" # 允许在请求中携带的头信息
+            allowCredentials: true # 是否允许携带cookie
+            maxAge: 360000 # 这次跨域检测的有效期，浏览器将在该有效期内不再发送请求，直接使用
+      #网关路由配置
+      default-filters:
+        - AddRequestHeader=sign, kk.com is eternal
+      routes:
+          #路由 id，自定义【唯一即可】
+        - id: user-service
+          #uri http://localhost:8081 路由的目标地址就是 http 固定地址，lb 就是负载均衡，后面跟着服务名称
+          uri: lb://user-service
+          #路由断言，也就是判断请求是否符合路由规则的条件，按照路径匹配，以/user/开头就符合
+          predicates:
+            - Path=/user/**
+            #- After=2031-04-13T15:14:47.433+08:00[Asia/Shanghai]
+          filters:
+            - AddRequestHeader=sign, kk.com is eternal

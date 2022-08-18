@@ -1,0 +1,1004 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="43d4e940-1fb8-497b-b5f9-0abea53ee8f7" name="Changes" comment="ElasticSearch：&#10;1.搭建 hotel-demo 项目">
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__antlr_antlr_2_7_7.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__aopalliance_aopalliance_1_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__ch_qos_logback_logback_classic_1_2_11.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__ch_qos_logback_logback_classic_1_2_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__ch_qos_logback_logback_core_1_2_11.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__ch_qos_logback_logback_core_1_2_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_cloud_spring_cloud_alibaba_commons_2_2_5_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_cloud_spring_cloud_starter_alibaba_nacos_discovery_2_2_5_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_fastjson_1_2_71.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_nacos_nacos_api_1_4_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_nacos_nacos_client_1_4_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_nacos_nacos_common_1_4_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_spring_spring_context_support_1_0_10.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_baomidou_mybatis_plus_3_4_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_baomidou_mybatis_plus_annotation_3_4_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_baomidou_mybatis_plus_boot_starter_3_4_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_baomidou_mybatis_plus_core_3_4_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_baomidou_mybatis_plus_extension_3_4_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_carrotsearch_hppc_0_8_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_classmate_1_5_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_annotations_2_11_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_annotations_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_core_2_11_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_core_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_databind_2_11_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_core_jackson_databind_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_dataformat_jackson_dataformat_cbor_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_dataformat_jackson_dataformat_smile_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_dataformat_jackson_dataformat_xml_2_11_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_dataformat_jackson_dataformat_xml_2_9_10.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_dataformat_jackson_dataformat_yaml_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_datatype_jackson_datatype_jdk8_2_11_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_datatype_jackson_datatype_jdk8_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_datatype_jackson_datatype_jsr310_2_11_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_datatype_jackson_datatype_jsr310_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_module_jackson_module_jaxb_annotations_2_11_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_module_jackson_module_jaxb_annotations_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_module_jackson_module_parameter_names_2_11_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_jackson_module_jackson_module_parameter_names_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_fasterxml_woodstox_woodstox_core_5_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_github_jsqlparser_jsqlparser_4_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_github_spullara_mustache_java_compiler_0_9_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_code_findbugs_jsr305_3_0_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_code_findbugs_jsr305_3_0_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_code_gson_gson_2_8_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_errorprone_error_prone_annotations_2_3_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_guava_failureaccess_1_0_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_guava_guava_29_0_jre.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_guava_listenablefuture_9999_0_empty_to_avoid_conflict_with_guava.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_inject_guice_4_1_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_j2objc_j2objc_annotations_1_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_protobuf_protobuf_java_3_13_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_jayway_jsonpath_json_path_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_archaius_archaius_core_0_7_7.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_eureka_eureka_client_1_10_11.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_eureka_eureka_core_1_10_11.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_hystrix_hystrix_core_1_5_18.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_netflix_commons_netflix_commons_util_0_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_netflix_commons_netflix_eventbus_0_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_netflix_commons_netflix_infix_0_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_netflix_commons_netflix_statistics_0_1_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_ribbon_ribbon_2_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_ribbon_ribbon_core_2_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_ribbon_ribbon_eureka_2_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_ribbon_ribbon_httpclient_2_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_ribbon_ribbon_loadbalancer_2_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_ribbon_ribbon_transport_2_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_servo_servo_core_0_12_21.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_rabbitmq_amqp_client_5_14_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_stoyanr_evictor_1_0_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_activation_jakarta_activation_1_2_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_istack_istack_commons_runtime_3_0_11.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_jersey_contribs_jersey_apache_client4_1_19_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_jersey_jersey_client_1_19_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_jersey_jersey_client_1_19_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_jersey_jersey_core_1_19_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_jersey_jersey_server_1_19_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_jersey_jersey_servlet_1_19_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_tdunning_t_digest_3_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_thoughtworks_xstream_xstream_1_4_14.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_vaadin_external_google_android_json_0_0_20131108_vaadin1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_zaxxer_HikariCP_3_4_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_zaxxer_HikariCP_4_0_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_codec_commons_codec_1_14.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_codec_commons_codec_1_15.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_collections_commons_collections_3_2_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_configuration_commons_configuration_1_8.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_fileupload_commons_fileupload_1_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_io_commons_io_2_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_jxpath_commons_jxpath_1_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_lang_commons_lang_2_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_github_openfeign_feign_core_10_10_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_github_openfeign_feign_httpclient_10_10_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_github_openfeign_feign_hystrix_10_10_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_github_openfeign_feign_slf4j_10_10_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_github_openfeign_form_feign_form_3_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_github_openfeign_form_feign_form_spring_3_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_micrometer_micrometer_core_1_5_11.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_buffer_4_1_59_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_codec_4_1_59_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_codec_http2_4_1_59_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_codec_http_4_1_59_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_codec_socks_4_1_59_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_common_4_1_59_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_handler_4_1_59_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_handler_proxy_4_1_59_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_resolver_4_1_59_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_transport_4_1_59_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_transport_native_epoll_linux_x86_64_4_1_59_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_transport_native_unix_common_4_1_59_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_projectreactor_addons_reactor_extra_3_3_5_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_projectreactor_netty_reactor_netty_0_9_17_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_projectreactor_reactor_core_3_3_14_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_prometheus_simpleclient_0_5_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_reactivex_rxjava_1_3_8.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_reactivex_rxnetty_0_4_9.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_reactivex_rxnetty_contexts_0_4_9.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_reactivex_rxnetty_servo_0_4_9.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__jakarta_activation_jakarta_activation_api_1_2_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__jakarta_annotation_jakarta_annotation_api_1_3_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__jakarta_validation_jakarta_validation_api_2_0_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__jakarta_xml_bind_jakarta_xml_bind_api_2_3_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__javax_inject_javax_inject_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__javax_ws_rs_jsr311_api_1_1_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__joda_time_joda_time_2_10_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__joda_time_joda_time_2_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__mysql_mysql_connector_java_8_0_28.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_bytebuddy_byte_buddy_1_12_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_bytebuddy_byte_buddy_agent_1_12_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_minidev_accessors_smart_2_4_8.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_minidev_json_smart_2_4_8.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_sf_jopt_simple_jopt_simple_5_0_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_antlr_antlr_runtime_3_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_antlr_stringtemplate_3_2_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_lang3_3_12_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_math_2_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_httpcomponents_httpasyncclient_4_1_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_httpcomponents_httpasyncclient_4_1_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_httpcomponents_httpclient_4_5_13.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_httpcomponents_httpcore_4_4_14.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_httpcomponents_httpcore_4_4_15.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_httpcomponents_httpcore_nio_4_4_14.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_httpcomponents_httpcore_nio_4_4_15.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_logging_log4j_log4j_api_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_logging_log4j_log4j_api_2_17_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_logging_log4j_log4j_to_slf4j_2_13_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_logging_log4j_log4j_to_slf4j_2_17_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_lucene_lucene_analyzers_common_8_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_lucene_lucene_backward_codecs_8_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_lucene_lucene_core_8_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_lucene_lucene_grouping_8_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_lucene_lucene_highlighter_8_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_lucene_lucene_join_8_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_lucene_lucene_memory_8_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_lucene_lucene_misc_8_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_lucene_lucene_queries_8_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_lucene_lucene_queryparser_8_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_lucene_lucene_sandbox_8_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_lucene_lucene_spatial3d_8_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_lucene_lucene_spatial_extras_8_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_lucene_lucene_suggest_8_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_embed_tomcat_embed_core_9_0_43.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_embed_tomcat_embed_core_9_0_65.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_embed_tomcat_embed_el_9_0_65.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_embed_tomcat_embed_websocket_9_0_43.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_embed_tomcat_embed_websocket_9_0_65.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apiguardian_apiguardian_api_1_1_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_aspectj_aspectjweaver_1_9_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_assertj_assertj_core_3_22_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_bouncycastle_bcpkix_jdk15on_1_64.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_bouncycastle_bcprov_jdk15on_1_64.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_checkerframework_checker_qual_2_11_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_codehaus_jettison_jettison_1_4_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_codehaus_woodstox_stax2_api_4_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_codehaus_woodstox_stax2_api_4_2_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_elasticsearch_client_elasticsearch_rest_client_7_12_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_elasticsearch_client_elasticsearch_rest_high_level_client_7_12_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_elasticsearch_elasticsearch_7_12_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_elasticsearch_elasticsearch_cli_7_12_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_elasticsearch_elasticsearch_core_7_12_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_elasticsearch_elasticsearch_geo_7_12_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_elasticsearch_elasticsearch_plugin_classloader_7_12_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_elasticsearch_elasticsearch_secure_sm_7_12_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_elasticsearch_elasticsearch_x_content_7_12_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_elasticsearch_jna_5_7_0_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_elasticsearch_plugin_aggs_matrix_stats_client_7_12_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_elasticsearch_plugin_lang_mustache_client_7_12_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_elasticsearch_plugin_mapper_extras_client_7_12_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_elasticsearch_plugin_parent_join_client_7_12_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_elasticsearch_plugin_rank_eval_client_7_12_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_freemarker_freemarker_2_3_31.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_glassfish_jakarta_el_3_0_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_glassfish_jaxb_jaxb_runtime_2_3_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_glassfish_jaxb_txw2_2_3_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_2_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hdrhistogram_HdrHistogram_2_1_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hdrhistogram_HdrHistogram_2_1_9.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hibernate_validator_hibernate_validator_6_1_7_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_jboss_logging_jboss_logging_3_4_1_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_5_8_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_api_5_8_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_engine_5_8_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_params_5_8_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_commons_1_8_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_engine_1_8_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_latencyutils_LatencyUtils_2_0_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mockito_mockito_core_4_5_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mockito_mockito_junit_jupiter_4_5_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mybatis_mybatis_3_5_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mybatis_mybatis_3_5_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mybatis_mybatis_spring_2_0_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mybatis_mybatis_spring_2_0_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mybatis_spring_boot_mybatis_spring_boot_autoconfigure_2_1_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mybatis_spring_boot_mybatis_spring_boot_starter_2_1_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_objenesis_objenesis_3_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_opentest4j_opentest4j_1_2_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_ow2_asm_asm_9_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_projectlombok_lombok_1_18_24.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_reactivestreams_reactive_streams_1_0_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_skyscreamer_jsonassert_1_5_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_jul_to_slf4j_1_7_30.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_jul_to_slf4j_1_7_36.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_slf4j_api_1_7_30.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_slf4j_api_1_7_36.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_amqp_spring_amqp_2_4_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_amqp_spring_rabbit_2_4_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_2_7_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_actuator_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_actuator_autoconfigure_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_autoconfigure_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_autoconfigure_2_7_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_2_7_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_actuator_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_amqp_2_7_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_aop_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_cache_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_freemarker_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_jdbc_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_jdbc_2_7_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_json_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_json_2_7_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_logging_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_logging_2_7_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_reactor_netty_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_test_2_7_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_tomcat_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_tomcat_2_7_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_validation_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_web_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_web_2_7_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_webflux_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_test_2_7_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_test_autoconfigure_2_7_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_commons_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_context_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_gateway_server_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_loadbalancer_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_netflix_archaius_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_netflix_eureka_client_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_netflix_eureka_server_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_netflix_hystrix_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_netflix_ribbon_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_openfeign_core_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_feign_1_4_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_gateway_3_1_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_loadbalancer_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_loadbalancer_3_1_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_netflix_archaius_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_netflix_eureka_server_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_netflix_ribbon_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_openfeign_2_2_7_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_retry_spring_retry_1_3_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_security_spring_security_crypto_5_3_8_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_security_spring_security_rsa_1_0_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_aop_5_2_13_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_aop_5_3_22.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_beans_5_2_13_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_beans_5_3_22.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_context_5_2_13_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_context_5_3_22.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_context_support_5_2_13_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_core_5_2_13_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_core_5_3_22.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_expression_5_2_13_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_expression_5_3_22.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_jcl_5_2_13_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_jcl_5_3_22.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_jdbc_5_2_13_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_jdbc_5_3_22.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_messaging_5_3_22.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_test_5_3_22.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_tx_5_2_13_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_tx_5_3_22.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_web_5_2_13_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_web_5_3_22.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_webflux_5_2_13_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_webmvc_5_2_13_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_webmvc_5_3_22.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_synchronoss_cloud_nio_multipart_parser_1_1_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_synchronoss_cloud_nio_stream_storage_1_1_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_xmlunit_xmlunit_core_2_9_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_yaml_snakeyaml_1_26.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_yaml_snakeyaml_1_30.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__xmlpull_xmlpull_1_1_3_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__xpp3_xpp3_min_1_1_4c.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/eureka-service/target/classes/application.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/eureka-service/target/classes/com/kk/eureka/EurekaApplication.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/classes/com/kk/clients/UserClient.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/classes/com/kk/pojo/User.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/feign-api-1.0.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/maven-archiver/pom.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/gateway/target/classes/application.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/gateway/target/classes/com/kk/gateway/GatewayApplication.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/gateway/target/classes/com/kk/gateway/filter/MyGlobalFilter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/application.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/bootstrap.yml.bak" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/OrderApplication.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/configuration/MyConfiguration.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/configuration/MyConfigurationProperties.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/configuration/MyFeignConfiguration.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/controller/OrderController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/controller/OrderController1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/mapper/OrderMapper.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/pojo/Order.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/service/OrderService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/service/OrderServiceFeign.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/application.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/bootstrap.yml.bak" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/com/kk/user/UserApplication.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/com/kk/user/coniguration/MyConfigurationProperties.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/com/kk/user/controller/UserController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/com/kk/user/controller/UserController1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/com/kk/user/controller/UserController2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/com/kk/user/mapper/UserMapper.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/com/kk/user/pojo/User.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/com/kk/user/service/UserService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/HotelApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/controller/HotelController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/mapper/HotelMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/Hotel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/HotelDoc.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/service/HotelService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/service/impl/HotelServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SpringCloud.md" beforeDir="false" afterPath="$PROJECT_DIR$/SpringCloud.md" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="D:/Maven/apache-maven-3.8.4" />
+        <option name="userSettingsFile" value="D:\Maven\apache-maven-3.8.4\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="MavenRunner">
+    <option name="skipTests" value="true" />
+  </component>
+  <component name="ProjectId" id="2DKutKmD4YGiwJAJ6gNYFEWM5Op" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="ExpandSpringBootJavaOptionsPanel" value="true" />
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="jdk.selected.JAVA_MODULE" value="1.8" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.31806284" />
+    <property name="settings.editor.selected.configurable" value="MavenSettings" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.kk.publisher" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.kk.publisher" />
+      <recent name="com.kk.consumer.config" />
+      <recent name="com.kk.consumer" />
+      <recent name="com.kk.user.controller" />
+      <recent name="com.kk.order.service" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
+  </component>
+  <component name="RunManager" selected="JUnit.SpringAMQPTest.testObject">
+    <configuration name="SpringAMQPTest.testDirect" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="publisher" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.kk.publisher.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.kk.publisher" />
+      <option name="MAIN_CLASS_NAME" value="com.kk.publisher.SpringAMQPTest" />
+      <option name="METHOD_NAME" value="testDirect" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SpringAMQPTest.testFanout" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="publisher" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.kk.publisher.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.kk.publisher" />
+      <option name="MAIN_CLASS_NAME" value="com.kk.publisher.SpringAMQPTest" />
+      <option name="METHOD_NAME" value="testFanout" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SpringAMQPTest.testObject" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="publisher" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.kk.publisher.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.kk.publisher" />
+      <option name="MAIN_CLASS_NAME" value="com.kk.publisher.SpringAMQPTest" />
+      <option name="METHOD_NAME" value="testObject" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SpringAMQPTest.testTopic" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="publisher" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.kk.publisher.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.kk.publisher" />
+      <option name="MAIN_CLASS_NAME" value="com.kk.publisher.SpringAMQPTest" />
+      <option name="METHOD_NAME" value="testTopic" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ConsumerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="consumer" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.kk.consumer.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.kk.consumer.ConsumerApplication" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SHORTEN_COMMAND_LINE" value="NONE" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="HotelApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="03-hotel-demo" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.kk.hotel.HotelApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="OrderApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="order-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.kk.order.OrderApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PublisherApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="publisher" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.kk.publisher.PublisherApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UserApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="user-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.kk.user.UserApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="JUnit.SpringAMQPTest.testFanout" />
+      <item itemvalue="JUnit.SpringAMQPTest.testDirect" />
+      <item itemvalue="JUnit.SpringAMQPTest.testTopic" />
+      <item itemvalue="JUnit.SpringAMQPTest.testObject" />
+      <item itemvalue="Spring Boot.ConsumerApplication" />
+      <item itemvalue="Spring Boot.UserApplication" />
+      <item itemvalue="Spring Boot.OrderApplication" />
+      <item itemvalue="Spring Boot.PublisherApplication" />
+      <item itemvalue="Spring Boot.HotelApplication" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.SpringAMQPTest.testObject" />
+        <item itemvalue="Spring Boot.ConsumerApplication" />
+        <item itemvalue="JUnit.SpringAMQPTest.testTopic" />
+        <item itemvalue="JUnit.SpringAMQPTest.testDirect" />
+        <item itemvalue="JUnit.SpringAMQPTest.testFanout" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="43d4e940-1fb8-497b-b5f9-0abea53ee8f7" name="Changes" comment="" />
+      <created>1660460312289</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1660460312289</updated>
+      <workItem from="1660460314025" duration="19275000" />
+      <workItem from="1660542656650" duration="15565000" />
+      <workItem from="1660569869901" duration="5446000" />
+      <workItem from="1660657185806" duration="659000" />
+      <workItem from="1660715806354" duration="14769000" />
+      <workItem from="1660816602584" duration="1827000" />
+    </task>
+    <task id="LOCAL-00001" summary="提供 Eureka 注册中心：&#10;1.@EnableEurekaServer&#10;2.server:&#10;    port: 10086&#10;  spring:&#10;    application:&#10;      name: eureka-server&#10;  eureka:&#10;    client:&#10;      service-url:&#10;        defaultZone: http://localhost:10086/eureka&#10;3.访问：http://localhost:10086">
+      <created>1660461894107</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1660461894107</updated>
+    </task>
+    <task id="LOCAL-00002" summary="在 order-service 和 user-service 中使用 eureka-client：&#10;1.引入依赖&#10;2.启动类添加注解：@EnableEurekaClient&#10;3.在 RestTemplate Bean 配置类中添加负载均衡注解 @LoadBalanced&#10;4.在 order-service.service.OrderService 更改 URL 地址 ---&gt; Eureka 注册中心会自动注册：userservice --&gt; localhost:8081 [IP + Port]">
+      <created>1660462427313</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1660462427313</updated>
+    </task>
+    <task id="LOCAL-00003" summary="在 order-service 和 user-service 中使用 eureka-client：&#10;1.引入依赖&#10;2.修改配置：&#10;        spring:&#10;          application:&#10;            name: user-service&#10;        spring:&#10;          application:&#10;            name: order-service&#10;        eureka:&#10;          client:&#10;            service-url:&#10;              defaultZone: http://localhost:10086/eureka&#10;2.启动类添加注解：@EnableEurekaClient，Eureka 会根据 spring.application.name 作为服务的注册名进行注册&#10;3.在 RestTemplate Bean 配置类中添加负载均衡注解 @LoadBalanced&#10;4.在 order-service.service.OrderService 更改 URL 地址 ---&gt; Eureka 注册中心会自动注册：userservice --&gt; localhost:8081 [IP + Port] ---&gt; &quot;http://user-service/user/&quot; + order.getUserId();&#10;5.使用 copy configuration ---》 VM Operations: -Dserver.port=8082/8083 可以创建新的服务">
+      <created>1660463555136</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1660463555136</updated>
+    </task>
+    <task id="LOCAL-00004" summary="更改 Robbin 负载均衡策略：&#10;1. 添加 Bean ---&gt; &#10;    @Bean&#10;    public IRule randomRule() {&#10;        return new RandomRule();&#10;    }">
+      <created>1660470431833</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1660470431833</updated>
+    </task>
+    <task id="LOCAL-00005" summary="为提高页面访问速度，将拉取服务从懒加载更改为饥饿加载：&#10;ribbon:&#10;  eager-load:&#10;    enable: true&#10;    clients: user-service">
+      <created>1660470814090</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1660470814090</updated>
+    </task>
+    <task id="LOCAL-00006" summary="笔记标题更改">
+      <created>1660471494611</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1660471494611</updated>
+    </task>
+    <task id="LOCAL-00007" summary="使用 Nacos 作为注册中心：&#10;1.注释掉 Eureka 的依赖和配置信息&#10;2.打开 Nacos 的服务 startup.cmd -m standalone&#10;3.修改 user-service order-service 的配置信息：&#10;    spring:&#10;      cloud:&#10;        nacos:&#10;          server-addr: 192.168.0.105:8848">
+      <created>1660474962095</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1660474962095</updated>
+    </task>
+    <task id="LOCAL-00008" summary="使用 Nacos 作为注册中心：&#10;4.配置集群&#10;    spring.cloud.nacos.discovery.cluster-name: Beijing&#10;    -Dserver.port=8082 -Dspring.cloud.nacos.discovery.cluster-name=Beijing&#10;5.配置负载均衡策略：&#10;    @Bean&#10;    public IRule nacosRule() {&#10;        return new NacosRule();&#10;    }&#10;    user-service:&#10;      ribbon:&#10;        NFLoadBalancerRuleClassName: spring.cloud.nacos.ribbon.NacosRule&#10;6.控制台添加命名空间：namespace&#10;  然后在配置文件中添加配置&#10;    spring:&#10;      cloud:&#10;        nacos:&#10;          server-addr: 192.168.0.105:8848&#10;          discovery:&#10;            cluster-name: Beijing&#10;            namespace: xxxxxx&#10;7.Eureka 和 Nacos 的相同与不同点：&#10;  都可以做服务的注册与拉取，都支持服务提供以心跳方式做检测&#10;  不同点在于 Nacos 有临时实例和非临时实例，后者可以让注册中心注册主动去询问，主动向消费者告知服务更新了，并且临时实例采用的是可用性原理即AP原理，而非临时实例采用的是CP原理即一致性原理。而 Eureka 只采用可用性原理。">
+      <created>1660482653259</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1660482653259</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Nacos 配置中心：&#10;0.Nacos 控制台添加配置&#10;1.引入依赖&#10;2.添加 bbotstrap.yml 配置文件【该配置文件的优先级比application.yml的优先级高】&#10;4.使用 @Value 获取控制台中的配置信息进行验证">
+      <created>1660545203844</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1660545203844</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Nacos 配置中心实现热更新：&#10;在 OrderController 中使用 @RefreshScope">
+      <created>1660545754553</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1660545754553</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Nacos 配置中心实现热更新：&#10;使用 ---&gt; 1.@ConfigurationProperties(prefix = {pattern})&#10;         2.@EnableConfigurationProperties(value = {MyConfigurationProperties.class})">
+      <created>1660546265176</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1660546265176</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Nacos 配置中心实现数据共享：&#10;1.有无 spring.profile.active 即不同环境之间的数据共享&#10;2.有无 spring.cloud.nacos.config.shared-configs/extension-configs: - dataId 即不同微服务之间的数据共享">
+      <created>1660549294483</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1660549294483</updated>
+    </task>
+    <task id="LOCAL-00013" summary="搭建 Nacos 集群">
+      <created>1660555006083</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1660555006083</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Feign&#10;1.使用 Feign 实现远程调用&#10;2.使用 Feign 自定义配置&#10;3.使用 Feign 性能优化 ---&gt; HttpClient">
+      <created>1660559651235</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1660559651235</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Feign&#10;1.使用 Feign 实现远程调用&#10;2.使用 Feign 自定义配置&#10;3.使用 Feign 性能优化 ---&gt; HttpClient&#10;4.使用 Feign 最佳实践 ---&gt; feign api">
+      <created>1660567788363</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1660567788363</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Gateway:&#10;1.网关可以干什么：身份验证权限校验、服务路由负载均衡、请求限流&#10;2.网关初步使用&#10;3.断言工厂 predicates ---&gt; Path&#10;4.过滤器工厂 filters / default-filters&#10;5.全局过滤器&#10;6.跨域问题">
+      <created>1660575300446</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1660575300446</updated>
+    </task>
+    <task id="LOCAL-00017" summary="MessageQueue:&#10;1.同步通讯和异步通讯&#10;2.消息队列&#10;3.Docker 安装 RabbitMQ&#10;4.RabbitMQ 角色及其基本结构&#10;5.RabbitMQ 底层实现原理&#10;6.RabbitMQ 官方 API 实现 HelloWorld 模型&#10;7.SpringAMQP 实现 HelloWorld 模型&#10;8.SpringAMQP 实现 WorkQueues 模型">
+      <created>1660721201860</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1660721201860</updated>
+    </task>
+    <task id="LOCAL-00018" summary="MessageQueue:&#10;9. SpringAMQP 实现 Fanout 类型的发布订阅模型">
+      <created>1660725066186</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1660725066186</updated>
+    </task>
+    <task id="LOCAL-00019" summary="MessageQueue:&#10;10. SpringAMQP 实现 Direct 类型的发布订阅模型&#10;11. SpringAMQP 实现 Topic 类型的发布订阅模型">
+      <created>1660728583231</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1660728583231</updated>
+    </task>
+    <task id="LOCAL-00020" summary="MessageQueue:&#10;12. 消息转换器 ---&gt; jackson">
+      <created>1660730726190</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1660730726190</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="java:org.slf4j:jul-to-slf4j" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.xml.bind:jakarta.xml.bind-api" />
+    <option featureType="dependencySupport" implementationName="java:com.netflix.ribbon:ribbon-loadbalancer" />
+    <option featureType="dependencySupport" implementationName="java:org.synchronoss.cloud:nio-multipart-parser" />
+    <option featureType="dependencySupport" implementationName="java:com.zaxxer:HikariCP" />
+    <option featureType="dependencySupport" implementationName="java:com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery" />
+    <option featureType="dependencySupport" implementationName="java:com.alibaba.cloud:spring-cloud-alibaba-dependencies" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-webmvc" />
+    <option featureType="dependencySupport" implementationName="java:net.minidev:accessors-smart" />
+    <option featureType="dependencySupport" implementationName="java:com.google.j2objc:j2objc-annotations" />
+    <option featureType="dependencySupport" implementationName="java:com.google.code.gson:gson" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.amqp:spring-amqp" />
+    <option featureType="dependencySupport" implementationName="java:org.apache.tomcat.embed:tomcat-embed-core" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-test" />
+    <option featureType="dependencySupport" implementationName="java:com.fasterxml.jackson.datatype:jackson-datatype-jsr310" />
+    <option featureType="dependencySupport" implementationName="java:javax.ws.rs:jsr311-api" />
+    <option featureType="dependencySupport" implementationName="java:org.skyscreamer:jsonassert" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-starter-netflix-archaius" />
+    <option featureType="dependencySupport" implementationName="java:org.glassfish.jaxb:txw2" />
+    <option featureType="dependencySupport" implementationName="java:org.mockito:mockito-junit-jupiter" />
+    <option featureType="dependencySupport" implementationName="java:commons-lang:commons-lang" />
+    <option featureType="dependencySupport" implementationName="java:org.freemarker:freemarker" />
+    <option featureType="dependencySupport" implementationName="java:org.opentest4j:opentest4j" />
+    <option featureType="dependencySupport" implementationName="java:org.elasticsearch.client:elasticsearch-rest-high-level-client" />
+    <option featureType="dependencySupport" implementationName="java:org.junit.jupiter:junit-jupiter" />
+    <option featureType="dependencySupport" implementationName="java:com.google.guava:listenablefuture" />
+    <option featureType="dependencySupport" implementationName="java:com.google.inject:guice" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-web" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-starter-logging" />
+    <option featureType="dependencySupport" implementationName="java:com.netflix.ribbon:ribbon" />
+    <option featureType="dependencySupport" implementationName="java:com.fasterxml.jackson.core:jackson-databind" />
+    <option featureType="dependencySupport" implementationName="java:org.apache.logging.log4j:log4j-to-slf4j" />
+    <option featureType="dependencySupport" implementationName="java:org.codehaus.jettison:jettison" />
+    <option featureType="dependencySupport" implementationName="java:io.github.openfeign:feign-core" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-starter" />
+    <option featureType="dependencySupport" implementationName="java:org.jboss.logging:jboss-logging" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-starter-gateway" />
+    <option featureType="dependencySupport" implementationName="java:org.slf4j:slf4j-api" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.retry:spring-retry" />
+    <option featureType="dependencySupport" implementationName="java:org.yaml:snakeyaml" />
+    <option featureType="dependencySupport" implementationName="java:org.mybatis:mybatis" />
+    <option featureType="dependencySupport" implementationName="java:antlr:antlr" />
+    <option featureType="dependencySupport" implementationName="java:commons-configuration:commons-configuration" />
+    <option featureType="dependencySupport" implementationName="java:io.github.openfeign.form:feign-form" />
+    <option featureType="dependencySupport" implementationName="java:org.mybatis:mybatis-spring" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-starter-json" />
+    <option featureType="dependencySupport" implementationName="java:com.netflix.eureka:eureka-core" />
+    <option featureType="dependencySupport" implementationName="java:org.glassfish:jakarta.el" />
+    <option featureType="dependencySupport" implementationName="java:org.reactivestreams:reactive-streams" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-starter-actuator" />
+    <option featureType="dependencySupport" implementationName="java:org.latencyutils:LatencyUtils" />
+    <option featureType="dependencySupport" implementationName="java:org.apache.httpcomponents:httpclient" />
+    <option featureType="dependencySupport" implementationName="java:mysql:mysql-connector-java" />
+    <option featureType="dependencySupport" implementationName="java:com.vaadin.external.google:android-json" />
+    <option featureType="dependencySupport" implementationName="java:org.apiguardian:apiguardian-api" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-jdbc" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-starter-jdbc" />
+    <option featureType="dependencySupport" implementationName="java:org.mockito:mockito-core" />
+    <option featureType="dependencySupport" implementationName="java:net.bytebuddy:byte-buddy" />
+    <option featureType="dependencySupport" implementationName="java:javax.inject:javax.inject" />
+    <option featureType="dependencySupport" implementationName="java:commons-codec:commons-codec" />
+    <option featureType="dependencySupport" implementationName="java:org.hamcrest:hamcrest" />
+    <option featureType="dependencySupport" implementationName="java:org.junit.platform:junit-platform-engine" />
+    <option featureType="dependencySupport" implementationName="java:net.bytebuddy:byte-buddy-agent" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-webflux" />
+    <option featureType="dependencySupport" implementationName="java:io.netty:netty-resolver" />
+    <option featureType="dependencySupport" implementationName="java:com.netflix.netflix-commons:netflix-eventbus" />
+    <option featureType="dependencySupport" implementationName="java:com.jayway.jsonpath:json-path" />
+    <option featureType="dependencySupport" implementationName="java:org.mybatis.spring.boot:mybatis-spring-boot-autoconfigure" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-netflix-ribbon" />
+    <option featureType="dependencySupport" implementationName="java:org.synchronoss.cloud:nio-stream-storage" />
+    <option featureType="dependencySupport" implementationName="java:io.netty:netty-buffer" />
+    <option featureType="dependencySupport" implementationName="java:com.baomidou:mybatis-plus-boot-starter" />
+    <option featureType="dependencySupport" implementationName="java:org.junit.jupiter:junit-jupiter-engine" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-starter-amqp" />
+    <option featureType="dependencySupport" implementationName="java:org.apache.commons:commons-math" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-starter-feign" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-starter-openfeign" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-starter-reactor-netty" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-openfeign-core" />
+    <option featureType="dependencySupport" implementationName="java:com.alibaba.nacos:nacos-api" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-starter-tomcat" />
+    <option featureType="dependencySupport" implementationName="java:com.fasterxml.jackson.core:jackson-annotations" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-test" />
+    <option featureType="dependencySupport" implementationName="java:com.fasterxml.jackson.core:jackson-core" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-starter-netflix-eureka-server" />
+    <option featureType="dependencySupport" implementationName="java:io.reactivex:rxnetty-contexts" />
+    <option featureType="dependencySupport" implementationName="java:com.kk:feign-api" />
+    <option featureType="dependencySupport" implementationName="java:com.netflix.ribbon:ribbon-eureka" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-loadbalancer" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-context" />
+    <option featureType="dependencySupport" implementationName="java:com.sun.jersey:jersey-core" />
+    <option featureType="dependencySupport" implementationName="java:com.sun.istack:istack-commons-runtime" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-aop" />
+    <option featureType="dependencySupport" implementationName="java:com.google.guava:failureaccess" />
+    <option featureType="dependencySupport" implementationName="java:com.rabbitmq:amqp-client" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-starter-loadbalancer" />
+    <option featureType="dependencySupport" implementationName="java:org.junit.jupiter:junit-jupiter-api" />
+    <option featureType="dependencySupport" implementationName="java:net.minidev:json-smart" />
+    <option featureType="dependencySupport" implementationName="java:com.netflix.netflix-commons:netflix-infix" />
+    <option featureType="dependencySupport" implementationName="java:io.netty:netty-codec-http2" />
+    <option featureType="dependencySupport" implementationName="java:io.github.openfeign:feign-hystrix" />
+    <option featureType="dependencySupport" implementationName="java:io.reactivex:rxjava" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-starter-web" />
+    <option featureType="dependencySupport" implementationName="java:org.apache.logging.log4j:log4j-api" />
+    <option featureType="dependencySupport" implementationName="java:com.netflix.hystrix:hystrix-core" />
+    <option featureType="dependencySupport" implementationName="java:com.sun.jersey:jersey-server" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-core" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-context" />
+    <option featureType="dependencySupport" implementationName="java:com.netflix.eureka:eureka-client" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-actuator-autoconfigure" />
+    <option featureType="dependencySupport" implementationName="java:io.netty:netty-handler-proxy" />
+    <option featureType="dependencySupport" implementationName="java:org.aspectj:aspectjweaver" />
+    <option featureType="dependencySupport" implementationName="java:io.netty:netty-transport-native-unix-common" />
+    <option featureType="dependencySupport" implementationName="java:xpp3:xpp3_min" />
+    <option featureType="dependencySupport" implementationName="java:com.fasterxml:classmate" />
+    <option featureType="dependencySupport" implementationName="java:com.alibaba.cloud:spring-cloud-alibaba-commons" />
+    <option featureType="dependencySupport" implementationName="java:commons-io:commons-io" />
+    <option featureType="dependencySupport" implementationName="java:io.netty:netty-transport" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-netflix-hystrix" />
+    <option featureType="dependencySupport" implementationName="java:org.glassfish.jaxb:jaxb-runtime" />
+    <option featureType="dependencySupport" implementationName="java:org.apache.tomcat.embed:tomcat-embed-websocket" />
+    <option featureType="dependencySupport" implementationName="java:ch.qos.logback:logback-classic" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.validation:jakarta.validation-api" />
+    <option featureType="dependencySupport" implementationName="java:com.google.errorprone:error_prone_annotations" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-netflix-eureka-server" />
+    <option featureType="dependencySupport" implementationName="java:org.objenesis:objenesis" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-tx" />
+    <option featureType="dependencySupport" implementationName="java:commons-fileupload:commons-fileupload" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.security:spring-security-rsa" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-jcl" />
+    <option featureType="dependencySupport" implementationName="java:com.alibaba:fastjson" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-starter-aop" />
+    <option featureType="dependencySupport" implementationName="java:com.google.protobuf:protobuf-java" />
+    <option featureType="dependencySupport" implementationName="java:org.bouncycastle:bcprov-jdk15on" />
+    <option featureType="dependencySupport" implementationName="java:org.apache.httpcomponents:httpcore" />
+    <option featureType="dependencySupport" implementationName="java:ch.qos.logback:logback-core" />
+    <option featureType="dependencySupport" implementationName="java:org.checkerframework:checker-qual" />
+    <option featureType="dependencySupport" implementationName="java:org.apache.commons:commons-lang3" />
+    <option featureType="dependencySupport" implementationName="java:org.hibernate.validator:hibernate-validator" />
+    <option featureType="dependencySupport" implementationName="java:commons-collections:commons-collections" />
+    <option featureType="dependencySupport" implementationName="java:org.ow2.asm:asm" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-starter-freemarker" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-commons" />
+    <option featureType="dependencySupport" implementationName="java:com.google.guava:guava" />
+    <option featureType="dependencySupport" implementationName="java:com.baomidou:mybatis-plus-core" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-netflix-archaius" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-autoconfigure" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-test-autoconfigure" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-starter-netflix-ribbon" />
+    <option featureType="dependencySupport" implementationName="java:io.projectreactor:reactor-core" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-expression" />
+    <option featureType="dependencySupport" implementationName="java:com.fasterxml.jackson.datatype:jackson-datatype-jdk8" />
+    <option featureType="dependencySupport" implementationName="java:com.alibaba.spring:spring-context-support" />
+    <option featureType="dependencySupport" implementationName="java:com.fasterxml.jackson.dataformat:jackson-dataformat-xml" />
+    <option featureType="dependencySupport" implementationName="java:io.github.openfeign.form:feign-form-spring" />
+    <option featureType="dependencySupport" implementationName="java:org.projectlombok:lombok" />
+    <option featureType="dependencySupport" implementationName="java:io.reactivex:rxnetty-servo" />
+    <option featureType="dependencySupport" implementationName="java:io.github.openfeign:feign-httpclient" />
+    <option featureType="dependencySupport" implementationName="java:org.codehaus.woodstox:stax2-api" />
+    <option featureType="dependencySupport" implementationName="java:com.github.jsqlparser:jsqlparser" />
+    <option featureType="dependencySupport" implementationName="java:org.assertj:assertj-core" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-gateway-server" />
+    <option featureType="dependencySupport" implementationName="java:com.fasterxml.jackson.module:jackson-module-parameter-names" />
+    <option featureType="dependencySupport" implementationName="java:org.antlr:stringtemplate" />
+    <option featureType="dependencySupport" implementationName="java:io.prometheus:simpleclient" />
+    <option featureType="dependencySupport" implementationName="java:io.projectreactor.netty:reactor-netty" />
+    <option featureType="dependencySupport" implementationName="java:com.netflix.netflix-commons:netflix-statistics" />
+    <option featureType="dependencySupport" implementationName="java:org.hdrhistogram:HdrHistogram" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-messaging" />
+    <option featureType="dependencySupport" implementationName="java:org.xmlunit:xmlunit-core" />
+    <option featureType="dependencySupport" implementationName="java:org.junit.jupiter:junit-jupiter-params" />
+    <option featureType="dependencySupport" implementationName="java:io.netty:netty-transport-native-epoll" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-starter-validation" />
+    <option featureType="dependencySupport" implementationName="java:com.baomidou:mybatis-plus" />
+    <option featureType="dependencySupport" implementationName="java:org.antlr:antlr-runtime" />
+    <option featureType="dependencySupport" implementationName="java:com.sun.jersey:jersey-client" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.amqp:spring-rabbit" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-starter-webflux" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-starter-test" />
+    <option featureType="dependencySupport" implementationName="java:com.netflix.ribbon:ribbon-httpclient" />
+    <option featureType="dependencySupport" implementationName="java:com.alibaba.nacos:nacos-common" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-beans" />
+    <option featureType="dependencySupport" implementationName="java:com.netflix.ribbon:ribbon-transport" />
+    <option featureType="dependencySupport" implementationName="java:com.baomidou:mybatis-plus-extension" />
+    <option featureType="dependencySupport" implementationName="java:io.netty:netty-codec-http" />
+    <option featureType="dependencySupport" implementationName="java:io.netty:netty-codec-socks" />
+    <option featureType="dependencySupport" implementationName="java:com.alibaba.nacos:nacos-client" />
+    <option featureType="dependencySupport" implementationName="java:joda-time:joda-time" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-starter" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-actuator" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.activation:jakarta.activation-api" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot-starter-cache" />
+    <option featureType="dependencySupport" implementationName="java:io.netty:netty-common" />
+    <option featureType="dependencySupport" implementationName="java:com.fasterxml.jackson.module:jackson-module-jaxb-annotations" />
+    <option featureType="dependencySupport" implementationName="java:org.apache.httpcomponents:httpasyncclient" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.cloud:spring-cloud-netflix-eureka-client" />
+    <option featureType="dependencySupport" implementationName="java:com.sun.jersey.contribs:jersey-apache-client4" />
+    <option featureType="dependencySupport" implementationName="java:io.netty:netty-codec" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.security:spring-security-crypto" />
+    <option featureType="dependencySupport" implementationName="java:io.reactivex:rxnetty" />
+    <option featureType="dependencySupport" implementationName="java:xmlpull:xmlpull" />
+    <option featureType="dependencySupport" implementationName="java:com.sun.jersey:jersey-servlet" />
+    <option featureType="dependencySupport" implementationName="java:aopalliance:aopalliance" />
+    <option featureType="dependencySupport" implementationName="java:org.junit.platform:junit-platform-commons" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.annotation:jakarta.annotation-api" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-context-support" />
+    <option featureType="dependencySupport" implementationName="java:org.apache.httpcomponents:httpcore-nio" />
+    <option featureType="dependencySupport" implementationName="java:com.netflix.archaius:archaius-core" />
+    <option featureType="dependencySupport" implementationName="java:com.google.code.findbugs:jsr305" />
+    <option featureType="dependencySupport" implementationName="java:com.thoughtworks.xstream:xstream" />
+    <option featureType="dependencySupport" implementationName="java:commons-jxpath:commons-jxpath" />
+    <option featureType="dependencySupport" implementationName="java:io.projectreactor.addons:reactor-extra" />
+    <option featureType="dependencySupport" implementationName="java:com.baomidou:mybatis-plus-annotation" />
+    <option featureType="dependencySupport" implementationName="java:io.micrometer:micrometer-core" />
+    <option featureType="dependencySupport" implementationName="java:com.netflix.servo:servo-core" />
+    <option featureType="dependencySupport" implementationName="java:com.stoyanr:evictor" />
+    <option featureType="dependencySupport" implementationName="java:io.github.openfeign:feign-slf4j" />
+    <option featureType="dependencySupport" implementationName="java:org.mybatis.spring.boot:mybatis-spring-boot-starter" />
+    <option featureType="dependencySupport" implementationName="java:io.netty:netty-handler" />
+    <option featureType="dependencySupport" implementationName="java:com.fasterxml.woodstox:woodstox-core" />
+    <option featureType="dependencySupport" implementationName="java:com.netflix.netflix-commons:netflix-commons-util" />
+    <option featureType="dependencySupport" implementationName="java:org.bouncycastle:bcpkix-jdk15on" />
+    <option featureType="dependencySupport" implementationName="java:com.sun.activation:jakarta.activation" />
+    <option featureType="dependencySupport" implementationName="java:com.netflix.ribbon:ribbon-core" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="提供 Eureka 注册中心：&#10;1.@EnableEurekaServer&#10;2.server:&#10;    port: 10086&#10;  spring:&#10;    application:&#10;      name: eureka-server&#10;  eureka:&#10;    client:&#10;      service-url:&#10;        defaultZone: http://localhost:10086/eureka&#10;3.访问：http://localhost:10086" />
+    <MESSAGE value="在 order-service 和 user-service 中使用 eureka-client：&#10;1.引入依赖&#10;2.启动类添加注解：@EnableEurekaClient&#10;3.在 RestTemplate Bean 配置类中添加负载均衡注解 @LoadBalanced&#10;4.在 order-service.service.OrderService 更改 URL 地址 ---&gt; Eureka 注册中心会自动注册：userservice --&gt; localhost:8081 [IP + Port]" />
+    <MESSAGE value="在 order-service 和 user-service 中使用 eureka-client：&#10;1.引入依赖&#10;2.修改配置：&#10;        spring:&#10;          application:&#10;            name: user-service&#10;        spring:&#10;          application:&#10;            name: order-service&#10;        eureka:&#10;          client:&#10;            service-url:&#10;              defaultZone: http://localhost:10086/eureka&#10;2.启动类添加注解：@EnableEurekaClient，Eureka 会根据 spring.application.name 作为服务的注册名进行注册&#10;3.在 RestTemplate Bean 配置类中添加负载均衡注解 @LoadBalanced&#10;4.在 order-service.service.OrderService 更改 URL 地址 ---&gt; Eureka 注册中心会自动注册：userservice --&gt; localhost:8081 [IP + Port] ---&gt; &quot;http://user-service/user/&quot; + order.getUserId();&#10;5.使用 copy configuration ---》 VM Operations: -Dserver.port=8082/8083 可以创建新的服务" />
+    <MESSAGE value="更改 Robbin 负载均衡策略：&#10;1. 添加 Bean ---&gt; &#10;    @Bean&#10;    public IRule randomRule() {&#10;        return new RandomRule();&#10;    }" />
+    <MESSAGE value="为提高页面访问速度，将拉取服务从懒加载更改为饥饿加载：&#10;ribbon:&#10;  eager-load:&#10;    enable: true&#10;    clients: user-service" />
+    <MESSAGE value="笔记标题更改" />
+    <MESSAGE value="使用 Nacos 作为注册中心：&#10;1.注释掉 Eureka 的依赖和配置信息&#10;2.打开 Nacos 的服务 startup.cmd -m standalone&#10;3.修改 user-service order-service 的配置信息：&#10;    spring:&#10;      cloud:&#10;        nacos:&#10;          server-addr: 192.168.0.105:8848" />
+    <MESSAGE value="使用 Nacos 作为注册中心：&#10;4.配置集群&#10;    spring.cloud.nacos.discovery.cluster-name: Beijing&#10;    -Dserver.port=8082 -Dspring.cloud.nacos.discovery.cluster-name=Beijing&#10;5.配置负载均衡策略：&#10;    @Bean&#10;    public IRule nacosRule() {&#10;        return new NacosRule();&#10;    }&#10;    user-service:&#10;      ribbon:&#10;        NFLoadBalancerRuleClassName: spring.cloud.nacos.ribbon.NacosRule&#10;6.控制台添加命名空间：namespace&#10;  然后在配置文件中添加配置&#10;    spring:&#10;      cloud:&#10;        nacos:&#10;          server-addr: 192.168.0.105:8848&#10;          discovery:&#10;            cluster-name: Beijing&#10;            namespace: xxxxxx&#10;7.Eureka 和 Nacos 的相同与不同点：&#10;  都可以做服务的注册与拉取，都支持服务提供以心跳方式做检测&#10;  不同点在于 Nacos 有临时实例和非临时实例，后者可以让注册中心注册主动去询问，主动向消费者告知服务更新了，并且临时实例采用的是可用性原理即AP原理，而非临时实例采用的是CP原理即一致性原理。而 Eureka 只采用可用性原理。" />
+    <MESSAGE value="Nacos 配置中心：&#10;0.Nacos 控制台添加配置&#10;1.引入依赖&#10;2.添加 bbotstrap.yml 配置文件【该配置文件的优先级比application.yml的优先级高】&#10;4.使用 @Value 获取控制台中的配置信息进行验证" />
+    <MESSAGE value="Nacos 配置中心实现热更新：&#10;在 OrderController 中使用 @RefreshScope" />
+    <MESSAGE value="Nacos 配置中心实现热更新：&#10;使用 ---&gt; 1.@ConfigurationProperties(prefix = {pattern})&#10;         2.@EnableConfigurationProperties(value = {MyConfigurationProperties.class})" />
+    <MESSAGE value="Nacos 配置中心实现数据共享：&#10;1.有无 spring.profile.active 即不同环境之间的数据共享&#10;2.有无 spring.cloud.nacos.config.shared-configs/extension-configs: - dataId 即不同微服务之间的数据共享" />
+    <MESSAGE value="搭建 Nacos 集群" />
+    <MESSAGE value="Feign&#10;1.使用 Feign 实现远程调用&#10;2.使用 Feign 自定义配置&#10;3.使用 Feign 性能优化 ---&gt; HttpClient" />
+    <MESSAGE value="Feign&#10;1.使用 Feign 实现远程调用&#10;2.使用 Feign 自定义配置&#10;3.使用 Feign 性能优化 ---&gt; HttpClient&#10;4.使用 Feign 最佳实践 ---&gt; feign api" />
+    <MESSAGE value="Gateway:&#10;1.网关可以干什么：身份验证权限校验、服务路由负载均衡、请求限流&#10;2.网关初步使用&#10;3.断言工厂 predicates ---&gt; Path&#10;4.过滤器工厂 filters / default-filters&#10;5.全局过滤器&#10;6.跨域问题" />
+    <MESSAGE value="MessageQueue:&#10;1.同步通讯和异步通讯&#10;2.消息队列&#10;3.Docker 安装 RabbitMQ&#10;4.RabbitMQ 角色及其基本结构&#10;5.RabbitMQ 底层实现原理&#10;6.RabbitMQ 官方 API 实现 HelloWorld 模型&#10;7.SpringAMQP 实现 HelloWorld 模型&#10;8.SpringAMQP 实现 WorkQueues 模型" />
+    <MESSAGE value="MessageQueue:&#10;9. SpringAMQP 实现 Fanout 类型的发布订阅模型" />
+    <MESSAGE value="MessageQueue:&#10;10. SpringAMQP 实现 Direct 类型的发布订阅模型&#10;11. SpringAMQP 实现 Topic 类型的发布订阅模型" />
+    <MESSAGE value="MessageQueue:&#10;12. 消息转换器 ---&gt; jackson" />
+    <MESSAGE value="ElasticSearch：&#10;1.搭建 hotel-demo 项目" />
+    <option name="LAST_COMMIT_MESSAGE" value="ElasticSearch：&#10;1.搭建 hotel-demo 项目" />
+  </component>
+</project>

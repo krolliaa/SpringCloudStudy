@@ -1,0 +1,23 @@
+server:
+  port: 80
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/es?useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+  rabbitmq:
+    host: 192.168.56.1
+    port: 5672
+    username: admin
+    password: 123456
+    virtual-host: /
+logging:
+  level:
+    com.kk.hotel: debug
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  type-aliases-package: com.kk.hotel.pojo
