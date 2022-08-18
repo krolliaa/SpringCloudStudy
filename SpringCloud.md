@@ -3829,6 +3829,8 @@ GET /{索引库名称}/_doc/{id}
 
 后面将使用 `Java HighLevel Rest Client`操作`ElasticSearch`。
 
+#### 18.11.1 初始化`hotel-demo`项目
+
 1. 首先得在`mysql`中创建数据库和表，将酒店表的数据拉进去【资料有】
 
 2. 创建`hotel-demo`，`pom.xml`如下：
@@ -4099,103 +4101,334 @@ GET /{索引库名称}/_doc/{id}
    }
    ```
 
-10. 
+#### 18.11.2 初始化`RestHighLevelClient`
 
+在`ElasticSearch`提供的`API`中，`ElasticSearch`一切交互都封装在一个名为`RestHighLevelClient`的类中，必须先完成这个对象的初始化，建立与`ElasticSearch`的连接。
 
-
-
-
-
-
-
-
-
-
-# 4.部署es集群
-
-部署es集群可以直接使用docker-compose来完成，不过要求你的Linux虚拟机至少有**4G**的内存空间
-
-
-
-首先编写一个docker-compose文件，内容如下：
-
-```sh
-version: '2.2'
-services:
-  es01:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
-    container_name: es01
-    environment:
-      - node.name=es01
-      - cluster.name=es-docker-cluster
-      - discovery.seed_hosts=es02,es03
-      - cluster.initial_master_nodes=es01,es02,es03
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - data01:/usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
-    networks:
-      - elastic
-  es02:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
-    container_name: es02
-    environment:
-      - node.name=es02
-      - cluster.name=es-docker-cluster
-      - discovery.seed_hosts=es01,es03
-      - cluster.initial_master_nodes=es01,es02,es03
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - data02:/usr/share/elasticsearch/data
-    networks:
-      - elastic
-  es03:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
-    container_name: es03
-    environment:
-      - node.name=es03
-      - cluster.name=es-docker-cluster
-      - discovery.seed_hosts=es01,es02
-      - cluster.initial_master_nodes=es01,es02,es03
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - data03:/usr/share/elasticsearch/data
-    networks:
-      - elastic
-
-volumes:
-  data01:
-    driver: local
-  data02:
-    driver: local
-  data03:
-    driver: local
-
-networks:
-  elastic:
-    driver: bridge
+```xml
+<dependency>
+    <groupId>org.elasticsearch.client</groupId>
+    <artifactId>elasticsearch-rest-high-level-client</artifactId>
+    <version>7.12.1</version>
+</dependency>
 ```
 
+也可以集中管理版本：
 
-
-Run `docker-compose` to bring up the cluster:
-
-```sh
-docker-compose up
+```xml
+<properties>
+    <java.version>1.8</java.version>
+    <elasticsearch.version>7.12.1</elasticsearch.version>
+</properties>
 ```
+
+创建配置类，引入`RestHighLevelClient`，交由`Spring`容器管理该对象：
+
+```java
+package com.kk.hotel.config;
+
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class ESConfiguration {
+    @Bean
+    public RestHighLevelClient restHighLevelClient() {
+        return new RestHighLevelClient(RestClient.builder(HttpHost.create("http://192.168.56.1:9200")));
+    }
+}
+```
+
+如果你是单纯的测试使用可以在测试类中使用`@BeforeEach`创建对象在`@AfterEach`中销毁。
+
+```java
+package com.kk.hotel;
+
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.io.IOException;
+
+@SpringBootTest
+public class HotelTest {
+
+    private RestHighLevelClient restHighLevelClient;
+
+    public static String MAPPING_TEMPLATE = "{\n" +
+            "  \"mappings\": {\n" +
+            "    \"properties\": {\n" +
+            "      \"id\": {\n" +
+            "        \"type\": \"keyword\"\n" +
+            "      },\n" +
+            "      \"name\":{\n" +
+            "        \"type\": \"text\",\n" +
+            "        \"analyzer\": \"ik_max_word\",\n" +
+            "        \"copy_to\": \"all\"\n" +
+            "      },\n" +
+            "      \"address\":{\n" +
+            "        \"type\": \"keyword\",\n" +
+            "        \"index\": false\n" +
+            "      },\n" +
+            "      \"price\":{\n" +
+            "        \"type\": \"integer\"\n" +
+            "      },\n" +
+            "      \"score\":{\n" +
+            "        \"type\": \"integer\"\n" +
+            "      },\n" +
+            "      \"brand\":{\n" +
+            "        \"type\": \"keyword\",\n" +
+            "        \"copy_to\": \"all\"\n" +
+            "      },\n" +
+            "      \"city\":{\n" +
+            "        \"type\": \"keyword\",\n" +
+            "        \"copy_to\": \"all\"\n" +
+            "      },\n" +
+            "      \"starName\":{\n" +
+            "        \"type\": \"keyword\"\n" +
+            "      },\n" +
+            "      \"business\":{\n" +
+            "        \"type\": \"keyword\"\n" +
+            "      },\n" +
+            "      \"location\":{\n" +
+            "        \"type\": \"geo_point\"\n" +
+            "      },\n" +
+            "      \"pic\":{\n" +
+            "        \"type\": \"keyword\",\n" +
+            "        \"index\": false\n" +
+            "      },\n" +
+            "      \"all\":{\n" +
+            "        \"type\": \"text\",\n" +
+            "        \"analyzer\": \"ik_max_word\"\n" +
+            "      }\n" +
+            "    }\n" +
+            "  }\n" +
+            "}";
+
+
+    @BeforeEach
+    public void createRestHighLevelClient() {
+        this.restHighLevelClient = new RestHighLevelClient(RestClient.builder(HttpHost.create("http://192.168.56.1:9200")));
+    }
+
+    @AfterEach
+    public void CloseRestHighLevelClient() throws IOException {
+        if (this.restHighLevelClient != null) restHighLevelClient.close();
+    }
+}
+```
+
+#### 18.11.3 使用`RestHighLevelClient`创建、删除、判断索引是否存在
+
+测试使用`RestHighLevelClient`创建映射：
+
+```java
+package com.kk.hotel;
+
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.io.IOException;
+
+@SpringBootTest
+public class HotelTest {
+
+    private RestHighLevelClient restHighLevelClient;
+
+    public static String MAPPING_TEMPLATE = "{\n" +
+            "  \"mappings\": {\n" +
+            "    \"properties\": {\n" +
+            "      \"id\": {\n" +
+            "        \"type\": \"keyword\"\n" +
+            "      },\n" +
+            "      \"name\":{\n" +
+            "        \"type\": \"text\",\n" +
+            "        \"analyzer\": \"ik_max_word\",\n" +
+            "        \"copy_to\": \"all\"\n" +
+            "      },\n" +
+            "      \"address\":{\n" +
+            "        \"type\": \"keyword\",\n" +
+            "        \"index\": false\n" +
+            "      },\n" +
+            "      \"price\":{\n" +
+            "        \"type\": \"integer\"\n" +
+            "      },\n" +
+            "      \"score\":{\n" +
+            "        \"type\": \"integer\"\n" +
+            "      },\n" +
+            "      \"brand\":{\n" +
+            "        \"type\": \"keyword\",\n" +
+            "        \"copy_to\": \"all\"\n" +
+            "      },\n" +
+            "      \"city\":{\n" +
+            "        \"type\": \"keyword\",\n" +
+            "        \"copy_to\": \"all\"\n" +
+            "      },\n" +
+            "      \"starName\":{\n" +
+            "        \"type\": \"keyword\"\n" +
+            "      },\n" +
+            "      \"business\":{\n" +
+            "        \"type\": \"keyword\"\n" +
+            "      },\n" +
+            "      \"location\":{\n" +
+            "        \"type\": \"geo_point\"\n" +
+            "      },\n" +
+            "      \"pic\":{\n" +
+            "        \"type\": \"keyword\",\n" +
+            "        \"index\": false\n" +
+            "      },\n" +
+            "      \"all\":{\n" +
+            "        \"type\": \"text\",\n" +
+            "        \"analyzer\": \"ik_max_word\"\n" +
+            "      }\n" +
+            "    }\n" +
+            "  }\n" +
+            "}";
+
+
+    @BeforeEach
+    public void createRestHighLevelClient() {
+        this.restHighLevelClient = new RestHighLevelClient(RestClient.builder(HttpHost.create("http://192.168.56.1:9200")));
+    }
+
+    @Test
+    public void testCreateIndex() throws IOException {
+        CreateIndexRequest createIndexRequest = new CreateIndexRequest("hotel");//相当于 PUT /hotel
+        createIndexRequest.source(HotelTest.MAPPING_TEMPLATE, XContentType.JSON);//映射中内容 JSON 格式
+        restHighLevelClient.indices().create(createIndexRequest, RequestOptions.DEFAULT);//使用 RestHighLevelClient 创建映射
+    }
+
+    @AfterEach
+    public void CloseRestHighLevelClient() throws IOException {
+        if (this.restHighLevelClient != null) restHighLevelClient.close();
+    }
+}
+```
+
+可以看到创建映射成功：
+
+![img](https://img-blog.csdnimg.cn/5d9e6b94145b44a2aaf4ddc2564c4390.png)
+
+测试使用`RestHighLevelClient`删除索引：
+
+```java
+@Test
+public void testDeleteIndex() throws IOException {
+    DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest("hotel");
+    restHighLevelClient.indices().delete(deleteIndexRequest, RequestOptions.DEFAULT);
+}
+```
+
+![img](https://img-blog.csdnimg.cn/47635712c84d40feb638080292fbd5dd.png)
+
+测试判断索引库是否存在：
+
+```java
+@Test
+public void testExistIndex() throws IOException {
+    GetIndexRequest getIndexRequest = new GetIndexRequest("hotel");
+    boolean exists = restHighLevelClient.indices().exists(getIndexRequest, RequestOptions.DEFAULT);
+    System.out.println(exists);
+}
+```
+
+#### 18.11.4 使用`RestHighLevelClient`增删改查文档
+
+**创建文档：**
+
+文档也好索引也，操作时需要根据`MySQL`数据库中的信息创建，不要随意创建以防数据错乱。所以这里创建文档我们随便以一条记录为例，例如：`id = 61083`的酒店信息。【在此之前需要测试下使用`MyBatis-Plus`操作数据库是否是通的，这里就不做这个演示了】
+
+注意这里转化为字符串，需要使用：`JSON.toJSONString()`否则到时候取数据为`null`，因为格式不对。
+
+```java
+@Test
+public void testCreateDoc() throws IOException {
+    Hotel hotel = hotelService.getById(61083L);
+    HotelDoc hotelDoc = new HotelDoc(hotel);
+    IndexRequest indexRequest = new IndexRequest("hotel").id(hotelDoc.getId().toString());
+    indexRequest.source(JSON.toJSONString(hotelDoc), XContentType.JSON);
+    restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
+}
+```
+
+![img](https://img-blog.csdnimg.cn/3da03e0799c043e4affe23ea7f6f4a3a.png)
+
+**删除文档：**
+
+```java
+@Test
+public void testDeleteDoc() throws IOException {
+    DeleteRequest deleteRequest = new DeleteRequest("hotel").id(String.valueOf(61083L));
+    restHighLevelClient.delete(deleteRequest, RequestOptions.DEFAULT);
+}
+```
+
+![img](https://img-blog.csdnimg.cn/76dc4f196be44e9b949beacfa1070ccf.png)
+
+**查询文档：**
+
+```java
+@Test
+public void testGetDoc() throws IOException {
+    GetRequest getRequest = new GetRequest("hotel").id(String.valueOf(61083L));
+    GetResponse getResponse = restHighLevelClient.get(getRequest, RequestOptions.DEFAULT);
+    String responseSourceAsString = getResponse.getSourceAsString();//获取内容字符串 ---> 转换为对象
+    HotelDoc hotelDoc = JSON.parseObject(responseSourceAsString, HotelDoc.class);
+    System.out.println(hotelDoc);
+}
+```
+
+**修改文档：**
+
+说过在`ES`中修改有两种全量修改跟增量修改，全量修改其实相当于新增，而增量修改就是局部，全量修改在`RestHighLevleClient`中跟新增文档是一样的，一摸一样，所以这里学习增量修改即可。
+
+```java
+@Test
+public void testUpdateDoc() throws IOException {
+    UpdateRequest updateRequest = new UpdateRequest("hotel", "61083");
+    updateRequest.doc("price", "99999", "starName", "四钻");
+    restHighLevelClient.update(updateRequest, RequestOptions.DEFAULT);
+}
+```
+
+**批量导入文档：**
+
+平常使用时肯定不会一条条的存储，肯定都是批量的导入。批量导入需要使用`BulkRequest`。`BulkRequest`相当于一个专门存储`Request`的容器。
+
+```java
+public void testBulkDoc() throws IOException {
+    BulkRequest bulkRequest = new BulkRequest();
+    Long[] hotelIds = {56977L, 60922L, 395799L, 636080L, 2011785622L};
+    for (int i = 0; i < hotelIds.length; i++) {
+        Hotel hotel = hotelService.getById(hotelIds[i]);
+        HotelDoc hotelDoc = new HotelDoc(hotel);
+        bulkRequest.add(new IndexRequest("hotel").id(hotelDoc.getId().toString()).source(JSON.toJSONString(hotelDoc), XContentType.JSON));
+    }
+    restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+}
+```
+
+![img](https://img-blog.csdnimg.cn/5e1b73487169482b8b38bc10da5027e4.png)
+
+**<font color="red">细心的你一定可以发现，索引相关的操作都是`CreateIndexRequest GetIndexRequest DeleteIndexRequest`三个单词组成，而文档相关的操作都是`IndexRequest GetRequest DeleteRequest`两个单词组成，因为文档是包在索引里面的，有索引才有文档，索引大，所以索引用三个单词，文档用两个单词。</font>**
+
