@@ -5487,7 +5487,7 @@ public void testSearchDocFunctionScore() throws IOException {
    }
    ```
 
-2. 定义分页的结果类：
+2. 定义分页的结果类：这里的列表名称必须为`hotels`否则前端拿不到，改的话前端都要改相当麻烦，所以还是乖乖写`hotels`吧
 
    ```java
    package com.kk.hotel.pojo;
@@ -5503,7 +5503,7 @@ public void testSearchDocFunctionScore() throws IOException {
    @AllArgsConstructor
    public class PageResult {
        private Long total;
-       private List<HotelDoc> hotelDocList;
+       private List<HotelDoc> hotels;
    }
    ```
 
@@ -5529,29 +5529,111 @@ public void testSearchDocFunctionScore() throws IOException {
        PageResult search(RequestParam requestParam);
    }
 
-5. 实现类实现`search`方法
+5. 实现类实现`search`方法：完成全文搜索功能
 
    ```java
    package com.kk.hotel.service.impl;
    
+   import com.alibaba.fastjson.JSON;
+   import com.baomidou.mybatisplus.extension.api.R;
    import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
    import com.kk.hotel.mapper.HotelMapper;
    import com.kk.hotel.pojo.Hotel;
+   import com.kk.hotel.pojo.HotelDoc;
    import com.kk.hotel.pojo.PageResult;
    import com.kk.hotel.pojo.RequestParam;
    import com.kk.hotel.service.HotelService;
+   import org.elasticsearch.action.search.SearchRequest;
+   import org.elasticsearch.action.search.SearchResponse;
+   import org.elasticsearch.client.RequestOptions;
+   import org.elasticsearch.client.RestHighLevelClient;
+   import org.elasticsearch.index.query.QueryBuilders;
+   import org.elasticsearch.search.SearchHit;
+   import org.springframework.beans.factory.annotation.Autowired;
    import org.springframework.stereotype.Service;
+   import org.springframework.util.CollectionUtils;
+   
+   import java.io.IOException;
+   import java.util.ArrayList;
+   import java.util.List;
    
    @Service
    public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements HotelService {
+   
+       @Autowired
+       private RestHighLevelClient restHighLevelClient;
+   
        @Override
        public PageResult search(RequestParam requestParam) {
-           return null;
+           try {
+               //实现全文检索
+               int page = requestParam.getPage();
+               int size = requestParam.getSize();
+               String key = requestParam.getKey();
+               SearchRequest searchRequest = new SearchRequest("hotel");
+               //健壮性判断 ---> 如果 key 为空或者为空字符串则查询全部，否则进行全文检索
+               if (key == null || "".equals(key))
+                   searchRequest.source().query(QueryBuilders.matchAllQuery()).from((page - 1) * size).size(size);
+               else searchRequest.source().query(QueryBuilders.matchQuery("name", key)).from((page - 1) * size).size(size);
+               SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+               return handleSearchResult(searchResponse);
+           } catch (IOException e) {
+               throw new RuntimeException(e);
+           }
+       }
+   
+       //封装处理请求的函数
+       public PageResult handleSearchResult(SearchResponse searchResponse) {
+           PageResult pageResult = new PageResult();
+           pageResult.setTotal(searchResponse.getHits().getTotalHits().value);
+           SearchHit[] hits = searchResponse.getHits().getHits();
+           List<HotelDoc> hotelDocList = new ArrayList<>();
+           for (SearchHit hit : hits) {
+               String sourceAsString = hit.getSourceAsString();
+               HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+               hotelDocList.add(hotelDoc);
+           }
+           pageResult.setHotels(hotelDocList);
+           return pageResult;
        }
    }
    ```
 
-6. 
+6. 实现过滤条件：完成按条件筛选功能 ---> 城市、星级、品牌、价格
+
+   修改`RequestParams`，添加：`brand city starName minPrice maxPrice`
+
+   ```java
+   package com.kk.hotel.pojo;
+   
+   import lombok.AllArgsConstructor;
+   import lombok.Data;
+   import lombok.NoArgsConstructor;
+   
+   @Data
+   @NoArgsConstructor
+   @AllArgsConstructor
+   public class RequestParam {
+       private String key;//搜索关键字
+       private Integer page;//当前页码 (page - 1) * size
+       private Integer size;//显示条数
+       private String sortBy;//排序字段
+       private String brand;//品牌
+       private String city;//城市
+       private String startName;//星级
+       private Integer minPrice;//最小价格
+       private Integer maxPrice;//最大价格
+   }
+   ```
+
+   - `city`:精确匹配
+   - `brand`：精确匹配
+   - `starName`：精确匹配
+   - `price`：范围匹配
+
+   多个条件组合在一起使用布尔查询且为`AND`关系，并且不为空才需要添加，为空不添加。
+
+   注意：`BoolQueryBuilder`应该使用同一个，如果你在每一个`query()`中使用的都是`QueryBuilders.boolQuery()`则会覆盖，不信可以结尾打印下`SearchRequest`
 
 
 
