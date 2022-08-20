@@ -5599,41 +5599,648 @@ public void testSearchDocFunctionScore() throws IOException {
    }
    ```
 
-6. 实现过滤条件：完成按条件筛选功能 ---> 城市、星级、品牌、价格
+#### 18.16.2 过滤
 
-   修改`RequestParams`，添加：`brand city starName minPrice maxPrice`
+实现过滤条件：完成按条件筛选功能 ---> 城市、星级、品牌、价格
 
-   ```java
-   package com.kk.hotel.pojo;
-   
-   import lombok.AllArgsConstructor;
-   import lombok.Data;
-   import lombok.NoArgsConstructor;
-   
-   @Data
-   @NoArgsConstructor
-   @AllArgsConstructor
-   public class RequestParam {
-       private String key;//搜索关键字
-       private Integer page;//当前页码 (page - 1) * size
-       private Integer size;//显示条数
-       private String sortBy;//排序字段
-       private String brand;//品牌
-       private String city;//城市
-       private String startName;//星级
-       private Integer minPrice;//最小价格
-       private Integer maxPrice;//最大价格
-   }
-   ```
+修改`RequestParams`，添加：`brand city starName minPrice maxPrice`
 
-   - `city`:精确匹配
-   - `brand`：精确匹配
-   - `starName`：精确匹配
-   - `price`：范围匹配
+```java
+package com.kk.hotel.pojo;
 
-   多个条件组合在一起使用布尔查询且为`AND`关系，并且不为空才需要添加，为空不添加。
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-   注意：`BoolQueryBuilder`应该使用同一个，如果你在每一个`query()`中使用的都是`QueryBuilders.boolQuery()`则会覆盖，不信可以结尾打印下`SearchRequest`
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RequestParam {
+    private String key;//搜索关键字
+    private Integer page;//当前页码 (page - 1) * size
+    private Integer size;//显示条数
+    private String sortBy;//排序字段
+    private String brand;//品牌
+    private String city;//城市
+    private String startName;//星级
+    private Integer minPrice;//最小价格
+    private Integer maxPrice;//最大价格
+}
+```
+
+- `city`:精确匹配
+- `brand`：精确匹配
+- `starName`：精确匹配
+- `price`：范围匹配
+
+多个条件组合在一起使用布尔查询且为`AND`关系，并且不为空才需要添加，为空不添加。
+
+注意：`BoolQueryBuilder`应该使用同一个，如果你在每一个`query()`中使用的都是`QueryBuilders.boolQuery()`则会覆盖，不信可以结尾打印下`SearchRequest`
+
+```java
+package com.kk.hotel.service.impl;
+
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.extension.api.R;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.kk.hotel.mapper.HotelMapper;
+import com.kk.hotel.pojo.Hotel;
+import com.kk.hotel.pojo.HotelDoc;
+import com.kk.hotel.pojo.PageResult;
+import com.kk.hotel.pojo.RequestParam;
+import com.kk.hotel.service.HotelService;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements HotelService {
+
+    @Autowired
+    private RestHighLevelClient restHighLevelClient;
+
+    @Override
+    public PageResult search(RequestParam requestParam) {
+        try {
+            //实现全文检索
+            int page = requestParam.getPage();
+            int size = requestParam.getSize();
+            SearchRequest searchRequest = new SearchRequest("hotel");
+            //按条件过滤信息
+            handlerFilter(requestParam, searchRequest);
+            searchRequest.source().from((page - 1) * size).size(size);
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            return handleSearchResult(searchResponse);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //过滤
+    public void handlerFilter(RequestParam requestParam, SearchRequest searchRequest) {
+        if (requestParam != null) {
+            String key = requestParam.getKey();
+            //健壮性判断 ---> 如果 key 为空或者为空字符串则查询全部，否则进行全文检索
+            BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+            if (key == null || "".equals(key))
+                searchRequest.source().query(boolQuery.must(QueryBuilders.matchAllQuery()));
+            else searchRequest.source().query(boolQuery.must(QueryBuilders.matchQuery("name", key)));
+            String city = requestParam.getCity();
+            String brand = requestParam.getBrand();
+            String starName = requestParam.getStarName();
+            Integer minPrice = requestParam.getMinPrice();
+            Integer maxPrice = requestParam.getMaxPrice();
+            String location = requestParam.getLocation();
+            //健壮性判断 ---> 如果 key 为空或者为空字符串则查询全部，否则进行全文检索
+            if (city != null && !"".equals(city)){
+                searchRequest.source().query(boolQuery.filter(QueryBuilders.termQuery("city", city)));
+            }
+            if (brand != null && !"".equals(brand)) {
+                searchRequest.source().query(boolQuery.filter(QueryBuilders.termQuery("brand", brand)));
+            }
+            if (starName != null && !"".equals(starName)) {
+                searchRequest.source().query(boolQuery.filter(QueryBuilders.termQuery("starName", starName)));
+            }
+            if (minPrice != null && maxPrice != null) {
+                searchRequest.source().query(boolQuery.filter(QueryBuilders.rangeQuery("price").lte(maxPrice).gte(minPrice)));
+            }
+            if (location != null && !"".equals(location)) {
+                searchRequest.source().query(boolQuery.filter(QueryBuilders.rangeQuery("").lte(maxPrice).gte(minPrice)));
+            }
+            //System.out.println(searchRequest.toString());
+        }
+    }
+
+    //封装处理请求的函数
+    public PageResult handleSearchResult(SearchResponse searchResponse) {
+        PageResult pageResult = new PageResult();
+        pageResult.setTotal(searchResponse.getHits().getTotalHits().value);
+        SearchHit[] hits = searchResponse.getHits().getHits();
+        List<HotelDoc> hotelDocList = new ArrayList<>();
+        for (SearchHit hit : hits) {
+            String sourceAsString = hit.getSourceAsString();
+            HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+            hotelDocList.add(hotelDoc);
+        }
+        pageResult.setHotels(hotelDocList);
+        return pageResult;
+    }
+}
+```
+
+#### 18.16.3 我附近的酒店
+
+根据坐标排个序，最前面显示最近距离的酒店
+
+```java
+if (location != null && !"".equals(location)) {
+    searchRequest.source().sort(SortBuilders.geoDistanceSort("location", new GeoPoint(location)).unit(DistanceUnit.KILOMETERS).order(SortOrder.ASC));
+}
+```
+
+#### 18.16.4 显示距离
+
+```java
+//封装处理请求的函数
+public PageResult handleSearchResult(SearchResponse searchResponse) {
+    PageResult pageResult = new PageResult();
+    pageResult.setTotal(searchResponse.getHits().getTotalHits().value);
+    SearchHit[] hits = searchResponse.getHits().getHits();
+    List<HotelDoc> hotelDocList = new ArrayList<>();
+    for (SearchHit hit : hits) {
+        String sourceAsString = hit.getSourceAsString();
+        HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+        if(hit.getSortValues().length > 0) hotelDoc.setDistance(hit.getSortValues()[0]);
+        hotelDocList.add(hotelDoc);
+    }
+    pageResult.setHotels(hotelDocList);
+    return pageResult;
+}
+```
+
+#### 18.16.5 广告置顶
+
+```json
+# 给索引库新增一个叫isAD的字段，类型是布尔类型
+PUT /hotel/_mapping
+{
+  "properties":{
+    "isAD":{
+      "type": "boolean"
+    }
+  }
+}
+
+# 给索引库id为45845的记录赋值，让其isAD字段为true（用于测试广告竞价排名，该记录会靠前）
+POST /hotel/_update/45845
+{
+  "doc": {  
+    "isAD":true
+  }
+}
 
 
+GET hotel/_doc/45845
+```
 
+给有广告的进行算分函数加权即可：
+
+```java
+//过滤
+public void handlerFilter(RequestParam requestParam, SearchRequest searchRequest) {
+    if (requestParam != null) {
+        String key = requestParam.getKey();
+        //健壮性判断 ---> 如果 key 为空或者为空字符串则查询全部，否则进行全文检索
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+        if (key == null || "".equals(key))
+            searchRequest.source().query(boolQuery.must(QueryBuilders.matchAllQuery()));
+        else searchRequest.source().query(boolQuery.must(QueryBuilders.matchQuery("name", key)));
+        String city = requestParam.getCity();
+        String brand = requestParam.getBrand();
+        String starName = requestParam.getStarName();
+        Integer minPrice = requestParam.getMinPrice();
+        Integer maxPrice = requestParam.getMaxPrice();
+        String location = requestParam.getLocation();
+        //健壮性判断 ---> 如果 key 为空或者为空字符串则查询全部，否则进行全文检索
+        if (city != null && !"".equals(city)){
+            searchRequest.source().query(boolQuery.filter(QueryBuilders.termQuery("city", city)));
+        }
+        if (brand != null && !"".equals(brand)) {
+            searchRequest.source().query(boolQuery.filter(QueryBuilders.termQuery("brand", brand)));
+        }
+        if (starName != null && !"".equals(starName)) {
+            searchRequest.source().query(boolQuery.filter(QueryBuilders.termQuery("starName", starName)));
+        }
+        if (minPrice != null && maxPrice != null) {
+            searchRequest.source().query(boolQuery.filter(QueryBuilders.rangeQuery("price").lte(maxPrice).gte(minPrice)));
+        }
+        if (location != null && !"".equals(location)) {
+            searchRequest.source().sort(SortBuilders.geoDistanceSort("location", new GeoPoint(location)).unit(DistanceUnit.KILOMETERS).order(SortOrder.ASC));
+        }
+        FunctionScoreQueryBuilder functionScoreQuery = QueryBuilders.functionScoreQuery(boolQuery, new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
+                new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.termQuery("isAD", true), ScoreFunctionBuilders.weightFactorFunction(10))
+        });
+        searchRequest.source().query(functionScoreQuery);
+    }
+}
+```
+
+![img](https://img-blog.csdnimg.cn/a9257d54a2354c45928d6b9e417749d1.png)
+
+**记得在`HotelDoc`实体类添加`isAD`属性。**
+
+### 18.17 `DSL`数据聚合
+
+**聚合**可以让我们极其方便的实现对数据的统计、分析、运算。
+
+- 什么品牌的手机最受欢迎？
+- 这些手机的平均价格、最高价格、最低价格？
+- 这些手机每月的销售情况如何？
+
+在`ElasticSearch`实现这些统计功能比数据库的`SQL`要方便的多，而且查询速度非常快，可以实现近实时搜索效果。
+
+常见的聚合有三类：
+
+- 桶聚合`Bucket Aggregations`：用来对文档进行分组
+  - `TermAggregation`：按照文档字段值分组，例如按照品牌值分组、按照国家分组
+  - `Date Histogram`：按照日期阶梯分组，例如一周为一组，或者一月为一组
+- 度量聚合`Metric Aggregations`：用来计算一些值，比如**最大值最小值平均值**等。
+  - `Avg`：求平均值
+  - `Max`：求最大值
+  - `Min`：求最小值
+  - `Stats`：同时求`max、min、avg、sum`等
+- 管道聚合`Pipeline Aggregations`：用来聚合其它聚合的结果【聚合的聚合】
+
+<font color="red">**注意**：参加聚合的字段必须是`keyword`、日期、数值、布尔类型</font>
+
+#### 18.17.1 桶聚合`Bucket Aggregation`
+
+例如：我们要统计所有数据中的酒店品牌有几种，其实就是按照品牌对数据分组。此时可以根据酒店品牌的名称做聚合，也就是`Bucket`聚合。
+
+```json
+GET /hotel/_search
+{
+  "size": 0,//结果不显示文档，只包含聚合结果
+  "aggs":{//定义聚合
+    "brandAggregation":{//聚合名称：给聚合结果起名字
+      "terms":{//聚合类型：文档类型 + 日期类型
+        "field":"brand",//参与聚合的字段
+        "size":100//聚合结果数量
+      }
+    }
+  }
+}
+```
+
+结果如下：
+
+![img](https://cdn.xn2001.com/img/2021/20211022184007.png)
+
+默认情况下，`Bucket`聚合会统计`Bucket`内的文档数量，记为`_count`，并且按照`_count`降序排序。你可以在上图看到这一事实，当然我们也可以指定`order`属性，自定义聚合的排序方式。
+
+```json
+GET /hotel/_search
+{
+  "size":0,
+  "aggs":{
+    "brandAggregation":{
+      "terms":{
+         "field":"brand",
+         "order":{
+           "_count":"asc"
+         },
+         "size": 20
+      }
+    }
+  }
+}
+```
+
+默认情况下，Bucket 聚合是对索引库的所有文档做聚合，但真实场景下，用户会输入搜索条件，因此聚合必须是对搜索结果聚合。那么聚合必须添加限定条件。我们可以限定要聚合的文档范围，只要添加`query`条件即可；
+
+```json
+GET /hotel/_search
+{
+  "query":{
+    "range":{
+      "price":{
+        "gte": 2000
+      }
+    }
+  },
+  "size":0,
+  "aggs":{
+    "brandAggregation":{
+      "terms":{
+         "field":"brand",
+         "order":{
+           "_count":"asc"
+         },
+         "size": 20
+      }
+    }
+  }
+}
+```
+
+可以看到聚合的品牌明显变少了：
+
+![img](https://img-blog.csdnimg.cn/5f45f337fc7f4371acfe9627bd14d108.png)
+
+#### 18.17.2 度量聚合`Metric Aggregation`
+
+上面，我们对酒店按照品牌分组，形成了一个个桶。现在我们需要对桶内的酒店做运算，获取每个品牌的用户评分的`min、max、avg`等值，使用`stats`就是包含了所有的类型包括`count max min avg sum`。
+
+```json
+GET /hotel/_search
+{
+  "size": 0,
+  "aggs":{
+    "brand_aggs":{
+      "terms":{
+        "field":"brand",
+        "size": 20
+      },
+      "aggs":{
+        "score_aggs":{
+          "stats":{
+            "field":"score"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+![img](https://cdn.xn2001.com/img/2021/20211022184847.png)
+
+```json
+GET /hotel/_search
+{
+  "size": 0,
+  "aggs":{
+    "brand_aggs":{
+      "terms":{
+        "field":"brand",
+        "size": 20
+      },
+      "aggs":{
+        "max_price":{
+          "max":{
+            "field":"price"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+#### 18.17.3 使用`RestClient`执行数据聚合
+
+```java
+@Test
+public void testSearchDocAggregation() throws IOException {
+    SearchRequest searchRequest = new SearchRequest("hotel");
+    searchRequest.source().aggregation(AggregationBuilders.terms("brand_aggregation").field("brand").size(20));
+    SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+    Aggregations aggregations = searchResponse.getAggregations();
+    Terms brandAggregation = aggregations.get("brand_aggregation");
+    List<? extends Terms.Bucket> buckets = brandAggregation.getBuckets();
+    for (Terms.Bucket bucket : buckets) {
+        String keyAsString = bucket.getKeyAsString();
+        System.out.println(keyAsString);
+    }
+}
+```
+
+#### 18.17.4 多条件聚合
+
+需求：搜索页面中的品牌、城市等信息不应该是写死的而是索引库中有什么把它传递给前端页面，而完成这些需要使用到聚合索引。
+
+![img](https://img-blog.csdnimg.cn/8838273a22cb45f4826d73dbda40d3ad.png)
+
+```java
+GET /hotel/_search
+{
+  "size": 0,
+  "aggs":{
+    "brand_aggs":{
+      "terms":{
+        "field":"brand"
+      }
+    },
+    "city_aggs":{
+      "terms":{
+        "field": "city"
+      }
+    },
+    "starName_aggs":{
+      "terms":{
+        "field":"starName"
+      }
+    }
+  }
+}
+```
+
+接着我们的`hotel_demo`继续做，在`HotelService`中定义一个`Map<String, List<String>> filters`方法，用于返还索引库中存在的：品牌、城市、星级。
+
+```java
+@Override
+public Map<String, List<String>> filters() {
+    try {
+        SearchRequest searchRequest = new SearchRequest("hotel");
+        searchRequest.source().aggregation(AggregationBuilders.terms("brand_aggregation").field("brand"));
+        searchRequest.source().aggregation(AggregationBuilders.terms("city_aggregation").field("city"));
+        searchRequest.source().aggregation(AggregationBuilders.terms("starName_aggregation").field("starName"));
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        Aggregations aggregations = searchResponse.getAggregations();
+        Terms brandAggregation = aggregations.get("brand_aggregation");
+        List<? extends Terms.Bucket> brandBuckets = brandAggregation.getBuckets();
+        List<String> brandList = getList(brandBuckets);
+        Terms cityAggregation = aggregations.get("city_aggregation");
+        List<? extends Terms.Bucket> cityBuckets = cityAggregation.getBuckets();
+        List<String> cityList = getList(cityBuckets);
+        Terms starNameAggregation = aggregations.get("starName_aggregation");
+        List<? extends Terms.Bucket> starNameBuckets = starNameAggregation.getBuckets();
+        List<String> starNameList = getList(starNameBuckets);
+        Map<String, List<String>> map = new HashMap<>();
+        map.put("city", cityList);
+        map.put("brand", brandList);
+        map.put("starName", starNameList);
+        return map;
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+public List<String> getList(List<? extends Terms.Bucket> buckets) {
+    List<String> keywordList = new ArrayList<>();
+    for (Terms.Bucket bucket : buckets) {
+        String keyAsString = bucket.getKeyAsString();
+        keywordList.add(keyAsString);
+    }
+    return keywordList;
+}
+```
+
+#### 18.17.5 带过滤条件的多条件聚合
+
+对过滤出来的条件应该还要结合搜索框，字段等信息进行过滤。所以应该在`filter`中加上参数，使用`search()`中的代码。比如`1500`元价格以上的酒店只有`喜来登、希尔顿、皇冠假日、维也纳`四个品牌，那在品牌一来只该显示这四个品牌而不能显示其它品牌。
+
+![img](https://img-blog.csdnimg.cn/599b43f3f02b4684b5daf0606b08a33e.png)
+
+**主要是：`filters getList handlerFilter`三个方法**
+
+```java
+package com.kk.hotel.service.impl;
+
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.extension.api.R;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.kk.hotel.mapper.HotelMapper;
+import com.kk.hotel.pojo.Hotel;
+import com.kk.hotel.pojo.HotelDoc;
+import com.kk.hotel.pojo.PageResult;
+import com.kk.hotel.pojo.RequestParam;
+import com.kk.hotel.service.HotelService;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.geo.GeoPoint;
+import org.elasticsearch.common.lucene.search.function.FunctionScoreQuery;
+import org.elasticsearch.common.lucene.search.function.ScoreFunction;
+import org.elasticsearch.common.unit.DistanceUnit;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
+import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilder;
+import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.*;
+
+@Service
+public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements HotelService {
+
+    @Autowired
+    private RestHighLevelClient restHighLevelClient;
+
+    @Override
+    public PageResult search(RequestParam requestParam) {
+        try {
+            //实现全文检索
+            int page = requestParam.getPage();
+            int size = requestParam.getSize();
+            SearchRequest searchRequest = new SearchRequest("hotel");
+            //按条件过滤信息
+            handlerFilter(requestParam, searchRequest);
+            searchRequest.source().from((page - 1) * size).size(size);
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            return handleSearchResult(searchResponse);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Map<String, List<String>> filters(RequestParam requestParam) {
+        try {
+            SearchRequest searchRequest = new SearchRequest("hotel");
+            handlerFilter(requestParam, searchRequest);
+            searchRequest.source().aggregation(AggregationBuilders.terms("brand_aggregation").field("brand"));
+            searchRequest.source().aggregation(AggregationBuilders.terms("city_aggregation").field("city"));
+            searchRequest.source().aggregation(AggregationBuilders.terms("starName_aggregation").field("starName"));
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            Aggregations aggregations = searchResponse.getAggregations();
+            Terms brandAggregation = aggregations.get("brand_aggregation");
+            List<? extends Terms.Bucket> brandBuckets = brandAggregation.getBuckets();
+            List<String> brandList = getList(brandBuckets);
+            Terms cityAggregation = aggregations.get("city_aggregation");
+            List<? extends Terms.Bucket> cityBuckets = cityAggregation.getBuckets();
+            List<String> cityList = getList(cityBuckets);
+            Terms starNameAggregation = aggregations.get("starName_aggregation");
+            List<? extends Terms.Bucket> starNameBuckets = starNameAggregation.getBuckets();
+            List<String> starNameList = getList(starNameBuckets);
+            Map<String, List<String>> map = new HashMap<>();
+            map.put("city", cityList);
+            map.put("brand", brandList);
+            map.put("starName", starNameList);
+            return map;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<String> getList(List<? extends Terms.Bucket> buckets) {
+        List<String> keywordList = new ArrayList<>();
+        for (Terms.Bucket bucket : buckets) {
+            String keyAsString = bucket.getKeyAsString();
+            keywordList.add(keyAsString);
+        }
+        return keywordList;
+    }
+
+    //过滤
+    public void handlerFilter(RequestParam requestParam, SearchRequest searchRequest) {
+        if (requestParam != null) {
+            String key = requestParam.getKey();
+            //健壮性判断 ---> 如果 key 为空或者为空字符串则查询全部，否则进行全文检索
+            BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+            if (key == null || "".equals(key))
+                searchRequest.source().query(boolQuery.must(QueryBuilders.matchAllQuery()));
+            else searchRequest.source().query(boolQuery.must(QueryBuilders.matchQuery("name", key)));
+            String city = requestParam.getCity();
+            String brand = requestParam.getBrand();
+            String starName = requestParam.getStarName();
+            Integer minPrice = requestParam.getMinPrice();
+            Integer maxPrice = requestParam.getMaxPrice();
+            String location = requestParam.getLocation();
+            //健壮性判断 ---> 如果 key 为空或者为空字符串则查询全部，否则进行全文检索
+            if (city != null && !"".equals(city)) {
+                searchRequest.source().query(boolQuery.filter(QueryBuilders.termQuery("city", city)));
+            }
+            if (brand != null && !"".equals(brand)) {
+                searchRequest.source().query(boolQuery.filter(QueryBuilders.termQuery("brand", brand)));
+            }
+            if (starName != null && !"".equals(starName)) {
+                searchRequest.source().query(boolQuery.filter(QueryBuilders.termQuery("starName", starName)));
+            }
+            if (minPrice != null && maxPrice != null) {
+                searchRequest.source().query(boolQuery.filter(QueryBuilders.rangeQuery("price").lte(maxPrice).gte(minPrice)));
+            }
+            if (location != null && !"".equals(location)) {
+                searchRequest.source().sort(SortBuilders.geoDistanceSort("location", new GeoPoint(location)).unit(DistanceUnit.KILOMETERS).order(SortOrder.ASC));
+            }
+            FunctionScoreQueryBuilder functionScoreQuery = QueryBuilders.functionScoreQuery(boolQuery, new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
+                    new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.termQuery("isAD", true), ScoreFunctionBuilders.weightFactorFunction(10))
+            });
+            searchRequest.source().query(functionScoreQuery);
+        }
+    }
+
+    //封装处理请求的函数
+    public PageResult handleSearchResult(SearchResponse searchResponse) {
+        PageResult pageResult = new PageResult();
+        pageResult.setTotal(searchResponse.getHits().getTotalHits().value);
+        SearchHit[] hits = searchResponse.getHits().getHits();
+        List<HotelDoc> hotelDocList = new ArrayList<>();
+        for (SearchHit hit : hits) {
+            String sourceAsString = hit.getSourceAsString();
+            HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+            if (hit.getSortValues().length > 0) hotelDoc.setDistance(hit.getSortValues()[0]);
+            hotelDocList.add(hotelDoc);
+        }
+        pageResult.setHotels(hotelDocList);
+        return pageResult;
+    }
+}
+```
+
+![img](https://img-blog.csdnimg.cn/478f58aa8c3f4cbfa14879a2539eb0b4.png)

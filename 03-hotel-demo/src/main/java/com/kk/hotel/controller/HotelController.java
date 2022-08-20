@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/hotel")
@@ -23,5 +25,10 @@ public class HotelController {
     @PostMapping(value = "/list")
     public PageResult search(@RequestBody RequestParam requestParam) throws IOException {
         return hotelService.search(requestParam);
+    }
+
+    @PostMapping(value = "/filters")
+    public Map<String, List<String>> filters(@RequestBody RequestParam requestParam) {
+        return hotelService.filters(requestParam);
     }
 }

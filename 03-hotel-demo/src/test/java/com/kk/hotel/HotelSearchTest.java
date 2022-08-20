@@ -8,6 +8,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.ml.job.results.Bucket;
 import org.elasticsearch.common.geo.GeoDistance;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.lucene.search.function.CombineFunction;
@@ -20,6 +21,10 @@ import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.elasticsearch.index.query.functionscore.WeightBuilder;
 import org.elasticsearch.index.reindex.ScrollableHitSource;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -32,6 +37,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
@@ -186,7 +192,7 @@ public class HotelSearchTest {
         }
     }
 
-    @Test
+    //@Test
     public void testSearchDocFunctionScore() throws IOException {
         SearchRequest searchRequest = new SearchRequest("hotel");
         searchRequest.source().query(QueryBuilders.functionScoreQuery(QueryBuilders.matchAllQuery(),
@@ -200,6 +206,20 @@ public class HotelSearchTest {
             String sourceAsString = hit.getSourceAsString();
             HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
             System.out.println(hotelDoc);
+        }
+    }
+
+    @Test
+    public void testSearchDocAggregation() throws IOException {
+        SearchRequest searchRequest = new SearchRequest("hotel");
+        searchRequest.source().aggregation(AggregationBuilders.terms("brand_aggregation").field("brand").size(20));
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        Aggregations aggregations = searchResponse.getAggregations();
+        Terms brandAggregation = aggregations.get("brand_aggregation");
+        List<? extends Terms.Bucket> buckets = brandAggregation.getBuckets();
+        for (Terms.Bucket bucket : buckets) {
+            String keyAsString = bucket.getKeyAsString();
+            System.out.println(keyAsString);
         }
     }
 

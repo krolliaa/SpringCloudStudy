@@ -4,12 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43d4e940-1fb8-497b-b5f9-0abea53ee8f7" name="Changes" comment="ES旅游项目案例：&#10;3. 完成全文检索 ---&gt; 输入框搜索功能">
+    <list default="true" id="43d4e940-1fb8-497b-b5f9-0abea53ee8f7" name="Changes" comment="ES旅游项目案例：&#10;4. 我附近的酒店 + 显示距离">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/OrderApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/OrderApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/controller/HotelController.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/controller/HotelController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/HotelDoc.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/HotelDoc.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/RequestParam.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/RequestParam.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/service/HotelService.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/service/HotelService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/service/impl/HotelServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/service/impl/HotelServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/test/java/com/kk/hotel/HotelSearchTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/test/java/com/kk/hotel/HotelSearchTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SpringCloud.md" beforeDir="false" afterPath="$PROJECT_DIR$/SpringCloud.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -101,8 +103,8 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.HotelApplication">
-    <configuration name="HotelSearchTest.testSearchDocBool" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.HotelSearchTest.testSearchDocAggregation">
+    <configuration name="HotelSearchTest.testSearchDocAggregation" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="03-hotel-demo" />
       <extension name="coverage">
         <pattern>
@@ -112,7 +114,7 @@
       </extension>
       <option name="PACKAGE_NAME" value="com.kk.hotel" />
       <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelSearchTest" />
-      <option name="METHOD_NAME" value="testSearchDocBool" />
+      <option name="METHOD_NAME" value="testSearchDocAggregation" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -192,20 +194,20 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="JUnit.HotelSearchTest.testSearchDocBool" />
       <item itemvalue="JUnit.HotelSearchTest.testSearchDocSortAndPage" />
       <item itemvalue="JUnit.HotelSearchTest.testSearchDocHighLight" />
       <item itemvalue="JUnit.HotelSearchTest.testSearchDocGeo" />
       <item itemvalue="JUnit.HotelSearchTest.testSearchDocFunctionScore" />
       <item itemvalue="Spring Boot.HotelApplication" />
+      <item itemvalue="JUnit.HotelSearchTest.testSearchDocAggregation" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.HotelSearchTest.testSearchDocAggregation" />
         <item itemvalue="JUnit.HotelSearchTest.testSearchDocFunctionScore" />
         <item itemvalue="JUnit.HotelSearchTest.testSearchDocGeo" />
         <item itemvalue="JUnit.HotelSearchTest.testSearchDocHighLight" />
         <item itemvalue="JUnit.HotelSearchTest.testSearchDocSortAndPage" />
-        <item itemvalue="JUnit.HotelSearchTest.testSearchDocBool" />
       </list>
     </recent_temporary>
   </component>
@@ -225,7 +227,7 @@
       <workItem from="1660816602584" duration="7666000" />
       <workItem from="1660834796126" duration="948000" />
       <workItem from="1660896685877" duration="17614000" />
-      <workItem from="1660981432041" duration="4531000" />
+      <workItem from="1660981432041" duration="11256000" />
     </task>
     <task id="LOCAL-00001" summary="提供 Eureka 注册中心：&#10;1.@EnableEurekaServer&#10;2.server:&#10;    port: 10086&#10;  spring:&#10;    application:&#10;      name: eureka-server&#10;  eureka:&#10;    client:&#10;      service-url:&#10;        defaultZone: http://localhost:10086/eureka&#10;3.访问：http://localhost:10086">
       <created>1660461894107</created>
@@ -402,7 +404,14 @@
       <option name="project" value="LOCAL" />
       <updated>1660983422994</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="ES旅游项目案例：&#10;3. 完成过滤检索 ---&gt; 要使用同一个 QueryBuilders.boolQuery();">
+      <created>1660986004521</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1660986004521</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -650,8 +659,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="提供 Eureka 注册中心：&#10;1.@EnableEurekaServer&#10;2.server:&#10;    port: 10086&#10;  spring:&#10;    application:&#10;      name: eureka-server&#10;  eureka:&#10;    client:&#10;      service-url:&#10;        defaultZone: http://localhost:10086/eureka&#10;3.访问：http://localhost:10086" />
-    <MESSAGE value="在 order-service 和 user-service 中使用 eureka-client：&#10;1.引入依赖&#10;2.启动类添加注解：@EnableEurekaClient&#10;3.在 RestTemplate Bean 配置类中添加负载均衡注解 @LoadBalanced&#10;4.在 order-service.service.OrderService 更改 URL 地址 ---&gt; Eureka 注册中心会自动注册：userservice --&gt; localhost:8081 [IP + Port]" />
     <MESSAGE value="在 order-service 和 user-service 中使用 eureka-client：&#10;1.引入依赖&#10;2.修改配置：&#10;        spring:&#10;          application:&#10;            name: user-service&#10;        spring:&#10;          application:&#10;            name: order-service&#10;        eureka:&#10;          client:&#10;            service-url:&#10;              defaultZone: http://localhost:10086/eureka&#10;2.启动类添加注解：@EnableEurekaClient，Eureka 会根据 spring.application.name 作为服务的注册名进行注册&#10;3.在 RestTemplate Bean 配置类中添加负载均衡注解 @LoadBalanced&#10;4.在 order-service.service.OrderService 更改 URL 地址 ---&gt; Eureka 注册中心会自动注册：userservice --&gt; localhost:8081 [IP + Port] ---&gt; &quot;http://user-service/user/&quot; + order.getUserId();&#10;5.使用 copy configuration ---》 VM Operations: -Dserver.port=8082/8083 可以创建新的服务" />
     <MESSAGE value="更改 Robbin 负载均衡策略：&#10;1. 添加 Bean ---&gt; &#10;    @Bean&#10;    public IRule randomRule() {&#10;        return new RandomRule();&#10;    }" />
     <MESSAGE value="为提高页面访问速度，将拉取服务从懒加载更改为饥饿加载：&#10;ribbon:&#10;  eager-load:&#10;    enable: true&#10;    clients: user-service" />
@@ -675,6 +682,8 @@
     <MESSAGE value="ElasticSearch 查询文档：&#10;1. 查询全部 match_all&#10;2. 全文检索 match + multi_match&#10;3. 精确查询 term + range&#10;4. 地理查询 geo_distance + geo_bounding_box&#10;5. 排序 sort&#10;6. 分页 from + size&#10;7. 高亮 highlighter&#10;8. 算分函数查询 function_score&#10;9. 布尔查询 bool" />
     <MESSAGE value="ES旅游项目案例：&#10;1. 定义获取的请求参数类 RequestParam&#10;2. 定义分页结果类 PageResult" />
     <MESSAGE value="ES旅游项目案例：&#10;3. 完成全文检索 ---&gt; 输入框搜索功能" />
-    <option name="LAST_COMMIT_MESSAGE" value="ES旅游项目案例：&#10;3. 完成全文检索 ---&gt; 输入框搜索功能" />
+    <MESSAGE value="ES旅游项目案例：&#10;3. 完成过滤检索 ---&gt; 要使用同一个 QueryBuilders.boolQuery();" />
+    <MESSAGE value="ES旅游项目案例：&#10;4. 我附近的酒店 + 显示距离" />
+    <option name="LAST_COMMIT_MESSAGE" value="ES旅游项目案例：&#10;4. 我附近的酒店 + 显示距离" />
   </component>
 </project>
