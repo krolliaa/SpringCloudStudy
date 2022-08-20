@@ -5505,9 +5505,53 @@ public void testSearchDocFunctionScore() throws IOException {
        private Long total;
        private List<HotelDoc> hotelDocList;
    }
-   
    ```
 
 3. 定义`Controller`接口接收前端请求：
 
    ```java
+   @PostMapping(value = "/list")
+   public PageResult search(@RequestBody RequestParam requestParam) {
+       return hotelService.search(requestParam);
+   }
+
+4. 添加`service`接口方法
+
+   ```java
+   package com.kk.hotel.service;
+   
+   import com.baomidou.mybatisplus.extension.service.IService;
+   import com.kk.hotel.pojo.Hotel;
+   import com.kk.hotel.pojo.PageResult;
+   import com.kk.hotel.pojo.RequestParam;
+   
+   public interface HotelService extends IService<Hotel>  {
+       PageResult search(RequestParam requestParam);
+   }
+
+5. 实现类实现`search`方法
+
+   ```java
+   package com.kk.hotel.service.impl;
+   
+   import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+   import com.kk.hotel.mapper.HotelMapper;
+   import com.kk.hotel.pojo.Hotel;
+   import com.kk.hotel.pojo.PageResult;
+   import com.kk.hotel.pojo.RequestParam;
+   import com.kk.hotel.service.HotelService;
+   import org.springframework.stereotype.Service;
+   
+   @Service
+   public class HotelServiceImpl extends ServiceImpl<HotelMapper, Hotel> implements HotelService {
+       @Override
+       public PageResult search(RequestParam requestParam) {
+           return null;
+       }
+   }
+   ```
+
+6. 
+
+
+

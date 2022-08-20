@@ -11,5 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 public class PageResult {
     private Long total;
-    private List<HotelDoc> hotelDocList;
+    private List<HotelDoc> hotels;
 }

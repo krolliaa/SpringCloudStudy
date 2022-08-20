@@ -5,22 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="43d4e940-1fb8-497b-b5f9-0abea53ee8f7" name="Changes" comment="ES旅游项目案例：&#10;1. 定义获取的请求参数类 RequestParam&#10;2. 定义分页结果类 PageResult">
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/PageResult.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/RequestParam.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/logback.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/css/banner.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/css/index.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/img/ad.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/img/ad2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/img/heima.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/js/amap.min.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/js/axios.min.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/js/vue.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/03-hotel-demo/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/controller/HotelController.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/controller/HotelController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/PageResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/PageResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/service/HotelService.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/service/HotelService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/service/impl/HotelServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/service/impl/HotelServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SpringCloud.md" beforeDir="false" afterPath="$PROJECT_DIR$/SpringCloud.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -196,41 +187,19 @@
     <configuration name="HotelApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="03-hotel-demo" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.kk.hotel.HotelApplication" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="OrderApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-      <module name="order-service" />
-      <option name="SPRING_BOOT_MAIN_CLASS" value="com.kk.order.OrderApplication" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="PublisherApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-      <module name="publisher" />
-      <option name="SPRING_BOOT_MAIN_CLASS" value="com.kk.publisher.PublisherApplication" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="UserApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-      <module name="user-service" />
-      <option name="SPRING_BOOT_MAIN_CLASS" value="com.kk.user.UserApplication" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SHORTEN_COMMAND_LINE" value="NONE" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <list>
-      <item itemvalue="Spring Boot.UserApplication" />
-      <item itemvalue="Spring Boot.OrderApplication" />
-      <item itemvalue="Spring Boot.PublisherApplication" />
-      <item itemvalue="Spring Boot.HotelApplication" />
       <item itemvalue="JUnit.HotelSearchTest.testSearchDocBool" />
       <item itemvalue="JUnit.HotelSearchTest.testSearchDocSortAndPage" />
       <item itemvalue="JUnit.HotelSearchTest.testSearchDocHighLight" />
       <item itemvalue="JUnit.HotelSearchTest.testSearchDocGeo" />
       <item itemvalue="JUnit.HotelSearchTest.testSearchDocFunctionScore" />
+      <item itemvalue="Spring Boot.HotelApplication" />
     </list>
     <recent_temporary>
       <list>
@@ -258,6 +227,7 @@
       <workItem from="1660816602584" duration="7666000" />
       <workItem from="1660834796126" duration="948000" />
       <workItem from="1660896685877" duration="17614000" />
+      <workItem from="1660981432041" duration="1916000" />
     </task>
     <task id="LOCAL-00001" summary="提供 Eureka 注册中心：&#10;1.@EnableEurekaServer&#10;2.server:&#10;    port: 10086&#10;  spring:&#10;    application:&#10;      name: eureka-server&#10;  eureka:&#10;    client:&#10;      service-url:&#10;        defaultZone: http://localhost:10086/eureka&#10;3.访问：http://localhost:10086">
       <created>1660461894107</created>
@@ -420,7 +390,14 @@
       <option name="project" value="LOCAL" />
       <updated>1660979022214</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="ES旅游项目案例：&#10;1. 定义获取的请求参数类 RequestParam&#10;2. 定义分页结果类 PageResult">
+      <created>1660981436512</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1660981436512</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
