@@ -5,12 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="43d4e940-1fb8-497b-b5f9-0abea53ee8f7" name="Changes" comment="ElasticSearch：&#10;2. 初始化 RestHighLevelClient&#10;3. 使用 CreateIndexRequest + indices 创建文档&#10;4. 使用 DeleteIndexRequest + indices 删除文档&#10;5. 使用 GetIndexRequest + exists + indices 判断文档&#10;6. 使用 IndexRequest 增加文档&#10;7. 使用 UpdateRequest 修改文档&#10;8。 使用 DeleteRequest 删除文档&#10;9. 使用 GetRequest 查询文档&#10;10. 使用 BulkRequest + IndexRequest 批量增加文档【当然可以做批量删除、批量修改、批量查询】">
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/config/ESConfiguration.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/test/java/com/kk/hotel/HotelDocTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/test/java/com/kk/hotel/HotelIndexTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/test/java/com/kk/hotel/HotelSearchTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/controller/HotelController.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/controller/HotelController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/test/java/com/kk/hotel/HotelDocTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/test/java/com/kk/hotel/HotelDocTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SpringCloud.md" beforeDir="false" afterPath="$PROJECT_DIR$/SpringCloud.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -45,6 +43,11 @@
         <option name="userSettingsFile" value="D:\Maven\apache-maven-3.8.4\conf\settings.xml" />
       </MavenGeneralSettings>
     </option>
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="jdkForImporter" value="1.8" />
+      </MavenImportingSettings>
+    </option>
   </component>
   <component name="MavenRunner">
     <option name="skipTests" value="true" />
@@ -69,10 +72,10 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.31806284" />
-    <property name="settings.editor.selected.configurable" value="MavenSettings" />
+    <property name="settings.editor.selected.configurable" value="reference.settings.project.maven.importing" />
   </component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
@@ -93,8 +96,8 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.HotelDocTest.testGetDoc">
-    <configuration name="HotelDocTest.testBulkDoc" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.HotelSearchTest.testSearchDocFunctionScore">
+    <configuration name="HotelSearchTest.testSearchDocBool" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="03-hotel-demo" />
       <extension name="coverage">
         <pattern>
@@ -103,14 +106,14 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="com.kk.hotel" />
-      <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelDocTest" />
-      <option name="METHOD_NAME" value="testBulkDoc" />
+      <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelSearchTest" />
+      <option name="METHOD_NAME" value="testSearchDocBool" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HotelDocTest.testCreateDoc" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="HotelSearchTest.testSearchDocFunctionScore" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="03-hotel-demo" />
       <extension name="coverage">
         <pattern>
@@ -119,14 +122,14 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="com.kk.hotel" />
-      <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelDocTest" />
-      <option name="METHOD_NAME" value="testCreateDoc" />
+      <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelSearchTest" />
+      <option name="METHOD_NAME" value="testSearchDocFunctionScore" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HotelDocTest.testDeleteDoc" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="HotelSearchTest.testSearchDocGeo" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="03-hotel-demo" />
       <extension name="coverage">
         <pattern>
@@ -135,14 +138,14 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="com.kk.hotel" />
-      <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelDocTest" />
-      <option name="METHOD_NAME" value="testDeleteDoc" />
+      <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelSearchTest" />
+      <option name="METHOD_NAME" value="testSearchDocGeo" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HotelDocTest.testGetDoc" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="HotelSearchTest.testSearchDocHighLight" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="03-hotel-demo" />
       <extension name="coverage">
         <pattern>
@@ -151,14 +154,14 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="com.kk.hotel" />
-      <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelDocTest" />
-      <option name="METHOD_NAME" value="testGetDoc" />
+      <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelSearchTest" />
+      <option name="METHOD_NAME" value="testSearchDocHighLight" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HotelDocTest.testUpdateDoc" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="HotelSearchTest.testSearchDocSortAndPage" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="03-hotel-demo" />
       <extension name="coverage">
         <pattern>
@@ -167,8 +170,8 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="com.kk.hotel" />
-      <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelDocTest" />
-      <option name="METHOD_NAME" value="testUpdateDoc" />
+      <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelSearchTest" />
+      <option name="METHOD_NAME" value="testSearchDocSortAndPage" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -207,19 +210,19 @@
       <item itemvalue="Spring Boot.OrderApplication" />
       <item itemvalue="Spring Boot.PublisherApplication" />
       <item itemvalue="Spring Boot.HotelApplication" />
-      <item itemvalue="JUnit.HotelDocTest.testCreateDoc" />
-      <item itemvalue="JUnit.HotelDocTest.testDeleteDoc" />
-      <item itemvalue="JUnit.HotelDocTest.testGetDoc" />
-      <item itemvalue="JUnit.HotelDocTest.testUpdateDoc" />
-      <item itemvalue="JUnit.HotelDocTest.testBulkDoc" />
+      <item itemvalue="JUnit.HotelSearchTest.testSearchDocBool" />
+      <item itemvalue="JUnit.HotelSearchTest.testSearchDocSortAndPage" />
+      <item itemvalue="JUnit.HotelSearchTest.testSearchDocHighLight" />
+      <item itemvalue="JUnit.HotelSearchTest.testSearchDocGeo" />
+      <item itemvalue="JUnit.HotelSearchTest.testSearchDocFunctionScore" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.HotelDocTest.testGetDoc" />
-        <item itemvalue="JUnit.HotelDocTest.testBulkDoc" />
-        <item itemvalue="JUnit.HotelDocTest.testUpdateDoc" />
-        <item itemvalue="JUnit.HotelDocTest.testCreateDoc" />
-        <item itemvalue="JUnit.HotelDocTest.testDeleteDoc" />
+        <item itemvalue="JUnit.HotelSearchTest.testSearchDocFunctionScore" />
+        <item itemvalue="JUnit.HotelSearchTest.testSearchDocGeo" />
+        <item itemvalue="JUnit.HotelSearchTest.testSearchDocHighLight" />
+        <item itemvalue="JUnit.HotelSearchTest.testSearchDocSortAndPage" />
+        <item itemvalue="JUnit.HotelSearchTest.testSearchDocBool" />
       </list>
     </recent_temporary>
   </component>
@@ -236,7 +239,9 @@
       <workItem from="1660569869901" duration="5446000" />
       <workItem from="1660657185806" duration="659000" />
       <workItem from="1660715806354" duration="14769000" />
-      <workItem from="1660816602584" duration="7559000" />
+      <workItem from="1660816602584" duration="7666000" />
+      <workItem from="1660834796126" duration="948000" />
+      <workItem from="1660896685877" duration="15042000" />
     </task>
     <task id="LOCAL-00001" summary="提供 Eureka 注册中心：&#10;1.@EnableEurekaServer&#10;2.server:&#10;    port: 10086&#10;  spring:&#10;    application:&#10;      name: eureka-server&#10;  eureka:&#10;    client:&#10;      service-url:&#10;        defaultZone: http://localhost:10086/eureka&#10;3.访问：http://localhost:10086">
       <created>1660461894107</created>
@@ -385,7 +390,14 @@
       <option name="project" value="LOCAL" />
       <updated>1660818450842</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="ElasticSearch：&#10;2. 初始化 RestHighLevelClient&#10;3. 使用 CreateIndexRequest + indices 创建文档&#10;4. 使用 DeleteIndexRequest + indices 删除文档&#10;5. 使用 GetIndexRequest + exists + indices 判断文档&#10;6. 使用 IndexRequest 增加文档&#10;7. 使用 UpdateRequest 修改文档&#10;8。 使用 DeleteRequest 删除文档&#10;9. 使用 GetRequest 查询文档&#10;10. 使用 BulkRequest + IndexRequest 批量增加文档【当然可以做批量删除、批量修改、批量查询】">
+      <created>1660824175144</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1660824175144</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

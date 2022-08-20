@@ -4432,3 +4432,1032 @@ public void testBulkDoc() throws IOException {
 
 **<font color="red">细心的你一定可以发现，索引相关的操作都是`CreateIndexRequest GetIndexRequest DeleteIndexRequest`三个单词组成，而文档相关的操作都是`IndexRequest GetRequest DeleteRequest`两个单词组成，因为文档是包在索引里面的，有索引才有文档，索引大，所以索引用三个单词，文档用两个单词。</font>**
 
+### 18.12 `DSL`文档查询【重点】
+
+`ElasticSearch`提供了基于`JSON`的`DSL(Domain Specific Language)`来定义查询。常见的查询类型包括：
+
+1. **查询所有：**查询所有数据，一般测试使用。例如：`match_all`
+2. **全文检索：**即`full text`查询，利用分词器对用户输入内容进行分词，然后使用倒排索引在索引库中匹配，例如：`match_query`以及`multi_match_query`
+3. **精确查询：**根据精确词条值查找数据，一般就是查找`keyword`、数值、日期、`boolean`等类型字段，例如：`ids range term`
+4. **地理查询：**即`geo`查询，根据经纬度查询。例如：`geo_distance、geo_bounding_box`
+5. **复合查询：**即`compound`查询，复合查询可以将上述的各种查询条件组合起来，合并查询条件。例如：`bool、function_score`
+
+#### 18.12.1 查询所有
+
+```json
+// 查询所有
+GET /indexName/_search
+{
+  "query": {
+    "match_all": {
+    }
+  }
+}
+```
+
+![img](https://img-blog.csdnimg.cn/593e8698108341b0b704c8889818cfe3.png)
+
+#### 18.12.2 全文检索
+
+全文检索查询的基本流程如下：
+
+- 对用户搜索的内容做分词，得到词条
+- 根据词条去倒排索引库中匹配得到文档`id`
+- 根据文档`id`获取文档然后返回给用户
+
+比较常见的应用场景如：百度输入框搜索、电商商城的输入框搜索 ---> 输入词条 ---> 类型为`text` ---> 分词器分词 ---> 倒排索引库检索
+
+常见的全文检索包括：【<font color="red">注：**字段**就相当于是**`MySQL`中的列**，而且查询的字段类型需为`text`，`hotel`索引库只有`all name`两个字段是`text`的类型，其余不是，所以你在其余字段中查询就算一模一样也是查询不出来的。`all`里面包含着：`name brand city`，所以要想全文检索品牌和城市可以在`all`字段中检索</font>】
+
+- `match`：单字段查询，也就是只查询一个字段中是否符合条件
+- `multi_match`：多字段查询，也就是在多个字段中查询是否符合条件
+
+比如使用单字段查询`name`字段中包含`世界`的酒店：
+
+```json
+GET /hotel/_search
+{
+  "query":{
+    "match":{
+      "name":"世界"
+    }
+  }
+}
+```
+
+再比如使用多字段查询，查询出`name`或者`brand`有世界二字的酒店：
+
+```json
+GET /hotel/_search
+{
+    "query":{
+        "multi_match":{
+            "fields":["name", "all"],
+            "query":"深圳"
+        }
+    }
+}
+```
+
+- 可以看到多字段查询`multi_match`其实是包含了单字段查询`match`的，所以你可以直接用多字段进行全文。
+
+- 但是检索的字段越多，其性能影响也会越来越大，所以我们尽量在创建影视`mapping`的时候就是使用`copy_to`将多个字段合并为一个字段比如：`"copy_to":"all"`，然后使用单字段查询。
+
+  ```json
+  GET /hotel/_search
+  {
+      "query":{
+          "match":{
+              "all":"深圳"
+          }
+      }
+  }
+  ```
+
+#### 18.12.3 精确查询
+
+精确查询一般是查询特定的某个关键字，比如`keyword`类型、数值、日期`boolean`等类型的字段，所以不会对搜索条件进行分词，进行分词的只有`text`。
+
+- `term`：根据词条精确查询
+
+  因为精确查询的字段搜是不分词的字段，因此查询的条件也必须是**不分词**的词条。查询时，用户输入的内容跟自动值完全匹配时才认为符合条件。如果用户输入的内容过多，反而搜索不到数据。
+
+  而且只支持单个字段的查询，比如我即要`id = `又要`brand = `就查询不到
+
+  ```json
+  GET /hotel/_search
+  {
+      "query":{
+          "term":{
+              "id":{
+                  "value":"60487"
+              }
+          }
+      }
+  }
+  ```
+
+  这样子是查询不到的：
+
+  ```json
+  GET /hotel/_search
+  {
+    "query":{
+      "term":{
+        "id":{
+          "value":"60487"
+        },
+        "brand":{
+          "value":"君悦"
+        }
+      }
+    }
+  }
+  ```
+
+- `range`：根据值得范围查询
+
+  范围查询，一般应用在对数值类型做范围过滤的时候。比如做价格范围过滤、日期范围的过滤等。
+
+  ```json
+  GET /hotel/_search
+  {
+    "query":{
+      "range":{
+        "price":{
+          "gte":"2500",
+          "lte":"3000"
+        }
+      }
+    }
+  }
+  ```
+
+  ![img](https://cdn.xn2001.com/img/2021/20210921182858.png)
+
+#### 18.12.4 地理坐标查询
+
+地理坐标查询，其实就是根据经纬度查询，官方文档：https://www.elastic.co/guide/en/elasticsearch/reference/current/geo-queries.html
+
+常见的使用场景包括：
+
+- 携程：搜索我附近的酒店
+
+  ![img](https://cdn.xn2001.com/img/2021/20210921183030.png)
+
+- 滴滴：搜索我附近的出租车
+
+  ![img](https://cdn.xn2001.com/img/2021/20210921183033.png)
+
+- 微信：搜索我附近的人
+
+**矩形范围查询：**
+
+矩形范围查询，也就是`geo_bounding_box`查询，查询坐标落在某个矩形范围的所有文档，查询时，需要指定矩形的**左上**、**右下**两个点的坐标，然后画出一个矩形，落在该矩形内的都是符合条件的点。
+
+![img](https://cdn.xn2001.com/img/2021/20210921183124.gif)
+
+```json
+GET /hotel/_search
+{
+  "query":{
+    "geo_bounding_box":{
+      "location":{
+        "top_left":{
+          "lat":31.1,
+          "lon":121.5
+        },
+        "bottom_right":{
+          "lat":30.9,
+          "lon":121.7
+        }
+      }
+    }
+  }
+}
+```
+
+**附近查询：**
+
+附近查询，也叫做距离查询`（geo_distance）`：查询到指定中心点小于某个距离值的所有文档。
+
+在地图上找一个点作为圆心，以指定距离为半径，画一个圆，落在圆内的坐标都算符合条件：
+
+![img](https://cdn.xn2001.com/img/2021/20210921183215.gif)
+
+查询深圳会展中心方圆`100km`的酒店：会展中心的经纬度为`(22.31, 114.03)`
+
+```json
+GET /hotel/_search
+{
+  "query":{
+    "geo_distance":{
+      "distance":"100km",
+      "location":"22.31,114.03"
+    }
+  }
+}
+```
+
+可以发现查询到：`56`家酒店
+
+![img](https://img-blog.csdnimg.cn/e45be03a9d024222acf67946459d4440.png)
+
+将其范围缩小到`25km`方圆之内：可以看到之查询到`6`家酒店
+
+![img](https://img-blog.csdnimg.cn/b600142c853e4126ac71302123b38b32.png)
+
+除此之外还可以针对这些查询的酒店结果，做一个排序得到与当前位置与各个酒店之间的距离：
+
+```json
+GET /hotel/_search
+{
+    "query":{
+        "geo_distance":{
+            "distance":"25km",
+            "location":"22.70,113.73"
+        }
+    },
+    "sort":[
+        "_geo_distance":{
+        	"location":"22.70,113.73",
+        	"order":"asc",
+        	"unit":"km"
+        }
+    ]
+}
+```
+
+可以看到当前位置和深圳会展中心的希尔顿酒店仅大约有`5km`的距离。
+
+![img](https://img-blog.csdnimg.cn/9f2597c1941f4a6e9b5e5e077df1fb8c.png)
+
+#### 18.12.5 复合查询
+
+复合`（compound）`查询：复合查询可以将其它简单查询组合起来，实现更复杂的搜索逻辑。
+
+- `fuction score`：算分函数查询，可以控制文档相关性算分，控制文档排名
+- `bool query`：布尔查询，利用逻辑关系组合多个其它的查询，实现复杂搜索
+
+**相关性算分：**
+
+当我们利用`match`查询时，文档结果会根据与搜索词条的关联度打分`(_score)`，返回结果时按照分值降序排列。例如，我们搜索 "虹桥如家"，结果如下：
+
+```json
+[
+  {
+    "_score" : 17.850193,
+    "_source" : {
+      "name" : "虹桥如家酒店真不错",
+    }
+  },
+  {
+    "_score" : 12.259849,
+    "_source" : {
+      "name" : "外滩如家酒店真不错",
+    }
+  },
+  {
+    "_score" : 11.91091,
+    "_source" : {
+      "name" : "迪士尼如家酒店真不错",
+    }
+  }
+]
+```
+
+`ElasticSearch`早期使用的打分算法是 **`TF-IDF`算法**，公式如下：
+
+![img](https://cdn.xn2001.com/img/2021/20210921205752.png)
+
+在后来的`5.1`版本升级中，`ElasticSearch`将算法改进为**`BM25`算法**，公式如下：
+
+![img](https://cdn.xn2001.com/img/2021/20210921205757.png)
+
+`TF-IDF`算法有一各缺陷，就是词条频率越高，文档得分也会越高，单个词条对文档影响较大。而`BM25`则会让单个词条的算分有一个上限，曲线更加平滑。
+
+![img](https://cdn.xn2001.com/img/2021/20210921205831.png)
+
+##### 18.12.5.1 算分函数查询
+
+根据相关度打分是比较合理的需求，但有时候也不能够满足我们的需求。以百度为例，你搜索的结果中，并不是相关度越高排名越靠前，而是谁给的钱多排名就越靠前。
+
+**要想制相关性算分，就需要利用`ElasticSearch`中的 `function score`查询。**
+
+![img](https://cdn.xn2001.com/img/2021/20210921210256.png)
+
+`function score`查询中包含四部分内容：
+
+- **原始查询**条件：`query`部分，基于这个条件搜索文档，并且基于`BM25`算法给文档打分，**原始算分**`（query score)`
+- **过滤条件**：`filter`部分，符合该条件的文档才会**重新算分**
+- **算分函数**：符合`filter`条件的文档要根据这个函数做运算，得到的函数算分`（function score）`，有四种函数：
+  - **`weight`**：函数结果是常量
+  - **`field_value_factor`**：以文档中的某个字段值作为函数结果
+  - **`random_score`**：以随机数作为函数结果
+  - **`script_score`**：自定义算分函数算法
+- **运算模式**：算分函数的结果、原始查询的相关性算分，两者之间的运算方式，包括：
+  - **`multiply`**：相乘
+  - **`replace`**：用`function score`替换`query score`
+  - **`sum、avg、max、min`**
+
+`function score`的运行流程如下：
+
+1. 根据**原始条件**查询搜索文档，并且计算相关性算分，称为**原始算分**`（query score）`
+2. 根据**过滤条件**，过滤文档
+3. 符合**过滤条件**的文档，基于**算分函数**运算，得到**函数算分**`（function score）`
+4. 将**原始算分**`（query score）`和**函数算分**`（function score）`基于**运算模式**做运算，得到最终结果，作为相关性算分。
+
+因此最关键的就是三个点：过滤条件、算分函数、运算模式
+
+- 过滤条件：决定哪些文档的算分被修改
+- 算分函数：决定函数算分的算法
+- 运算模式：决定最终算分结果
+
+例如：因为如家给我们打钱了，所以让品牌为`如家`的酒店排名靠前一些
+
+```json
+GET /hotel/_search
+{
+    "query":{
+        //原始算分
+        "function_score":{
+            //原始查询，可以是任意条件比如全文检索、精确查询、地理位置查询等
+            "query":{
+                
+            },
+            //算分函数
+            ”functions”：[
+            	{
+    	        	//过滤上述原始查询的文档，这里填写过滤条件
+	            	"filter":{
+            			"term":{
+	        	    		"brand":"如家"            
+				        }
+			        },
+	    			//算分权重，为10
+    				"weight":"10"
+				}
+	        ],
+			/原始算分和函数算分得到的结果的运算模式：这里为加权模式
+			"boost_mode":"sum"
+        }
+    }
+}
+```
+
+**<font color="red">其实很好理解，就是查询文档得到原始算分，然后过滤文档通过算分函数得到函数算分，原始算分和函数算分通过运算模式得到最终算分。</font>**
+
+比如我这里单纯的查询深圳的酒店：可以看到排名第一的是一家叫君越的酒店
+
+```json
+GET /hotel/_search
+{
+  "query": {
+    "match": {
+      "all": "深圳"
+    }
+  }
+}
+```
+
+![img](https://img-blog.csdnimg.cn/db795be870fd4b399f295c0fd37bddaa.png)
+
+当我们做了算分函数查询之后：
+
+```json
+GET /hotel/_search
+{
+  "query": {
+    "function_score": {
+      "query": {
+        "multi_match": {
+          "fields": ["all"],
+          "query": "深圳"
+        }
+      },
+      "functions": [
+        {
+          "filter": {
+            "term": {
+              "brand": "如家"
+            }
+          },
+          "weight": "10"
+        }
+      ],
+      "boost_mode": "sum"
+    }
+  }
+}
+```
+
+![img](https://img-blog.csdnimg.cn/6a0177d081284eb38a2afaaf1dbfac1c.png)
+
+可以看到如家酒店的排名一下就上去了，而且`score`是原始算分的基础上`+10`得到的。
+
+##### 18.12.5.2 布尔查询
+
+布尔查询是一个或多个查询子句的组合，每一个子句就是一个**子查询**。子查询的组合方式有
+
+- **`must`**：必须匹配每个子查询，类似“与”
+- **`should`**：选择性匹配子查询，类似“或”
+- **`must_not`**：必须不匹配，**不参与算分**，类似“非”
+- **`filter`**：必须匹配，**不参与算分**
+
+比如在搜索酒店时，除了关键字搜索外，我们还可能根据品牌、价格、城市等字段做过滤，**每一个不同的字段，其查询的条件、方式都不一样，必须是多个不同的查询，而要组合这些查询，就必须用`bool`查询了。**需要注意的是，搜索时，**<font color="red">参与打分的字段越多，查询的性能也越差</font>**。因此这种多条件查询时，建议这样做：
+
+- 搜索框的关键字搜索，是全文检索查询，使用`must`查询，参与算分
+- 其它过滤条件，采用`filter`查询，不参与算分
+
+例如：查询城市在上海，酒店品牌为皇冠假日或者华美达，并且价格一定在`500`以上且评分在`45`分以上：
+
+```json
+GET /hotel/_search
+{
+    "query":{
+        "bool":{
+            "must":[
+                {
+                	"term":{
+                		"city":{
+                			"value":"上海"
+                		}
+                	}
+                }
+            ],
+            "should":[
+                {
+					        "term":{
+                		"city":{
+                			"value":"皇冠假日"
+                		}
+					        }
+                },
+                {
+					        "term":{
+                		"brand":{
+                			"value":"华美达"
+                		}
+					        }
+                }
+            ],
+            "must_not":[
+                {
+                  "range":{
+                    "price":{
+                      "lte":500
+                    }
+                  }
+                }
+            ],
+            "filter":[
+                {
+                  "range":{
+                    "score":{
+                      "gte":"45"
+                    }
+                  }
+                }
+            ]
+        }
+    }
+}
+```
+
+需求：搜索名字包含“如家”，价格不高于`400`，在坐标`31.21,121.5`周围`10km`范围内的酒店。除此之外对以该坐标为中心到酒店的距离做一个排序，最近的排最前面。
+
+- 名称搜索，属于全文检索查询，应该参与算分，放到`must`中
+- 价格不高于`400`，用`range`查询，属于过滤条件，不参与算分，放到`must_not`中
+- 周围`10km`范围内，用`geo_distance`查询，属于过滤条件，不参与算分，放到`filter`中
+- 排序使用`sort`
+
+```json
+GET /hotel/_search
+{
+  "query":{
+    "bool":{
+        "must":[
+          {
+            "multi_match":{
+              "fields":["name"],
+              "query":"如家"
+            }  
+          }
+        ],
+        "must_not":[
+          {
+            "range":{
+              "price":{
+                "gte":"400"
+              }
+            }
+          }
+        ],
+        "filter":[
+          {
+            "geo_distance":{
+              "distance":"10km",
+              "location":"31.21,121.5"
+            }
+          }
+        ]
+    }
+  },
+  "sort":[
+    {
+      "_geo_distance":{
+        "location":"31.21,121.5",
+        "order":"asc",
+        "unit":"km"
+      }
+    }
+  ]
+}
+```
+
+![img](https://img-blog.csdnimg.cn/6b20d9e07dca42bcb3b209fbff6d28ef.png)
+
+### 18.13 搜索结果处理
+
+#### 18.13.1 排序
+
+`ElasticSearch`默认是根据相关度算分`（_score）`来排序，但是也支持自定义方式对搜索结果排序，官方文档在：https://www.elastic.co/guide/en/elasticsearch/reference/current/sort-search-results.html。可以排序字段类型有：`keyword`类型、数值类型、地理坐标类型、日期类型等。`keyword`、数值、日期类型排序的语法基本一致。
+
+```json
+GET /indexName/_search
+{
+  "query": {
+    "match_all": {}
+  },
+  "sort": [
+    {
+      "FIELD": "desc"  // 排序字段、排序方式ASC、DESC
+    }
+  ]
+}
+```
+
+排序条件是一个数组，也就是可以写多个排序条件。按照声明的顺序，当第一个条件相等时，再按照第二个条件排序。
+
+需求描述：酒店数据按照用户评价`（score)`降序排序，评价相同的按照价格`(price)`升序排序。
+
+```json
+GET /hotel/_search
+{
+  "query":{
+    "match_all":{}
+  },
+  "sort":[
+    {
+      "score":{
+        "order":"desc"
+      }
+    },
+    {
+      "price":{
+        "order":"asc"
+      }
+    }
+  ]
+}
+```
+
+可以看到查询出来的结果，会先按照`score`进行降序排序，如果`score`相同再按照`price`进行升序排序。
+
+![img](https://img-blog.csdnimg.cn/b8a97e2e7e4e4d29a2064cb794e62ecb.png)
+
+按地理位置到指定经纬坐标的距离进行排序：
+
+```json
+GET /hotel/_search
+{
+  "query":{
+    "match_all":{}
+  },
+  "sort":[
+    {
+      "_geo_distance":{
+        "location":"31.034661,121.612282",
+        "order":"desc",
+        "unit":"km"
+      }
+    }
+  ]
+}
+```
+
+![img](https://img-blog.csdnimg.cn/0d05985d07ba460e97c8df215c58818a.png)
+
+> 经纬度获取链接：https://lbs.amap.com/demo/jsapi-v2/example/map/click-to-get-lnglat
+
+#### 18.13.2 分页
+
+`ElasticSearch` 默认情况下只返回`top10`的数据。而如果要查询更多数据就需要修改分页参数了。
+
+`ElasticSearch`通过修改`from`和`size`参数来控制要返回的分页结果：类似`MySQL`中的`limit`。
+
+- `form`：表示从第几个文档开始
+- `size`：总共查询多少个文档
+
+```json
+GET /hotel/_search
+{
+  "query":{
+    "match_all":{
+      
+    }
+  },
+  "from": 0,
+  "size": 201
+}
+```
+
+查询`990~1000`的数据：
+
+```json
+GET /hotel/_search
+{
+  "query":{
+    "match_all":{
+      
+    }
+  },
+  "from": 990,
+  "size": 10
+}
+```
+
+**<font color="red">注意：`ElasticSearch`内部分页时，必须先查询`0~1000`条，然后截取其中的`990 ~ 1000`的这`10`条数据。</font>**
+
+![img](https://cdn.xn2001.com/img/2021/20210921234503.png)
+
+查询`TOP1000`，如果`es`是单点模式，这并无太大影响。但是`ElasticSearch`将来一定是集群，例如我集群有5个节点，我要查询`TOP1000`的数据，并不是每个节点查询`200`条就可以了。节点`A`的`TOP200`，在另一个节点可能排到`10000`名以外了。
+
+**因此要想获取整个集群的`TOP1000`，必须先查询出每个节点的`TOP1000`，汇总结果后，重新排名，重新截取`TOP1000`。**
+
+![img](https://cdn.xn2001.com/img/2021/20210921234555.png)
+
+**<font color="red">当查询分页深度较大时，汇总数据过多，对内存和`CPU`会产生非常大的压力，因此 `ElasticSearch`会禁止`from+ size`超过`10000`的请求。</font>**
+
+![img](https://img-blog.csdnimg.cn/de5fde12819d42a3bdb283df182fd17f.png)
+
+针对深度分页，`ES`提供了两种解决方案，[官方文档](https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html)：
+
+- `search after`：分页时需要排序，原理是从上一次的排序值开始，查询下一页数据。官方推荐使用的方式。
+- `scroll`：原理将排序后的文档id形成快照，保存在内存。官方已经不推荐使用。
+
+分页查询的常见实现方案以及优缺点
+
+- **`from + size`【用的最多】**
+  - 优点：支持随机翻页
+  - 缺点：深度分页问题，默认查询上限（`from + size`）是`10000`
+  - 场景：百度、京东、谷歌、淘宝这样的随机翻页搜索
+- **`after search`**
+  - 优点：没有查询上限（单次查询的`size`不超过`10000`）
+  - 缺点：只能向后逐页查询，不支持随机翻页
+  - 场景：没有随机翻页需求的搜索，例如手机向下滚动翻页
+- **`scroll`**
+  - 优点：没有查询上限（单次查询的`size`不超过`10000`）
+  - 缺点：会有额外内存消耗，并且搜索结果是非实时的
+  - 场景：海量数据的获取和迁移。从`ES7.1`开始不推荐，建议用`after search`方案。
+
+#### 18.13.3 高亮
+
+我们在百度，京东搜索时，关键字会变成红色，比较醒目，这叫高亮显示：
+
+![img](https://cdn.xn2001.com/img/2021/20210921234711.png)
+
+高亮显示的实现分为两步：
+
+1. 给文档中的所有关键字都添加一个标签，例如`<em>`标签
+2. 页面给`<em>`标签编写`CSS`样式
+
+前提条件：能分词才会有高亮即查询的数据类型为`text`
+
+```json
+GET /hotel/_search
+{
+  "query":{
+    "match":{
+      "all":"如家"
+    }
+  },
+  "highlight":{
+    "fields":{
+      "name":{
+        "pre_tags": "<em>",
+        "post_tags": "</em>"
+      }
+    }
+  }
+}
+```
+
+如果要对非搜索字段高亮，则需要添加一个属性：`required_field_match=false`
+
+```json
+GET /hotel/_search
+{
+  "query":{
+    "match":{
+      "all":"如家"
+    }
+  },
+  "highlight":{
+    "fields":{
+      "name":{
+        "pre_tags": "<em>",
+        "post_tags": "</em>"
+      }
+    },
+    "require_field_match": "false"
+  }
+}
+```
+
+### 18.14 `DSL`总体结构如下
+
+![img](https://cdn.xn2001.com/img/2021/20210921235330.png)
+
+### 18.15 使用`RestHighLevelClient`进行文档查询
+
+1. 用`RestHighLevelClient`进行文档查询使用：`SearchRequest`即可。这对应着第一行：`GET /hotel/_search`
+2. 对于里面的参数用`searchRequest.source().query(QueryBuilders.matchAllQuery());`表示，对应的语句为：`"query":{"match_all":{}}`，
+3. 发送请求：`SearchResponse searchResponse =  restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);`
+
+![img](https://cdn.xn2001.com/img/2021/20211016170057.png)
+
+```java
+@Test
+public void testSearchDoc() throws IOException {
+    SearchRequest searchRequest = new SearchRequest("hotel");
+    searchRequest.source().query(QueryBuilders.matchAllQuery()).from(0).size(200);
+    SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+    SearchHit[] hits = searchResponse.getHits().getHits();
+    for (SearchHit hit : hits) {
+        String sourceAsString = hit.getSourceAsString();
+        HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+        System.out.println(hotelDoc);
+    }
+}
+```
+
+**`match`查询：单字段匹配查询**
+
+```java
+@Test
+public void testSearchDocMatch() throws IOException {
+    SearchRequest searchRequest = new SearchRequest("hotel");
+    searchRequest.source().query(QueryBuilders.matchQuery("name", "如家")).from(0).size(100);
+    SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+    SearchHit[] hits = searchResponse.getHits().getHits();
+    for (SearchHit hit : hits) {
+        String sourceAsString = hit.getSourceAsString();
+        HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+        System.out.println(hotelDoc);
+    }
+}
+```
+
+**`multimatch`查询：多字段查询**
+
+```java
+@Test
+public void testSearchDocMultiMatch() throws IOException {
+    SearchRequest searchRequest = new SearchRequest("hotel");
+    searchRequest.source().query(QueryBuilders.multiMatchQuery("君悦", "name", "all")).from(0).size(200);
+    SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+    System.out.println("所有符合条件的酒店数量：" + searchResponse.getHits().getTotalHits().value);
+    SearchHit[] hits = searchResponse.getHits().getHits();
+    for (SearchHit hit : hits) {
+        String sourceAsString = hit.getSourceAsString();
+        HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+        System.out.println(hotelDoc);
+    }
+}
+```
+
+**`term`词条匹配精确查询：**
+
+```java
+@Test
+public void testSearchDocTerm() throws IOException {
+    SearchRequest searchRequest = new SearchRequest("hotel");
+    searchRequest.source().query(QueryBuilders.termQuery("brand", "君悦"));
+    SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+    System.out.println("酒店数量：" + searchResponse.getHits().getTotalHits().value + " 家");
+    SearchHit[] hits = searchResponse.getHits().getHits();
+    for (SearchHit hit : hits) {
+        String sourceAsString = hit.getSourceAsString();
+        HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+        System.out.println(hotelDoc);
+    }
+}
+```
+
+**`range`范围精确查询：**
+
+```java
+@Test
+public void testSearchDocRange() throws IOException {
+    SearchRequest searchRequest = new SearchRequest("hotel");
+    searchRequest.source().query(QueryBuilders.rangeQuery("price").gte(2500).lte(3000));
+    SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+    System.out.println("酒店数量：" + searchResponse.getHits().getTotalHits().value + " 家");
+    SearchHit[] hits = searchResponse.getHits().getHits();
+    for (SearchHit hit : hits) {
+        String sourceAsString = hit.getSourceAsString();
+        HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+        System.out.println(hotelDoc);
+    }
+}
+```
+
+**`bool`布尔查询：**
+
+例如：酒店必须在深圳并且品牌是如家或者汉庭或者是希尔顿，且价格不低于`300`，并且距离于`22.70,113.70`不超过`5km`且按顺序显示距离值。
+
+```java
+GET /hotel/_search
+{
+  "query":{
+    "bool":{
+      "must":[
+        {
+          "match":{
+            "name":"如家汉庭希尔顿"
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "range":{
+            "price":{
+              "lte":300
+            }
+          }
+        }
+      ], 
+      "filter":[
+        {
+          "geo_distance":{
+            "distance":"5km",
+            "location":"22.53,114.06"
+          }
+        }
+      ]
+    }
+  },
+  "sort":[
+    {
+      "_geo_distance":{
+        "location":"22.53,114.06",
+        "order":"asc",
+        "unit":"km"
+      }
+    }
+  ],
+  "from":"0",
+  "size":"200"
+}
+```
+
+```java
+@Test
+public void testSearchDocBool() throws IOException {
+    SearchRequest searchRequest = new SearchRequest("hotel");
+    searchRequest.source().query(QueryBuilders.boolQuery()
+                    .must(QueryBuilders.matchQuery("name","如家汉庭希尔顿"))
+                    .mustNot(QueryBuilders.rangeQuery("price").lte(300))
+                    //GeoDistance.ARC精确查询 || GeoDistance.PLANE模糊查询
+                    .filter(QueryBuilders.geoDistanceQuery("location").distance(3, DistanceUnit.KILOMETERS).point(22.53D, 114.06D).geoDistance(GeoDistance.ARC)))
+            .from(0)
+            .size(200);
+    searchRequest.source().sort(SortBuilders.geoDistanceSort("location",new GeoPoint(22.53D, 114.06D)).unit(DistanceUnit.KILOMETERS).order(SortOrder.ASC));
+    SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+    System.out.println("酒店数量：" + searchResponse.getHits().getTotalHits().value + " 家");
+    SearchHit[] hits = searchResponse.getHits().getHits();
+    for (SearchHit hit : hits) {
+        String sourceAsString = hit.getSourceAsString();
+        HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+        double distance = new BigDecimal(String.valueOf(hit.getSortValues()[0])).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        System.out.println("距离目的地大约" + distance + "公里 ---> " + hotelDoc);
+    }
+}
+```
+
+**排序、分页：**
+
+搜索最便宜的十家酒店：
+
+```java
+@Test
+public void testSearchDocSortAndPage() throws IOException {
+    int page = 1, size = 10;
+    SearchRequest searchRequest = new SearchRequest("hotel");
+    searchRequest.source().sort("price", SortOrder.ASC);
+    searchRequest.source().from((page - 1) * size).size(size);
+    SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+    SearchHit[] hits = searchResponse.getHits().getHits();
+    for (SearchHit hit : hits) {
+        String sourceAsString = hit.getSourceAsString();
+        HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+        System.out.println(hotelDoc);
+    }
+}
+```
+
+**高亮：**
+
+会自动给分词添加`<em></em>`标签。
+
+```
+@Test
+public void testSearchDocHighLight() throws IOException {
+    SearchRequest searchRequest = new SearchRequest("hotel");
+    searchRequest.source().query(QueryBuilders.matchQuery("name", "汉庭"))
+            .highlighter(new HighlightBuilder().field("name").requireFieldMatch(true));
+    SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+    SearchHit[] hits = searchResponse.getHits().getHits();
+    for (SearchHit hit : hits) {
+        String sourceAsString = hit.getSourceAsString();
+        HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+        Map<String, HighlightField> highLightFieldMap = hit.getHighlightFields();
+        if (!CollectionUtils.isEmpty(highLightFieldMap)) {
+            HighlightField highlightField = highLightFieldMap.get("name");
+            if (highlightField != null) {
+                String name = highlightField.getFragments()[0].string();
+                hotelDoc.setName(name);
+            }
+        }
+        System.out.println(hotelDoc);
+    }
+}
+```
+
+**地理坐标查询：**
+
+```java
+GET /hotel/_search
+{
+  "query":{
+    "geo_distance":{
+      "location":"22.53,114.06",
+      "distance":"5km"
+    }
+  },
+  "sort": [
+    {
+      "_geo_distance": {
+        "location":"22.53,114.06",
+        "unit": "km", 
+        "order": "asc"
+      }
+    }
+  ]
+}
+```
+
+```java
+@Test
+public void testSearchDocGeo() throws IOException {
+    SearchRequest searchRequest = new SearchRequest("hotel");
+    searchRequest.source().query(QueryBuilders.geoDistanceQuery("location").distance(5, DistanceUnit.KILOMETERS).point(new GeoPoint("22.53,114.06")));
+    searchRequest.source().sort(SortBuilders.geoDistanceSort("location", new GeoPoint("22.53,114.06")).order(SortOrder.ASC).unit(DistanceUnit.KILOMETERS));
+    SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+    SearchHit[] hits = searchResponse.getHits().getHits();
+    for (SearchHit hit : hits) {
+        String sourceAsString = hit.getSourceAsString();
+        HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+        System.out.println(hotelDoc);
+    }
+}
+```
+
+**算分函数查询：**
+
+```json
+GET /hotel/_search
+{
+  "query":{
+    "function_score":{
+      "query":{
+        "match_all":{}
+      },
+      "functions":[
+        {
+          "filter":{
+            "term":{
+              "brand":"汉庭"
+            }
+          },
+          "weight": 10
+        }
+      ],
+      "boost_mode": "sum"
+    }
+  },
+  "from": 0,
+  "size": 200
+}
+```
+
+```java
+@Test
+public void testSearchDocFunctionScore() throws IOException {
+    SearchRequest searchRequest = new SearchRequest("hotel");
+    searchRequest.source().query(QueryBuilders.functionScoreQuery(QueryBuilders.matchAllQuery(),
+            new FunctionScoreQueryBuilder.FilterFunctionBuilder[]{
+                    new FunctionScoreQueryBuilder.FilterFunctionBuilder(QueryBuilders.termQuery("brand", "汉庭"), ScoreFunctionBuilders.weightFactorFunction(10))
+            }).boostMode(CombineFunction.SUM));
+    searchRequest.source().from(0).size(200);
+    SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+    SearchHit[] hits = searchResponse.getHits().getHits();
+    for (SearchHit hit : hits) {
+        String sourceAsString = hit.getSourceAsString();
+        HotelDoc hotelDoc = JSON.parseObject(sourceAsString, HotelDoc.class);
+        System.out.println(hotelDoc);
+    }
+}
+```
+

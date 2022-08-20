@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
+import java.util.List;
 
 @SpringBootTest
 public class HotelDocTest {
@@ -70,10 +71,10 @@ public class HotelDocTest {
     @Test
     public void testBulkDoc() throws IOException {
         BulkRequest bulkRequest = new BulkRequest();
-        Long[] hotelIds = {56977L, 60922L, 395799L, 636080L, 2011785622L};
-        for (int i = 0; i < hotelIds.length; i++) {
-            Hotel hotel = hotelService.getById(hotelIds[i]);
+        List<Hotel> hotelList = hotelService.list();
+        for (Hotel hotel : hotelList) {
             HotelDoc hotelDoc = new HotelDoc(hotel);
+            System.out.println(hotelDoc);
             bulkRequest.add(new IndexRequest("hotel").id(hotelDoc.getId().toString()).source(JSON.toJSONString(hotelDoc), XContentType.JSON));
         }
         restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
