@@ -4,11 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43d4e940-1fb8-497b-b5f9-0abea53ee8f7" name="Changes" comment="ElasticSearch：&#10;2. 初始化 RestHighLevelClient&#10;3. 使用 CreateIndexRequest + indices 创建文档&#10;4. 使用 DeleteIndexRequest + indices 删除文档&#10;5. 使用 GetIndexRequest + exists + indices 判断文档&#10;6. 使用 IndexRequest 增加文档&#10;7. 使用 UpdateRequest 修改文档&#10;8。 使用 DeleteRequest 删除文档&#10;9. 使用 GetRequest 查询文档&#10;10. 使用 BulkRequest + IndexRequest 批量增加文档【当然可以做批量删除、批量修改、批量查询】">
-      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/test/java/com/kk/hotel/HotelSearchTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="43d4e940-1fb8-497b-b5f9-0abea53ee8f7" name="Changes" comment="ES旅游项目案例：&#10;1. 定义获取的请求参数类 RequestParam&#10;2. 定义分页结果类 PageResult">
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/PageResult.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/RequestParam.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/logback.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/css/banner.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/css/index.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/img/ad.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/img/ad2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/img/heima.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/js/amap.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/js/axios.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/static/js/vue.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/test/java/com/kk/hotel/HotelDocTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/test/java/com/kk/hotel/HotelDocTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/03-hotel-demo/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/controller/HotelController.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/controller/HotelController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/resources/application.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SpringCloud.md" beforeDir="false" afterPath="$PROJECT_DIR$/SpringCloud.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -72,12 +84,16 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/03-hotel-demo/src/main/resources" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.31806284" />
     <property name="settings.editor.selected.configurable" value="reference.settings.project.maven.importing" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\2022年\学习\计算机学习\Java\SpringCloudStudy\03-hotel-demo\src\main\resources" />
+    </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="com.kk.publisher" />
     </key>
@@ -96,7 +112,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.HotelSearchTest.testSearchDocFunctionScore">
+  <component name="RunManager" selected="Spring Boot.HotelApplication">
     <configuration name="HotelSearchTest.testSearchDocBool" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="03-hotel-demo" />
       <extension name="coverage">
@@ -241,7 +257,7 @@
       <workItem from="1660715806354" duration="14769000" />
       <workItem from="1660816602584" duration="7666000" />
       <workItem from="1660834796126" duration="948000" />
-      <workItem from="1660896685877" duration="15042000" />
+      <workItem from="1660896685877" duration="17614000" />
     </task>
     <task id="LOCAL-00001" summary="提供 Eureka 注册中心：&#10;1.@EnableEurekaServer&#10;2.server:&#10;    port: 10086&#10;  spring:&#10;    application:&#10;      name: eureka-server&#10;  eureka:&#10;    client:&#10;      service-url:&#10;        defaultZone: http://localhost:10086/eureka&#10;3.访问：http://localhost:10086">
       <created>1660461894107</created>
@@ -397,7 +413,14 @@
       <option name="project" value="LOCAL" />
       <updated>1660824175144</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="ElasticSearch 查询文档：&#10;1. 查询全部 match_all&#10;2. 全文检索 match + multi_match&#10;3. 精确查询 term + range&#10;4. 地理查询 geo_distance + geo_bounding_box&#10;5. 排序 sort&#10;6. 分页 from + size&#10;7. 高亮 highlighter&#10;8. 算分函数查询 function_score&#10;9. 布尔查询 bool">
+      <created>1660979022214</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1660979022214</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -667,6 +690,8 @@
     <MESSAGE value="MessageQueue:&#10;12. 消息转换器 ---&gt; jackson" />
     <MESSAGE value="ElasticSearch：&#10;1.搭建 hotel-demo 项目" />
     <MESSAGE value="ElasticSearch：&#10;2. 初始化 RestHighLevelClient&#10;3. 使用 CreateIndexRequest + indices 创建文档&#10;4. 使用 DeleteIndexRequest + indices 删除文档&#10;5. 使用 GetIndexRequest + exists + indices 判断文档&#10;6. 使用 IndexRequest 增加文档&#10;7. 使用 UpdateRequest 修改文档&#10;8。 使用 DeleteRequest 删除文档&#10;9. 使用 GetRequest 查询文档&#10;10. 使用 BulkRequest + IndexRequest 批量增加文档【当然可以做批量删除、批量修改、批量查询】" />
-    <option name="LAST_COMMIT_MESSAGE" value="ElasticSearch：&#10;2. 初始化 RestHighLevelClient&#10;3. 使用 CreateIndexRequest + indices 创建文档&#10;4. 使用 DeleteIndexRequest + indices 删除文档&#10;5. 使用 GetIndexRequest + exists + indices 判断文档&#10;6. 使用 IndexRequest 增加文档&#10;7. 使用 UpdateRequest 修改文档&#10;8。 使用 DeleteRequest 删除文档&#10;9. 使用 GetRequest 查询文档&#10;10. 使用 BulkRequest + IndexRequest 批量增加文档【当然可以做批量删除、批量修改、批量查询】" />
+    <MESSAGE value="ElasticSearch 查询文档：&#10;1. 查询全部 match_all&#10;2. 全文检索 match + multi_match&#10;3. 精确查询 term + range&#10;4. 地理查询 geo_distance + geo_bounding_box&#10;5. 排序 sort&#10;6. 分页 from + size&#10;7. 高亮 highlighter&#10;8. 算分函数查询 function_score&#10;9. 布尔查询 bool" />
+    <MESSAGE value="ES旅游项目案例：&#10;1. 定义获取的请求参数类 RequestParam&#10;2. 定义分页结果类 PageResult" />
+    <option name="LAST_COMMIT_MESSAGE" value="ES旅游项目案例：&#10;1. 定义获取的请求参数类 RequestParam&#10;2. 定义分页结果类 PageResult" />
   </component>
 </project>

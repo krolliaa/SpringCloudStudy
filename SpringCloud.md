@@ -5461,3 +5461,53 @@ public void testSearchDocFunctionScore() throws IOException {
 }
 ```
 
+### 18.16 使用`ElasticSearch`查询酒店
+
+第一个`bug`：需要重新`clean`下然后在`target`中才会出现`static`相关资源，否则访问不到。![img](https://img-blog.csdnimg.cn/705fc8cbd78a4dc3bd255437f0541732.png)
+
+#### 18.16.1 基本搜索和分页
+
+1. 定义类，接收前端请求参数
+
+   ```java
+   package com.kk.hotel.pojo;
+   
+   import lombok.AllArgsConstructor;
+   import lombok.Data;
+   import lombok.NoArgsConstructor;
+   
+   @Data
+   @NoArgsConstructor
+   @AllArgsConstructor
+   public class RequestParam {
+       private String key;//搜索关键字
+       private Integer page;//当前页码 (page - 1) * size
+       private Integer size;//显示条数
+       private String sortBy;//排序字段
+   }
+   ```
+
+2. 定义分页的结果类：
+
+   ```java
+   package com.kk.hotel.pojo;
+   
+   import lombok.AllArgsConstructor;
+   import lombok.Data;
+   import lombok.NoArgsConstructor;
+   
+   import java.util.List;
+   
+   @Data
+   @NoArgsConstructor
+   @AllArgsConstructor
+   public class PageResult {
+       private Long total;
+       private List<HotelDoc> hotelDocList;
+   }
+   
+   ```
+
+3. 定义`Controller`接口接收前端请求：
+
+   ```java
