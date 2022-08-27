@@ -4,14 +4,158 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43d4e940-1fb8-497b-b5f9-0abea53ee8f7" name="Changes" comment="ES旅游项目案例：&#10;4. 我附近的酒店 + 显示距离">
+    <list default="true" id="43d4e940-1fb8-497b-b5f9-0abea53ee8f7" name="Changes" comment="分布式事务：TCC 模式">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__cglib_cglib_3_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_cloud_spring_cloud_alibaba_sentinel_datasource_2021_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_cloud_spring_cloud_circuitbreaker_sentinel_2021_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_cloud_spring_cloud_starter_alibaba_seata_2021_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_cloud_spring_cloud_starter_alibaba_sentinel_2021_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_csp_sentinel_annotation_aspectj_1_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_csp_sentinel_cluster_client_default_1_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_csp_sentinel_cluster_common_default_1_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_csp_sentinel_cluster_server_default_1_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_csp_sentinel_core_1_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_csp_sentinel_datasource_extension_1_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_csp_sentinel_parameter_flow_control_1_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_csp_sentinel_reactor_adapter_1_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_csp_sentinel_spring_webflux_adapter_1_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_csp_sentinel_spring_webmvc_adapter_1_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_csp_sentinel_transport_common_1_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_csp_sentinel_transport_simple_http_1_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_druid_1_1_23.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_fastjson_1_2_73.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_baomidou_mybatis_plus_3_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_baomidou_mybatis_plus_annotation_3_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_baomidou_mybatis_plus_boot_starter_3_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_baomidou_mybatis_plus_core_3_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_baomidou_mybatis_plus_extension_3_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_github_ben_manes_caffeine_caffeine_2_8_8.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_github_jsqlparser_jsqlparser_3_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_protobuf_protobuf_java_3_12_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_googlecode_concurrentlinkedhashmap_concurrentlinkedhashmap_lru_1_4_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_ibm_icu_icu4j_61_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_jayway_jsonpath_json_path_2_4_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_netflix_archaius_archaius_core_0_7_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_typesafe_config_1_2_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_pool_commons_pool_1_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_all_4_1_59_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_seata_seata_all_1_4_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__io_seata_seata_spring_boot_starter_1_4_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_13_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__mysql_mysql_connector_java_5_1_47.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_bytebuddy_byte_buddy_1_10_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_bytebuddy_byte_buddy_agent_1_10_20.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_minidev_accessors_smart_1_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_minidev_json_smart_2_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_abego_treelayout_org_abego_treelayout_core_1_0_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_antlr_ST4_4_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_antlr_antlr4_4_8.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_antlr_antlr4_runtime_4_8.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_antlr_antlr_runtime_3_5_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_lang3_3_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_pool2_2_8_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apiguardian_apiguardian_api_1_1_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_aspectj_aspectjrt_1_9_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_assertj_assertj_core_3_16_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_glassfish_javax_json_1_0_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_5_6_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_api_5_6_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_engine_5_6_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_params_5_6_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_commons_1_6_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_engine_1_6_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_vintage_junit_vintage_engine_5_6_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mockito_mockito_core_3_3_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_mockito_mockito_junit_jupiter_3_3_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_objenesis_objenesis_2_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_ow2_asm_asm_4_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_ow2_asm_asm_5_0_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_projectlombok_lombok_1_18_18.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_skyscreamer_jsonassert_1_5_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_test_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_test_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_boot_spring_boot_test_autoconfigure_2_3_9_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_commons_2_2_5_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_context_2_2_5_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_netflix_archaius_2_2_5_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_netflix_ribbon_2_2_5_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_openfeign_core_2_2_5_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_2_2_5_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_netflix_archaius_2_2_5_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_netflix_ribbon_2_2_5_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_cloud_spring_cloud_starter_openfeign_2_2_5_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_springframework_spring_test_5_2_13_RELEASE.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_xmlunit_xmlunit_core_2_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/feign-api/src/main/java/com/kk/clients/fallbackfactory/UserClientFallbackFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/feign-api/src/main/java/com/kk/configuration/FeignConfiguration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/src/main/java/com/kk/order/handler/MySentinelExceptionHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/src/main/java/com/kk/order/sentinel/RequestHeaderOriginParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/account-service/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/account-service/src/main/java/cn/itcast/account/AccountApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/account-service/src/main/java/cn/itcast/account/entity/Account.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/account-service/src/main/java/cn/itcast/account/entity/AccountFreeze.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/account-service/src/main/java/cn/itcast/account/mapper/AccountFreezeMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/account-service/src/main/java/cn/itcast/account/mapper/AccountMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/account-service/src/main/java/cn/itcast/account/service/AccountService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/account-service/src/main/java/cn/itcast/account/service/impl/AccountServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/account-service/src/main/java/cn/itcast/account/tcc/AccountTCCService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/account-service/src/main/java/cn/itcast/account/tcc/impl/AccountTCCServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/account-service/src/main/java/cn/itcast/account/web/AccountController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/account-service/src/main/resources/application.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/order-service/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/order-service/src/main/java/cn/itcast/order/OrderApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/order-service/src/main/java/cn/itcast/order/client/AccountClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/order-service/src/main/java/cn/itcast/order/client/StorageClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/order-service/src/main/java/cn/itcast/order/entity/Order.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/order-service/src/main/java/cn/itcast/order/mapper/OrderMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/order-service/src/main/java/cn/itcast/order/service/OrderService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/order-service/src/main/java/cn/itcast/order/service/impl/OrderServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/order-service/src/main/java/cn/itcast/order/web/OrderController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/order-service/src/main/resources/application.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/storage-service/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/storage-service/src/main/java/cn/itcast/storage/StorageApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/storage-service/src/main/java/cn/itcast/storage/entity/Storage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/storage-service/src/main/java/cn/itcast/storage/mapper/StorageMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/storage-service/src/main/java/cn/itcast/storage/service/StorageService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/storage-service/src/main/java/cn/itcast/storage/service/impl/StorageServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/storage-service/src/main/java/cn/itcast/storage/web/StorageController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/04-seata-demo/storage-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/controller/HotelController.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/controller/HotelController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/HotelDoc.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/HotelDoc.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/RequestParam.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/pojo/RequestParam.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/service/HotelService.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/service/HotelService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/service/impl/HotelServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/main/java/com/kk/hotel/service/impl/HotelServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/03-hotel-demo/src/test/java/com/kk/hotel/HotelSearchTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/03-hotel-demo/src/test/java/com/kk/hotel/HotelSearchTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/feign-api/src/main/java/com/kk/clients/UserClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/feign-api/src/main/java/com/kk/clients/UserClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/classes/com/kk/clients/UserClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/classes/com/kk/clients/UserClient.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/feign-api-1.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/feign-api-1.0.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/feign-api/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/gateway/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/gateway/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/gateway/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/gateway/target/classes/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/src/main/java/com/kk/order/OrderApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/src/main/java/com/kk/order/OrderApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/src/main/java/com/kk/order/controller/OrderController1.java" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/src/main/java/com/kk/order/controller/OrderController1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/src/main/java/com/kk/order/service/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/src/main/java/com/kk/order/service/OrderService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/order-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/bootstrap.yml.bak" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/OrderApplication.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/configuration/MyConfiguration.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/configuration/MyConfigurationProperties.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/configuration/MyFeignConfiguration.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/controller/OrderController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/controller/OrderController1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/mapper/OrderMapper.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/pojo/Order.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/service/OrderService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/order-service/target/classes/com/kk/order/service/OrderServiceFeign.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/user-service/src/main/java/com/kk/user/UserApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/src/main/java/com/kk/user/UserApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/user-service/src/main/java/com/kk/user/controller/UserController2.java" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/src/main/java/com/kk/user/controller/UserController2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/user-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/com/kk/user/UserApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/com/kk/user/UserApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/com/kk/user/controller/UserController2.class" beforeDir="false" afterPath="$PROJECT_DIR$/01-cloud-demo/user-service/target/classes/com/kk/user/controller/UserController2.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SpringCloud.md" beforeDir="false" afterPath="$PROJECT_DIR$/SpringCloud.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -24,6 +168,7 @@
       <list>
         <option value="HTML File" />
         <option value="Interface" />
+        <option value="Kotlin Class" />
         <option value="Class" />
       </list>
     </option>
@@ -69,17 +214,20 @@
     <property name="ExpandSpringBootJavaOptionsPanel" value="true" />
     <property name="RequestMappingsPanelOrder0" value="0" />
     <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelOrder2" value="2" />
     <property name="RequestMappingsPanelWidth0" value="75" />
     <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="RequestMappingsPanelWidth2" value="75" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/03-hotel-demo/src/main/resources" />
-    <property name="project.structure.last.edited" value="Project" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/04-seata-demo" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
-    <property name="project.structure.side.proportion" value="0.31806284" />
-    <property name="settings.editor.selected.configurable" value="reference.settings.project.maven.importing" />
+    <property name="project.structure.side.proportion" value="0.21494102" />
+    <property name="settings.editor.selected.configurable" value="MavenSettings" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -103,111 +251,56 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.HotelSearchTest.testSearchDocAggregation">
-    <configuration name="HotelSearchTest.testSearchDocAggregation" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="03-hotel-demo" />
+  <component name="RunManager" selected="Spring Boot.StorageApplication">
+    <configuration name="AccountApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="account-service" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.kk.hotel.*" />
+          <option name="PATTERN" value="cn.itcast.account.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.kk.hotel" />
-      <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelSearchTest" />
-      <option name="METHOD_NAME" value="testSearchDocAggregation" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="cn.itcast.account.AccountApplication" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HotelSearchTest.testSearchDocFunctionScore" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="03-hotel-demo" />
+    <configuration name="OrderApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="order-service" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.kk.hotel.*" />
+          <option name="PATTERN" value="cn.itcast.order.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.kk.hotel" />
-      <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelSearchTest" />
-      <option name="METHOD_NAME" value="testSearchDocFunctionScore" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="cn.itcast.order.OrderApplication" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HotelSearchTest.testSearchDocGeo" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="03-hotel-demo" />
+    <configuration name="StorageApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="storage-service" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.kk.hotel.*" />
+          <option name="PATTERN" value="cn.itcast.storage.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.kk.hotel" />
-      <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelSearchTest" />
-      <option name="METHOD_NAME" value="testSearchDocGeo" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="HotelSearchTest.testSearchDocHighLight" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="03-hotel-demo" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.kk.hotel.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.kk.hotel" />
-      <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelSearchTest" />
-      <option name="METHOD_NAME" value="testSearchDocHighLight" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="HotelSearchTest.testSearchDocSortAndPage" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="03-hotel-demo" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.kk.hotel.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.kk.hotel" />
-      <option name="MAIN_CLASS_NAME" value="com.kk.hotel.HotelSearchTest" />
-      <option name="METHOD_NAME" value="testSearchDocSortAndPage" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="HotelApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-      <module name="03-hotel-demo" />
-      <option name="SPRING_BOOT_MAIN_CLASS" value="com.kk.hotel.HotelApplication" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="SHORTEN_COMMAND_LINE" value="NONE" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="cn.itcast.storage.StorageApplication" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <list>
-      <item itemvalue="JUnit.HotelSearchTest.testSearchDocSortAndPage" />
-      <item itemvalue="JUnit.HotelSearchTest.testSearchDocHighLight" />
-      <item itemvalue="JUnit.HotelSearchTest.testSearchDocGeo" />
-      <item itemvalue="JUnit.HotelSearchTest.testSearchDocFunctionScore" />
-      <item itemvalue="Spring Boot.HotelApplication" />
-      <item itemvalue="JUnit.HotelSearchTest.testSearchDocAggregation" />
+      <item itemvalue="Spring Boot.StorageApplication" />
+      <item itemvalue="Spring Boot.OrderApplication" />
+      <item itemvalue="Spring Boot.AccountApplication" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.HotelSearchTest.testSearchDocAggregation" />
-        <item itemvalue="JUnit.HotelSearchTest.testSearchDocFunctionScore" />
-        <item itemvalue="JUnit.HotelSearchTest.testSearchDocGeo" />
-        <item itemvalue="JUnit.HotelSearchTest.testSearchDocHighLight" />
-        <item itemvalue="JUnit.HotelSearchTest.testSearchDocSortAndPage" />
+        <item itemvalue="Spring Boot.AccountApplication" />
+        <item itemvalue="Spring Boot.OrderApplication" />
+        <item itemvalue="Spring Boot.StorageApplication" />
       </list>
     </recent_temporary>
   </component>
@@ -227,7 +320,9 @@
       <workItem from="1660816602584" duration="7666000" />
       <workItem from="1660834796126" duration="948000" />
       <workItem from="1660896685877" duration="17614000" />
-      <workItem from="1660981432041" duration="11256000" />
+      <workItem from="1660981432041" duration="12563000" />
+      <workItem from="1661150777943" duration="30423000" />
+      <workItem from="1661479726520" duration="662000" />
     </task>
     <task id="LOCAL-00001" summary="提供 Eureka 注册中心：&#10;1.@EnableEurekaServer&#10;2.server:&#10;    port: 10086&#10;  spring:&#10;    application:&#10;      name: eureka-server&#10;  eureka:&#10;    client:&#10;      service-url:&#10;        defaultZone: http://localhost:10086/eureka&#10;3.访问：http://localhost:10086">
       <created>1660461894107</created>
@@ -411,7 +506,14 @@
       <option name="project" value="LOCAL" />
       <updated>1660986004521</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="ES旅游项目案例：&#10;5. 显示索引库中城市、品牌、星级信息 ---&gt; 聚合查询&#10;6. 加上过滤条件的聚合查询">
+      <created>1661019667971</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1661019667971</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -659,8 +761,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="在 order-service 和 user-service 中使用 eureka-client：&#10;1.引入依赖&#10;2.修改配置：&#10;        spring:&#10;          application:&#10;            name: user-service&#10;        spring:&#10;          application:&#10;            name: order-service&#10;        eureka:&#10;          client:&#10;            service-url:&#10;              defaultZone: http://localhost:10086/eureka&#10;2.启动类添加注解：@EnableEurekaClient，Eureka 会根据 spring.application.name 作为服务的注册名进行注册&#10;3.在 RestTemplate Bean 配置类中添加负载均衡注解 @LoadBalanced&#10;4.在 order-service.service.OrderService 更改 URL 地址 ---&gt; Eureka 注册中心会自动注册：userservice --&gt; localhost:8081 [IP + Port] ---&gt; &quot;http://user-service/user/&quot; + order.getUserId();&#10;5.使用 copy configuration ---》 VM Operations: -Dserver.port=8082/8083 可以创建新的服务" />
-    <MESSAGE value="更改 Robbin 负载均衡策略：&#10;1. 添加 Bean ---&gt; &#10;    @Bean&#10;    public IRule randomRule() {&#10;        return new RandomRule();&#10;    }" />
     <MESSAGE value="为提高页面访问速度，将拉取服务从懒加载更改为饥饿加载：&#10;ribbon:&#10;  eager-load:&#10;    enable: true&#10;    clients: user-service" />
     <MESSAGE value="笔记标题更改" />
     <MESSAGE value="使用 Nacos 作为注册中心：&#10;1.注释掉 Eureka 的依赖和配置信息&#10;2.打开 Nacos 的服务 startup.cmd -m standalone&#10;3.修改 user-service order-service 的配置信息：&#10;    spring:&#10;      cloud:&#10;        nacos:&#10;          server-addr: 192.168.0.105:8848" />
@@ -684,6 +784,8 @@
     <MESSAGE value="ES旅游项目案例：&#10;3. 完成全文检索 ---&gt; 输入框搜索功能" />
     <MESSAGE value="ES旅游项目案例：&#10;3. 完成过滤检索 ---&gt; 要使用同一个 QueryBuilders.boolQuery();" />
     <MESSAGE value="ES旅游项目案例：&#10;4. 我附近的酒店 + 显示距离" />
-    <option name="LAST_COMMIT_MESSAGE" value="ES旅游项目案例：&#10;4. 我附近的酒店 + 显示距离" />
+    <MESSAGE value="ES旅游项目案例：&#10;5. 显示索引库中城市、品牌、星级信息 ---&gt; 聚合查询&#10;6. 加上过滤条件的聚合查询" />
+    <MESSAGE value="分布式事务：TCC 模式" />
+    <option name="LAST_COMMIT_MESSAGE" value="分布式事务：TCC 模式" />
   </component>
 </project>

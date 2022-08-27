@@ -1,2 +1,4 @@
+E:\2022年\学习\计算机学习\Java\SpringCloudStudy\01-cloud-demo\feign-api\src\main\java\com\kk\configuration\FeignConfiguration.java
+E:\2022年\学习\计算机学习\Java\SpringCloudStudy\01-cloud-demo\feign-api\src\main\java\com\kk\clients\fallback\UserClientFallbackFactory.java
 E:\2022年\学习\计算机学习\Java\SpringCloudStudy\01-cloud-demo\feign-api\src\main\java\com\kk\clients\UserClient.java
 E:\2022年\学习\计算机学习\Java\SpringCloudStudy\01-cloud-demo\feign-api\src\main\java\com\kk\pojo\User.java

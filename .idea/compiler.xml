@@ -9,10 +9,13 @@
         <outputRelativeToContentRoot value="true" />
         <module name="eureka-service" />
         <module name="nacos-service" />
+        <module name="order-service (1) (com.kk)" />
         <module name="publisher" />
         <module name="03-hotel-demo" />
-        <module name="order-service" />
         <module name="user-service" />
+        <module name="storage-service" />
+        <module name="order-service" />
+        <module name="account-service" />
         <module name="feign-api" />
         <module name="gateway" />
         <module name="consumer" />
@@ -22,13 +25,17 @@
       <module name="01-cloud-demo" target="1.8" />
       <module name="02-message-queue-demo" target="1.8" />
       <module name="03-hotel-demo" target="1.8" />
+      <module name="04-seata-demo" target="1.8" />
+      <module name="account-service" target="1.8" />
       <module name="consumer" target="8" />
       <module name="eureka-service" target="8" />
       <module name="feign-api" target="8" />
       <module name="gateway" target="8" />
       <module name="nacos-service" target="8" />
       <module name="order-service" target="1.8" />
+      <module name="order-service (1) (com.kk)" target="1.8" />
       <module name="publisher" target="8" />
+      <module name="storage-service" target="1.8" />
       <module name="user-service" target="1.8" />
     </bytecodeTargetLevel>
   </component>
@@ -36,13 +43,16 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="02-message-queue-demo" options="-parameters" />
       <module name="03-hotel-demo" options="-parameters" />
+      <module name="account-service" options="-parameters" />
       <module name="consumer" options="-parameters" />
       <module name="eureka-service" options="-parameters" />
       <module name="feign-api" options="-parameters" />
       <module name="gateway" options="-parameters" />
       <module name="nacos-service" options="-parameters" />
       <module name="order-service" options="-parameters" />
+      <module name="order-service (1) (com.kk)" options="-parameters" />
       <module name="publisher" options="-parameters" />
+      <module name="storage-service" options="-parameters" />
       <module name="user-service" options="-parameters" />
     </option>
   </component>

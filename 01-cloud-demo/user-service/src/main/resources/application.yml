@@ -10,11 +10,7 @@ spring:
     name: user-service
   cloud:
     nacos:
-      server-addr: 192.168.0.104:8848
-      #server-addr: 116.25.152.11:8848
-      #server-addr: 116.25.152.11:80
-      #discovery:
-      #  cluster-name: Beijing
+      server-addr: 192.168.56.1:8848
 mybatis:
   type-aliases-package: com.kk.user.pojo
   map-underscore-to-camel-case: true
@@ -23,7 +19,3 @@ logging:
     com.kk: debug
   pattern:
     dateformat: MM-dd HH:mm:ss:SSS
-#eureka:
-#  client:
-#    service-url:
-#      defaultZone: http://localhost:10086/eureka

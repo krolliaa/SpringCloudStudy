@@ -8,7 +8,7 @@ spring:
   cloud:
     nacos:
       #Nacos 地址
-      server-addr: 192.168.0.104:8848
+      server-addr: 192.168.56.1:8848
     gateway:
       globalcors: # 全局的跨域处理
         add-to-simple-url-handler-mapping: true # 网关特有，解决options请求被拦截问题，询问让不让访问
@@ -28,6 +28,7 @@ spring:
       #网关路由配置
       default-filters:
         - AddRequestHeader=sign, kk.com is eternal
+        - AddRequestHeader=origin,gateway
       routes:
           #路由 id，自定义【唯一即可】
         - id: user-service
@@ -37,5 +38,11 @@ spring:
           predicates:
             - Path=/user/**
             #- After=2031-04-13T15:14:47.433+08:00[Asia/Shanghai]
+          filters:
+            - AddRequestHeader=sign, kk.com is eternal
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/order/**
           filters:
             - AddRequestHeader=sign, kk.com is eternal

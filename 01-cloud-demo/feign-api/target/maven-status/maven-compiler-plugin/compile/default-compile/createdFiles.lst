@@ -1,2 +1,5 @@
+com\kk\clients\fallback\UserClientFallbackFactory.class
 com\kk\pojo\User.class
+com\kk\clients\fallback\UserClientFallbackFactory$1.class
+com\kk\configuration\FeignConfiguration.class
 com\kk\clients\UserClient.class

@@ -6,6 +6,10 @@
         <option value="$PROJECT_DIR$/01-cloud-demo/pom.xml" />
         <option value="$PROJECT_DIR$/02-message-queue-demo/pom.xml" />
         <option value="$PROJECT_DIR$/03-hotel-demo/pom.xml" />
+        <option value="$PROJECT_DIR$/04-seata-demo/account-service/pom.xml" />
+        <option value="$PROJECT_DIR$/04-seata-demo/order-service/pom.xml" />
+        <option value="$PROJECT_DIR$/04-seata-demo/storage-service/pom.xml" />
+        <option value="$PROJECT_DIR$/04-seata-demo/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

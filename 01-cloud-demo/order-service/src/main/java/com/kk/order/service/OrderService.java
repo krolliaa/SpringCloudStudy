@@ -1,5 +1,6 @@
 package com.kk.order.service;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.kk.order.mapper.OrderMapper;
 import com.kk.order.pojo.Order;
 import com.kk.pojo.User;
@@ -22,5 +23,10 @@ public class OrderService {
         order.setUser(user);
         System.out.println(user);
         return order;
+    }
+
+    @SentinelResource
+    public String queryGoods() {
+        return "查询商品成功！";
     }
 }

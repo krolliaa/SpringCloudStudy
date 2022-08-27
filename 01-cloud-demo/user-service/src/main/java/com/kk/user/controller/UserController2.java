@@ -14,8 +14,10 @@ public class UserController2 {
     private UserService userService;
 
     @GetMapping(value = "/{id}")
-    public User queryById(@PathVariable("id") Long id, @RequestHeader(value = "sign", required = false) String sign) {
+    public User queryById(@PathVariable("id") Long id, @RequestHeader(value = "sign", required = false) String sign) throws InterruptedException {
         log.warn(sign);
+        if(id == 1l) throw new RuntimeException("故意抛出异常，测试异常比例熔断机制");
+        else if(id == 2l) Thread.sleep(60);
         return userService.queryById(id);
     }
 }
