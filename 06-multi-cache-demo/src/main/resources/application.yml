@@ -1,0 +1,30 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: item-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.56.1:3307/item?useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+  redis:
+    host: 192.168.56.1
+    port: 6379
+mybatis-plus:
+  type-aliases-package: com.kk.cache.pojo
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      update-strategy: not_null
+      table-prefix: tb_
+      id-type: auto
+logging:
+  level:
+    com.kk: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS
+canal:
+  destination: item
+  server: 192.168.56.1:11111

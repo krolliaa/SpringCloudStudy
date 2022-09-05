@@ -7,9 +7,12 @@
         <option value="$PROJECT_DIR$/02-message-queue-demo/pom.xml" />
         <option value="$PROJECT_DIR$/03-hotel-demo/pom.xml" />
         <option value="$PROJECT_DIR$/04-seata-demo/account-service/pom.xml" />
-        <option value="$PROJECT_DIR$/04-seata-demo/order-service/pom.xml" />
         <option value="$PROJECT_DIR$/04-seata-demo/storage-service/pom.xml" />
         <option value="$PROJECT_DIR$/04-seata-demo/pom.xml" />
+        <option value="$PROJECT_DIR$/05-redis-demo/pom.xml" />
+        <option value="$PROJECT_DIR$/06-multi-cache-demo/pom.xml" />
+        <option value="$PROJECT_DIR$/07-mq-advanced-demo/pom.xml" />
+        <option value="$PROJECT_DIR$/02-message-queue-demo/publisher/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

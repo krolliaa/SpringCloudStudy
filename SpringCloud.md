@@ -9093,7 +9093,7 @@ public class AccountController {
 
 ![img](https://img-blog.csdnimg.cn/b6129c670b2d49699a2d995af8f8fb7c.png)
 
-## 18.分布式缓存
+## 18. 分布式缓存【重点 + 难点】
 
 ### 18.1 `Redis`单节点的问题
 
@@ -9138,11 +9138,13 @@ redis-cli shutdown
 
 ```shell
 docker pull redis:6.2.4
-doicker run --name redis -p 6379:6379 -d redis:6.2.4
+docker run --name redis -p 6379:6379 -d redis:6.2.4
 
-在/var/lib/docker/volumes/redis/redis.conf配置好配置文件、创建好文件夹然后再执行。可以使用xftp拉取配置文件。
+在/var/lib/docker/volumes/redis/redis.conf配置好配置文件、创建好文件夹data然后再执行。可以使用xftp拉取配置文件。
+更改下 bind 0.0.0.0
+更改下 protected-mode no
 
-docker run -p 6379:6379 --name redis -v /var/lib/docker/volumes/redis/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/data:/data -d redis:6.2.4 redis-server /etc/redis/redis.conf --appendonly yes[开启持久化]
+docker run -p 6379:6379 --name redis -v /var/lib/docker/volumes/redis/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/data:/data -d redis:6.2.4 redis-server /etc/redis/redis.conf --appendonly yes[开启AOF持久化]
 
 连接 redis：docker exec -it redis redis-cli
 ```
@@ -9362,11 +9364,11 @@ cp redis.conf ../7003/.
 ```
 
 ```shell
-docker run -p 7001:7001 --name redis7001 -v /var/lib/docker/volumes/redis/7001/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/7001/data:/data -d redis:6.2.4 redis-server /etc/redis/redis.conf
+docker run -p 7001:7001 -p 27001:27001 --name redis7001 -v /var/lib/docker/volumes/redis/7001/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/7001/data:/data -d redis:6.2.4 redis-server /etc/redis/redis.conf
 
-docker run -p 7002:7002 --name redis7002 -v /var/lib/docker/volumes/redis/7002/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/7002/data:/data -d redis:6.2.4 redis-server /etc/redis/redis.conf
+docker run -p 7002:7002 -p 27002:27002 --name redis7002 -v /var/lib/docker/volumes/redis/7002/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/7002/data:/data -d redis:6.2.4 redis-server /etc/redis/redis.conf
 
-docker run -p 7003:7003 --name redis7003 -v /var/lib/docker/volumes/redis/7003/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/7003/data:/data -d redis:6.2.4 redis-server /etc/redis/redis.conf
+docker run -p 7003:7003 -p 27003:27003 --name redis7003 -v /var/lib/docker/volumes/redis/7003/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/7003/data:/data -d redis:6.2.4 redis-server /etc/redis/redis.conf
 
 docker ps
 ```
@@ -9694,7 +9696,7 @@ docker restart redis7002
 
 三哨兵`sentinel`实例信息如下：
 
-| 节点 |        IP         |  PORT   |
+| 节点 |       `IP`        |  PORT   |
 | ---- | :---------------: | :-----: |
 | `s1` | `192.168.150.101` | `27001` |
 | `s2` | `192.168.150.101` | `27002` |
@@ -9724,6 +9726,14 @@ cp sentinel.conf ../../../7002/data/sentinel2/
 cp sentinel.conf ../../../7003/data/sentinel3/
 记得修改下各个配置文件的端口：27001 27002 27003
 以及各个配置文件的 dir "/data/sentinel1" "/data/sentinel2" "/data/sentinel3"
+
+vim /var/lib/docker/volumes/redis/7001/data/sentinel1/sentinel.conf
+vim /var/lib/docker/volumes/redis/7002/data/sentinel2/sentinel.conf
+vim /var/lib/docker/volumes/redis/7003/data/sentinel3/sentinel.conf
+
+cp /var/lib/docker/volumes/redis/7001/data/sentinel1/sentinel.conf /var/lib/docker/volumes/redis/7002/data/sentinel2/sentinel.conf
+
+cp /var/lib/docker/volumes/redis/7001/data/sentinel1/sentinel.conf /var/lib/docker/volumes/redis/7003/data/sentinel2/sentinel.conf
 
 启动哨兵：
 docker exec -it redis7001 redis-sentinel /data/sentinel1/sentinel.conf
@@ -9764,4 +9774,4354 @@ docker stop redis7001
 2. 引入依赖：
 
    ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+       <modelVersion>4.0.0</modelVersion>
+       <parent>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-parent</artifactId>
+           <version>2.7.3</version>
+           <relativePath/> <!-- lookup parent from repository -->
+       </parent>
+       <groupId>com.kk</groupId>
+       <artifactId>redis-demo</artifactId>
+       <version>0.0.1-SNAPSHOT</version>
+       <name>05-redis-demo</name>
+       <description>05-redis-demo</description>
+       <properties>
+           <java.version>1.8</java.version>
+       </properties>
+       <dependencies>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-web</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-data-redis</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>org.projectlombok</groupId>
+               <artifactId>lombok</artifactId>
+               <version>1.18.24</version>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-test</artifactId>
+               <scope>test</scope>
+           </dependency>
+       </dependencies>
    
+       <build>
+           <plugins>
+               <plugin>
+                   <groupId>org.springframework.boot</groupId>
+                   <artifactId>spring-boot-maven-plugin</artifactId>
+               </plugin>
+           </plugins>
+       </build>
+   
+   </project>
+
+3. 配置`application.yaml`配置文件：
+
+   ```yaml
+   spring:
+     redis:
+       sentinel:
+         master: mymaster #指定的主节点名称
+         nodes:
+           - 192.168.56.1:27001
+           - 192.168.56.1:27002
+           - 192.168.56.1:27003
+   ```
+
+4. 创建`HelloController`
+
+   ```java
+   package com.kk.redisdemo.controller;
+   
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.data.redis.core.StringRedisTemplate;
+   import org.springframework.web.bind.annotation.GetMapping;
+   import org.springframework.web.bind.annotation.PathVariable;
+   import org.springframework.web.bind.annotation.RestController;
+   
+   @RestController
+   public class HelloController {
+   
+       @Autowired
+       private StringRedisTemplate redisTemplate;
+   
+       @GetMapping("/get/{key}")
+       public String hi(@PathVariable String key) {
+           return redisTemplate.opsForValue().get(key);
+       }
+   
+       @GetMapping("/set/{key}/{value}")
+       public String hi(@PathVariable String key, @PathVariable String value) {
+           redisTemplate.opsForValue().set(key, value);
+           return "success";
+       }
+   }
+   ```
+
+5. 因为起初没有将容器的`27001`等端口开放，所以这里需要重新设置下容器：直接复制粘贴，别多想
+
+   ```shell
+   vim /var/lib/docker/volumes/redis/7001/redis.conf
+   replica-announce-ip 192.168.56.1
+   replica-announce-port 7001
+   
+   vim /var/lib/docker/volumes/redis/7002/redis.conf
+   replica-announce-ip 192.168.56.1
+   replica-announce-port 7002
+   replicaof 192.168.56.1 7001
+   :wq
+   
+   vim /var/lib/docker/volumes/redis/7003/redis.conf
+   replica-announce-ip 192.168.56.1
+   replica-announce-port 7003
+   replicaof 192.168.56.1 7001
+   :wq
+   
+   vim /var/lib/docker/volumes/redis/7001/sentinel.conf
+   port 27001
+   sentinel monitor mymaster 192.168.56.1 7001 2
+   sentinel down-after-milliseconds mymaster 5000
+   sentinel failover-timeout mymaster 60000
+   dir "/data"
+   
+   vim /var/lib/docker/volumes/redis/7002/sentinel.conf
+   port 27002
+   sentinel monitor mymaster 192.168.56.1 7001 2
+   sentinel down-after-milliseconds mymaster 5000
+   sentinel failover-timeout mymaster 60000
+   dir "/data"
+   
+   vim /var/lib/docker/volumes/redis/7003/sentinel.conf
+   port 27003
+   sentinel monitor mymaster 192.168.56.1 7001 2
+   sentinel down-after-milliseconds mymaster 5000
+   sentinel failover-timeout mymaster 60000
+   dir "/data"
+   
+   sentinel monitor mymaster 172.20.0.2 7001 2
+   :wq
+   ```
+
+   ```shell
+   docker stop redis7001
+   
+   docker stop redis7002
+   
+   docker stop redis7003
+   
+   docker stop sentinel1
+   
+   docker stop sentinel2
+   
+   docker stop sentinel3
+   
+   docker rm -f redis7001
+   
+   docker rm -f redis7002
+   
+   docker rm -f redis7003
+   
+   docker rm -f sentinel1
+   
+   docker rm -f sentinel2
+   
+   docker rm -f sentinel3
+   
+   docker run -p 7001:7001 --name redis7001 -v /var/lib/docker/volumes/redis/7001/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/7001/data:/data -d redis:6.2.4
+   
+   docker run -p 7002:7002 --name redis7002 -v /var/lib/docker/volumes/redis/7002/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/7002/data:/data -d redis:6.2.4
+   
+   docker run -p 7003:7003 --name redis7003 -v /var/lib/docker/volumes/redis/7003/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/7003/data:/data -d redis:6.2.4
+   
+   docker run -p 27001:27001 --name sentinel1 -v /var/lib/docker/volumes/redis/7003/sentinel.conf:/etc/redis/sentinel.conf -d redis:6.2.4
+   
+   docker run -p 27002:27002 --name sentinel2 -v /var/lib/docker/volumes/redis/7003/sentinel.conf:/etc/redis/sentinel.conf -d redis:6.2.4
+   
+   docker run -p 27003:27003 --name sentinel3 -v /var/lib/docker/volumes/redis/7003/sentinel.conf:/etc/redis/sentinel.conf -d redis:6.2.4
+   
+   docker ps
+   ```
+
+   ![img](https://img-blog.csdnimg.cn/4abe5280ac934c6384ff6db397030629.png)
+
+   ```shell
+   docker exec -it redis7001 redis-server /etc/redis/redis.conf
+   
+   docker exec -it redis7002 redis-server /etc/redis/redis.conf
+   
+   docker exec -it redis7003 redis-server /etc/redis/redis.conf
+   
+   docker exec -it sentinel1 redis-sentinel /etc/redis/sentinel.conf
+   
+   docker exec -it sentinel2 redis-sentinel /etc/redis/sentinel.conf
+   
+   docker exec -it sentinel3 redis-sentinel /etc/redis/sentinel.conf
+   ```
+
+   然后还要修改下`NAT`地址转换。
+
+6. 配置主从读写分离
+
+   ```java
+   package com.kk.redisdemo;
+   
+   import io.lettuce.core.ReadFrom;
+   import org.springframework.boot.SpringApplication;
+   import org.springframework.boot.autoconfigure.SpringBootApplication;
+   import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer;
+   import org.springframework.boot.autoconfigure.neo4j.ConfigBuilderCustomizer;
+   import org.springframework.context.annotation.Bean;
+   
+   @SpringBootApplication
+   public class Application {
+       public static void main(String[] args) {
+           SpringApplication.run(Application.class, args);
+       }
+   
+       @Bean
+       public LettuceClientConfigurationBuilderCustomizer lettuceClientConfigurationBuilderCustomizer() {
+           return configBuilderCustomizer -> configBuilderCustomizer.readFrom(ReadFrom.REPLICA_PREFERRED);
+       }
+   }
+   ```
+
+   这里的`ReadFrom`是配置`Redis`的读取策略，是一个枚举，包括如下选择：
+
+   - `MASTER`：从主节点中读取
+   - `MASTER_PREFERRED`：优先从主节点中读取，`master`不可用才读取`replica`
+   - `REPLICA`：从从节点中读取
+   - `REPLICA_PREFERRED`：优先从从节点中读取，`replica`不可用才读取`master`
+
+### 18.6 `Redis`分片集群
+
+- 前面为了避免故障从而导致`Redis`崩溃以至于数据丢失，于是我们学习了持久化，解决了**数据丢失问题**
+- 单机`Redis`并发能力不够强，我们整出了`Redis`主从模式的集群，解决了**并发能力问题**
+- 搭建的集群实例不知道健康状态，于是整出了`Sentinel`哨兵，解决了**故障恢复问题**
+- **现在到了最后一个，就是存储能力的问题我们该如何解决呢？**
+
+我们知道内存是有上限的，我们不可能把所有的内存空间全部分配给`Redis`，因为随着时间的消逝，`Redis`存储的数据会越来越多，越来越多，如果有海量数据，单纯的依靠简单的内存存储机制是无法满足需求的。这就是`Redis`的存储能力问题。
+
+而且，我们之前搭建的主从模式的集群，实现了读写分离，但是是应对大部分读的，那如果此时有一个场景写的需求很大，光主节点去执行写操作肯定是不够的，这又该如何解决呢？
+
+也就是说主从+哨兵的模式可以解决高并发读、高可用的问题，但是依然有两个问题没有解决：
+
+- **海量数据存储问题**
+- **高并发写的问题**
+
+**<font color="red">分片集群</font>**就可以解决这两个问题，可想而知是有多牛这玩意。
+
+#### 18.6.1 分片集群的结构
+
+分片集群的结构是这样子的：
+
+- 为了解决高并发写的问题，所以有了多个主节点`master`
+
+- 同时为了保持高可用，每个主节点`master`还是有多个从节点`slave`
+
+- `master`之间通过`ping`指令监测彼此的健康状态，此时就不需要哨兵了，`master`主节点覆盖了哨兵的角色，掌控了军权，如果有足够数量的主节点认为某个主节点`master`主观下线，则转变为客观下线，将该主节点`master`服务下线，然后从该主节点的从节点选一个备选节点将其升级为主节点。属于是合作攻击了这是。
+
+- 这么多主节点，`Redis`客户端访问谁呢？事实上，该客户端可以访问集群中的任意一个节点，因为这些节点会有一个路由表，它们每一个节点都会最终将该请求转发到正确的节点上。这里还是覆盖了哨兵的其中一个作用即 —— 通知功能。
+
+  ![img](https://img-blog.csdnimg.cn/fd7d16254eb1417887943380af1108b8.png)
+
+#### 18.6.2 搭建分片集群
+
+我们按下述的结构搭建下：`3`个主节点，每个主节点有一个从节点即一共`3`个从节点。
+
+![img](https://img-blog.csdnimg.cn/95e916eb1ddb4940bd25c1b266d7b522.png)
+
+|      `IP`      | `PORT` |   角色   |
+| :------------: | :----: | :------: |
+| `192.168.56.1` | `7001` | `master` |
+| `192.168.56.1` | `7002` | `master` |
+| `192.168.56.1` | `7003` | `master` |
+| `192.168.56.1` | `8001` | `slave`  |
+| `192.168.56.1` | `8002` | `slave`  |
+| `192.168.56.1` | `8003` | `slave`  |
+
+删除之前所有的哨兵和节点，因为我这里是`Docker`搭建的，所以删除的就是容器。
+
+```sh
+docker rm -f redis7001
+docker rm -f redis7002
+docker rm -f redis7003
+docker rm -f redis8001
+docker rm -f redis8002
+docker rm -f redis8003
+```
+
+在`/var/lib/docker/volumes/redis/`目录下，创建`7001 7002 7003 8001 8002 8003`目录，用作数据卷。这里每个文件夹都有一个`data`目录以及`redis.conf`，这是缩小版的`redis.conf`直接复制修改即可：
+
+**<font color="red">注意：分片集群中`slave`从节点不需要配置`replicaof 192.168.56.1 7001`，并且不再是`replica-announce-ip`而是`cluster-announce-ip`的模式</font>**
+
+每个节点改动的就是`port cluster-announce-ip cluster-announce-bus-port`
+
+```sh
+bind 0.0.0.0
+port 7001
+protected-mode no
+daemonize yes
+cluster-enabled yes
+cluster-config-file nodes.conf
+cluster-node-timeout 5000
+cluster-announce-ip 192.168.56.1
+cluster-announce-port 7001
+cluster-announce-bus-port 17001
+appendonly yes
+appendfsync everysec
+no-appendfsync-on-rewrite no
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+loglevel notice
+logfile "/data/redis.log"
+```
+
+`Docker`启动即可：
+
+```shell
+docker rm -f redis7001
+
+docker rm -f redis7002
+
+docker rm -f redis7003
+
+docker rm -f redis8001
+
+docker rm -f redis8002
+
+docker rm -f redis8003
+
+docker run -p 7001:7001 -p 17001:17001 --name redis7001 -v /var/lib/docker/volumes/redis/7001/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/7001/data:/data -d redis:6.2.4
+
+docker run -p 7002:7002 -p 17002:17002 --name redis7002 -v /var/lib/docker/volumes/redis/7002/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/7002/data:/data -d redis:6.2.4
+
+docker run -p 7003:7003 -p 17003:17003 --name redis7003 -v /var/lib/docker/volumes/redis/7003/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/7003/data:/data -d redis:6.2.4
+
+docker run -p 8001:8001 -p 18001:18001 --name redis8001 -v /var/lib/docker/volumes/redis/8001/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/8001/data:/data -d redis:6.2.4
+
+docker run -p 8002:8002 -p 18002:18002 --name redis8002 -v /var/lib/docker/volumes/redis/8002/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/8002/data:/data -d redis:6.2.4
+
+docker run -p 8003:8003 -p 18003:18003 --name redis8003 -v /var/lib/docker/volumes/redis/8003/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/8003/data:/data -d redis:6.2.4
+```
+
+```sh
+这里一个个执行：
+docker exec -it redis7001 redis-server /etc/redis/redis.conf
+
+docker exec -it redis7002 redis-server /etc/redis/redis.conf
+
+docker exec -it redis7003 redis-server /etc/redis/redis.conf
+
+docker exec -it redis8001 redis-server /etc/redis/redis.conf
+
+docker exec -it redis8002 redis-server /etc/redis/redis.conf
+
+docker exec -it redis8003 redis-server /etc/redis/redis.conf
+```
+
+![img](https://img-blog.csdnimg.cn/e7790d3612f4453ba2c5062b17aca8ef.png)
+
+此时服务都启动了，但是它们都是独立的，彼此之间没有任何关联。接下来我们要用命令一步步地创建集群，在`Redis 5.0`之前，创建集群是很麻烦的一件事情，但是在这之后，创建集群的命令集成到了`redis-cli`中。
+
+```sh
+docker exec -it redis7001 bash
+
+redis-cli -h 192.168.56.1 -p 7001 --cluster create --cluster-replicas 1 192.168.56.1:7001 192.168.56.1:7002 192.168.56.1:7003 192.168.56.1:8001 192.168.56.1:8002 192.168.56.1:8003 
+```
+
+这里的`1`代表的是每个主节点只有一个从节点，为什么不用指定哪个是主哪个是从，这里面前面：`节点总数 ➗ (replicas + 1)`，其中`replicas`就是我们设置的`1`，所以前面`3`个就是主节点。
+
+因为我是`NAT`地址转化，记得开启`7001 7002 7003 8001 8002 8003`的端口映射，否则一直出现`Connection Refused`的情况。
+
+而且还要开启`17001 17002 17003 18001 18002 18003`的总线端口映射，否则会一直停留在：`Waiting for the cluster to join...`
+
+![img](https://img-blog.csdnimg.cn/c3d175e48bbc4e4a9ca211e328ea5704.png)
+
+通过`redis-cli -h 192.168.56.1 -p 7001 cluster nodes`可以查看集群状态：
+
+![img](https://img-blog.csdnimg.cn/8fbb2649ba914b8e9d078f22671385d0.png)
+
+分片集群的测试：【注意我这是进入了容器直接做，你也可以在虚拟机或者`windows`中做】
+
+注意操作集群时要加入`-c`参数表示集群模式，否则无法写入，因为写入时会重定向到另外一个节点，到这里，虽然还无法弄懂为什么，但是已经开始可以感受到分片集群的一点点魅力了。
+
+连接任意一个实例比如我的连接：`redis-cli -c -h 192.168.56.1 -p 7001`，然后写入几条数据：
+
+![img](https://img-blog.csdnimg.cn/d86f958c32d14bb78d676acbf797fef4.png)
+
+再连接另外一个主节点，查看数据：`redis-cli -c -h 192.168.56.1 -p 7002`
+
+![img](https://img-blog.csdnimg.cn/b14c56ca8e24457e80943a491f353cc1.png)
+
+可以看到很哇塞，每个节点【是无论是哪个节点哦，任意】都可以访问到再其它节点创建的数据。可以看到分片集群相当牛逼。
+
+#### 18.6.3 分片集群存储原理散列插槽
+
+可以看到每一个主节点`master`都有一个`hash slot`，这个东西就叫做散列插槽。这有什么用呢？比如下图：
+
+![img](https://img-blog.csdnimg.cn/2f211a08c3544643893e62daeda0140a.png)
+
+ 为了实现分片集群，即提高高并发写能力，`Redis`会把每一个`master`主节点映射到`0~16383`供`16384`个插槽上`hash slot`，如上图：`[0 - 5460]`被映射给第一个主节点，`[5461 - 10922]`映射给了第二个主节点，而最后的`[10923 - 16383]`被映射给了最后一个主节点。
+
+当用户写入数据时，数据不是跟存储的节点所绑定，而是跟插槽所绑定，这样做有什么好处呢？当该节点过掉的时候，插槽就会携带着数据做一个转移，转移到其它节点，这样就不会导致因节点发生故障而宕机导致数据丢失。就好比如各个节点只是一块地盘，如果这个地盘已经不适合生存了，插槽首领就会带领数据子民离开这片土地而去寻找更适合居住的地方。数据子民就不会死。
+
+那么数据是如何跟插槽所绑定的呢？原来是根据`key`然后计算得到插槽值，分两种情况：
+
+- `key`中如果包含`{}`且`{}`里面含有字符，则`{}`里的字符就是有效部分
+- `key`中如果不包含`{}`，那么整个`key`就都是有效部分
+
+例如：如果`key`是`{kk}num`，那么就根据`{kk}`计算，如果`key`是`num`，那么根据`num`计算。计算方式是通过`CRC16`算法得到一个`hash`值，然后将该`hash % 16384`从而得到的数据都在`0 - 16383`。这就得到了插槽值即`slot`值。【字符 ---> 哈希值 ---> 余法得到插槽值】
+
+如下图，存储`a`时，算出来的`slot`插槽值在第三个主节点的插槽映射范围之内，所以需要存储在第三个主节点中。`redis-cli -h 192.168.56.1 -p 7001 -c`
+
+![img](https://img-blog.csdnimg.cn/ef22d694e3e74179a9bf08c5dfc7feae.png)
+
+总结下：
+
+- `Redis`是如何判断某个`key`应该在哪个实例？
+
+  - 将`[0 - 16384]`个插槽映射分配给不同的实例
+  - 通过`CRC16`算法对`key`的有效部分进行计算，获取到哈希值然后通过余法得到插槽值即`slot`值
+  - 根据计算出来的插槽值即`slot`值找到符合映射关系的实例存储即可
+
+- 如何将同一类的数据固定保存在同一个实例？
+
+  - 使用相同的有效部分：
+
+    我们知道有效部分分为两种，一种是有`{}`一种是没有`{}`的，如果我们想将一类数据存储在特定的实例，我们可以给这个`key`加上`{}`部分，使之成为有效部分。
+
+    ![img](https://img-blog.csdnimg.cn/366953e8ae69479cbdaeddae26c95a65.png)
+
+    可以看到有`{phone}`的都存储到了`7002`实例中。
+
+#### 18.6.4 分片集群之集群伸缩
+
+作为一个分片集群最重要的一个功能就是可以动态的增加或者移除节点，这就称之为集群伸缩。我们可以通过`redis-cli --cluster`命令添加或者移除节点。
+
+可以通过`redis-cli --cluster help`查看关于该命令的帮助信息：
+
+![img](https://img-blog.csdnimg.cn/921188f67d424dd6ba8e3a527bf3634d.png)
+
+比如添加节点：
+
+![img](https://img-blog.csdnimg.cn/64cf4f8e40f3408eb79f442cfcd9ec0b.png)
+
+需求：向集群中添加一个新的`master`节点，并向其中存储`num = 10`
+
+- 启动一个新的`redis`实例，端口为`7004`
+- 添加`7004`到之前的集群，并作为一个`master`节点
+- 给`7004`节点分配插槽，使得`num`这个key可以存储到`7004`实例
+
+```
+cd /var/lib/docker/volumes/redis/
+mkdir 7004
+cd 7004
+mkdir data
+vim redis.conf ---> 拷贝过去即可
+docker run -p 7004:7004 -p 17004:17004 --name redis7004 -v /var/lib/docker/volumes/redis/7004/redis.conf:/etc/redis/redis.conf -v /var/lib/docker/volumes/redis/7004/data:/data -d redis:6.2.4
+
+记得做 NAT 地址转换的映射
+
+docker exec -it redis7004 bash
+redis-server /etc/redis/redis.conf
+redis-cli --cluster add-node 192.168.56.1:7004 192.168.56.1:7001
+```
+
+可以看到成功向集群中添加了某节点：
+
+![img](https://img-blog.csdnimg.cn/5a7e6a5b2390442a823fcd66522fa477.png)
+
+查看下该集群的节点信息：`redis-cli -h 192.168.56.1 -p 7001 cluster nodes`，可以看到`7004`端口的节点已经添加到集群了。
+
+![img](https://img-blog.csdnimg.cn/95fcc3a9cba54dd5a4a6393ea6152918.png)
+
+但是我们可以看到此时的`7004`式没有插槽的，我们前面存储`num`的时候知道`num`计算出来的插槽值在`7001`实例中，所以我们得将这部分插槽分配到`7004`中，这样就可以将`num`存储到`7004`中。
+
+1. 确认是哪一部分插槽：别忘了`-c`，可以看到`num`跟插槽`2765`绑定在了一块中。
+
+   ```shell
+   redis-cli -h 192.168.56.1 -p 7003 -c
+   ```
+
+   ![img](https://img-blog.csdnimg.cn/9e6ce0e68ea249cfb7114abbb3a8d88f.png)
+
+2. 将插槽分配给`7004`实例：我们移动`0 - 2765`给`7004`也就是移动`2766`个插槽
+
+   ```shell
+   redis-cli --cluster help 查询分配帮助 ---> reshard
+   redis-cli --cluster reshard 192.168.56.1 7001
+   2766
+   复制上面的 id 值，因为要移动到 7004，所以这里粘贴 7004 的 id 值即可
+   然后就是数据/插槽源，来源于 7001 所以复制 7001 的 id 值即可
+   输入 done
+   ```
+
+   一下是特别省出来一个插槽当作案例，查看效果：
+
+   ![img](https://img-blog.csdnimg.cn/3dd37f4867f643788dc7c0ca9d4da181.png)
+
+   查看集群中各个节点的状态：可以看到`7004`实例的占据了`0 - 2765`一共`2766`个插槽。
+
+   ```shell
+   redis-cli -h 192.168.56.1 -p 7001 cluster nodes
+   ```
+
+   ![img](https://img-blog.csdnimg.cn/e2c33372fc2d4484a5608aed2abf36f9.jpeg)
+
+3. 连接到`7001`然后`set num 10`观察效果：可以看到重定向到了`7004`实例去了。
+
+   ```shell
+   redis-cli -h 192.168.56.1 -p 7001 -c
+   set num 10
+   ```
+
+   ![img](https://img-blog.csdnimg.cn/f56b784c3a7346ec92386d194b027015.png)
+
+回顾下：
+
+1. 可以通过`redis-cli -h 192.168.56.1 -p 7001 --cluster help`任意一个集群节点来查询集群操作的帮助文档
+2. 向集群中添加节点：可以通过`redis-cli -h 192.168.56.1 -p 7004 --cluster add-node 192.168.56.1:7005 192.168.56.1:7001`【前提当然是你得有这个实例节点，如果不添加`--cluster-slave --cluster-master-id <arg>`默认表示为主节点】
+3. 向集群中添加插槽：可以通过`redis-cli -h 192.168.56.1 -p 7001 --cluster reshard 192.168.56.1:7001【任意一个集群中的节点】`
+
+自己摸索下如何删除集群中的一个节点：
+
+1. 查询帮助：`redis-cli -h 192.168.56.1 -p 7001 --cluster help`可以看到一个`del-node`的帮助，可以看到需要节点`id`
+
+2. 查询`id`：`redis-cli -h 192.168.56.1 -p 7001 cluster nodes`查询到`7004`的节点`id`为：`b4228ec1e6f226358bb0707191d8f186acd9e965`
+
+3. 删除节点：`redis-cli -h 192.168.56.1 -p 7001 --cluster del-node 192.168.56.1:7004  b4228ec1e6f226358bb0707191d8f186acd9e965`
+
+4. 报错，说是要该节点里面有数据，你得先把数据移走即移走插槽：
+
+   ![img](https://img-blog.csdnimg.cn/b28d2ae7cdc241dab437d35f1b8a2fd1.png)
+
+5. 所以得使用先将插槽移走，我这里移动到`7001`实例中去，当然你也可以使用`all`分配给所有其余主节点：`redis-cli -h 192.168.56.1 -p 7001 --cluster reshard 192.168.56.1:7001`根据提示完成操作即可
+
+6. 再次删除`7004`节点：`redis-cli -h 192.168.56.1 -p 7001 --cluster del-node 192.168.56.1:7004 b4228ec1e6f226358bb0707191d8f186acd9e965`此时可以看到成功从集群中移除了该节点：
+
+   ![img](https://img-blog.csdnimg.cn/b6e3c3ac503f4760a9757703d48e2732.png)
+
+#### 18.6.5 分片集群之故障转移
+
+##### 18.6.5.1 自动故障转移
+
+学习分片集群结构的时候就知道了，分片集群是没有哨兵的，因为被主节点`master`掌控了军权，将哨兵`sentinel`灭了。
+
+因为有多个主节点，为了防止独裁，所以刚开始多个主节点之间商量好使用心跳机制决定互相监督，搞个权力分散，殊不知当一个主节点实例变弱【出现故障导致宕机】时，另外的主节点之间会强强联合，某个主节点先发现该`master`的弱点，心生一计，主观认为该`master`应该主观下线。知道自己一个人的力量不够，于是去找多个`master`，强强联手，导致该故障主节点`master`被击败，客观下线。
+
+为了安抚该主节点数据的民心，它们会在这个`master`的国家中的从节点选出一位，让它成为新的主节点。维持了整个系统的权力平衡。**暗流涌动下，权力的游戏还在继续。**
+
+**主节点`master`们不知道的是，它们的生死其实全部掌握在操控整个系统的人身上。**
+
+- 持续查看集群节点的状态：`watch redis-cli -p 7001 cluster nodes`
+
+  `Docker`安装的默认`redis`实例中是没有`watch`的，可以执行以下命令进行安装：
+
+  ```shell
+  apt-get update
+  apt-get upgrade
+  apt-get install watch
+  ```
+
+  然后就可以进行持续监控集群节点了：
+
+  ![img](https://img-blog.csdnimg.cn/5c3e58c138fe4401ae189c2c12a2b0db.png)
+
+- 然后尝试让`7002`宕机，观察效果：`redis-cli -h 192.168.56.1 -p 7002 shutdown`
+
+  可以看到主节点`fail + disconnected`，然后可以看到`8001`的从节点变成了`master`：
+
+  ![img](https://img-blog.csdnimg.cn/a5a2d89ddfab461099e2aa89425a0972.png)
+
+- 启动`7002`，观察`7002`的状态：`redis-server -h 192.168.56.1 -p 7002 /etc/redis/redis.conf`，可以看到`7002`实例成了从节点。
+
+  ![img](https://img-blog.csdnimg.cn/7d8075d5d7bc41e3a1e872ee956e6c4d.png)
+
+**总结下，当当集群中有一个`master`宕机会发生什么呢？**
+
+1. 该宕机主节点跟其它主节点失去连接
+2. 疑似宕机，被其余主节点标记为`fail`
+3. 确定该故障主节点`master`下线，自动提升一个从节点为主节点，并且将该旧主节点标记为从节点
+
+##### 18.6.5.2 手动故障转移
+
+上述是自动故障转移，有了自动的干嘛还需要手动的，是自动的不够香吗？当然不是，自动的虽然香，但是有时候机器可以用，但是这个机器太过老旧了需要做些维护，然后它的从节点的性能不是特别强，现在我引入了一个新的性能超级强吊打这两台机器的机器，此时我们就需要特定这台性能超强的机器，作为该主节点的从节点，然后手动的将该从节点替换掉主节点，这样就实现了故障转移。
+
+这就是为什么我们还需要手动故障转移 ，不是因为自动的不够香而是我们需要更多的自主性。
+
+那么，手动故障转移要怎么做呢？
+
+利用`cluster failover`命令可以手动地让分片集群中地某个`master`节点宕机，然后将主节点切换到执行`cluster failover`命令地这个`slave`节点中。**其实就是变相地夺权。**夺权最好地方式就是避免太多地人员伤亡，而且是亲手执行，要夺权的从节点深知这一点，所以只会让原`master`宕机。自己坐上王位。
+
+流程如下：
+
+![img](https://img-blog.csdnimg.cn/d8205a460b77418cb48c6f9ef9927563.png)
+
+1. 要成为主节点的`slave`，这里我们称其为夺权者，夺权者首先会威胁`master`退位，要求其告知所有的客户端，拒绝它们的请求
+2. 夺权者从`master`那里获取到当前的数据偏移量`offset`
+3. 夺权者实现数据同步更新，直到数据的`offset`偏移量跟`master`一致
+4. 夺权者跟`master`开始故障转移
+5. 夺权者将所有的操作全部完成，标记自己是`master`并广播告知所有人故障转移的结果
+6. 客户端眼中只有利益，它们对于谁是`master`根本不在乎，收到广播，它们的读请求会被原`master`所处理。
+
+手动`failover`支持三种不同的模式：【一般默认，不用选特定模式】
+
+- 缺省：默认的流程即走完上述`6`步
+- `force`：强制夺权，省略了照顾数据子民的两步，即`2-3`，一般这种事情都是类似唐太宗李世民做的。
+- `takeover`：暴力夺权，执行进行第`5`步忽略数据的一致性，不管子民了，武动夺取一切，忽略`master`和其它`master`的意见，不得民心的做法。需要很强很强的能力，一般是明成祖朱棣干得活。
+
+具体操作为：【在自动故障转移，我们的`7002`节点一心想夺取皇位，于是乎心心准备了很久，终于发起了夺权】
+
+1. 使用`redis-cli`连接到`7002`节点
+2. 执行`cluster failover`命令`redis-cli -h 192.168.56.1 -p 7002 cluster failover`
+
+**权力，说到底还是权力。**
+
+![img](https://img-blog.csdnimg.cn/f78e14c0c0c9405d9a26f86e14f739da.png)
+
+#### 18.6.6 `RedisTemplate`操作分片集群
+
+`RedisTemplate`的底层同样是基于生菜`lettuce`实现分片集群。使用步骤跟哨兵模式一致，只有在配置信息不同，其余的完全一致。访问测试看下日志验证下即可。
+
+```yaml
+logging:
+  level:
+    io.lettuce.core: debug
+  pattern:
+    dateformat: MM-dd HH:mm:ss:SSS
+#spring:
+#  redis:
+#    sentinel:
+#      master: mymaster
+#      nodes:
+#        - 192.168.56.1:27001
+#        - 192.168.56.1:27002
+spring:
+  redis:
+    cluster:
+      nodes:
+        - 192.168.56.1:7001
+        - 192.168.56.1:7002
+        - 192.168.56.1:7003
+        - 192.168.56.1:8001
+        - 192.168.56.1:8002
+        - 192.168.56.1:8003
+```
+
+## 19. 多级缓存
+
+### 19.1 为什么要实现多级缓存？
+
+之前学习的`Redis`分步缓存已经完成了高并发【主从复制】、高可用【包括持久化、分片存储、哨兵模式】的需求，还需要多级缓存吗？那就得先看分布式缓存是否能够承载得起像淘宝、京东这些访问量过亿级得项目了，显然光靠`Redis`是满足不了这样得需求的。
+
+**从传统缓存解决方案说起：**
+
+无论你是单节点的`Redis`还是高可用高并发的`Redis`集群，一般都采用传统的缓存策略：即发送请求到达`Tomcat`服务器之后，先查询`Redis`，如果`Redis`没有命中则查询数据库。这样做大大降低了`MySQL`数据库的压力。
+
+![img](https://img-blog.csdnimg.cn/82a99692dd1642f2884d8f35736f1a92.png)
+
+这样咋一看没什么问题，但是再定睛观察，你会发现，所有的请求第一站都是到达服务器，我们现在常用的就是`Tomcat`服务器，如此一来**服务器就会成为整个系统的性能瓶颈**。因为第一站就是服务器，所以如果服务器崩了的话，也就无从访问后面的`Redis`、`MySQL`数据库了。
+
+第二点我们就看到`Redis`，我们知道`Redis`中的数据是会过期的，如果某一时刻有大批量的数据过期了，那么就会对数据库产生巨大的冲击。
+
+以上就是传统缓存的解决方案。虽然加了`Redis`但是依然抵挡不住亿级请求。能撑得住上亿请求的只能靠多级缓存解决方案。
+
+**多级缓存解决方案：**
+
+多级缓存就是充分利用请求处理的每一个环节，在这每一个环节中都添加缓存，从而减轻服务器的压力，`Redis`的压力、`MySQL`数据库的压力从而大大提升服务性能：
+
+1. 首先用户发出请求，第一站肯定是通过浏览器，所以可以在浏览器做缓存，缓存一些静态资源。
+2. 然后第二站，我们并不像传统的缓存策略直接访问服务器，而是访问`Nginx`充当反向代理的角色。
+3. 反向代理过来我们仍然不访问服务器，而是访问搭建的`Nginx`集群，该集群为本地缓存。这里的`Nginx`服务不再是一个**反向代理服务器**，而是一个编写**业务的Web服务器了**。
+4. `Nginx`本地缓存集群没有数据未命中就到`Redis`缓存集群中找。
+5. `Redis`集群数据未命中才到服务器，服务器还做了进程缓存集群。这个进程缓存其实就是`JVM`进程缓存。
+6. 进程缓存数据未命中最后才到数据库，数据库还可以做集群。
+
+这就形成了：用户请求 ---> 浏览器缓存 ----> `Nginx`集群反向代理 ---> `Nginx`集群本地缓存 ---> `Redis`集群缓存 ---> 服务器进程缓存集群 ---> 数据库集群
+
+![img](https://img-blog.csdnimg.cn/9db2e4d863cc40f5a9d97fea59e5976a.png)
+
+- 从上可知，除了之前学习`Redis`跟`MySQL`做的集群之外，我们还可以在`Nginx`中编写业务，实现`Nginx`本地查询而且可以将编写业务实现本地查询的`Nginx`做集群。如何在`Nginx`编写业务，就会用到`OpenResty`框架结合`Lua`语言。
+- 除此之外，我们还可以在服务器中实现`JVM`进程缓存
+
+关于缓存，一般我们会将缓存分为两类：
+
+- 分布式缓存，例如`Redis`：
+  - 优点：存储容量更大、可靠性更好、可以在集群间共享
+  - 缺点：访问缓存**有网络开销**
+  - 场景：缓存数据量较大、可靠性要求较高、需要在集群间共享
+- 进程本地缓存，例如`HashMap、GuavaCache`：
+  - 优点：读取本地内存，**没有网络开销**，速度更快
+  - 缺点：存储容量有限、可靠性较低、无法共享【正因为此通常我们会在`Nginx`设置负载均衡策略为`iphash`】
+  - 场景：性能要求较高，缓存数据量较小
+
+为了学习多级缓存，所以需要先实现商品查询的业务。
+
+### 19.2 多级缓存的案例搭建
+
+1. 在`CentOS`中的`Docker`安装`MySQL`
+
+   ```shell
+   docker pull mysql:8.0.28
+   cd /tmp
+   mkdir mysql
+   cd mysql
+   
+   docker run -p 3307:3306 --name mysql -v $PWD/conf:/etc/mysql/conf.d -v $PWD/logs:/logs -v $PWD/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 --privileged -d mysql:8.0.28
+   
+   touch /tmp/mysql/conf/my.cnf
+   --->
+   [mysqld]
+   skip-name-resolve
+   character_set_server=utf8
+   datadir=/var/lib/mysql
+   server-id=1000
+   
+   docker restart mysql
+   
+   设置下，此时本地 Navicat 才能访问：
+   docker -it exec mysql bash
+   mysql -u root -p
+   use mysql
+   delete from user where host="%" and user="root";
+   # 设置允许使用root用户访问数据库的主机名称，%表示能使用所有的主机使用root用户访问
+   update user set host = '%' where user = 'root';
+   # 设置root用户密码，mysql_native_password表示密码认证的插件
+   alter user 'root'@'%' identified with mysql_native_password by '123456';
+   # 立即生效
+   FLUSH PRIVILEGES;
+   
+   我这里是 VirtualBox NAT 记得做下端口映射，然后使用 Windows Navicat 连接即可
+   ```
+
+2. 导入`sql`
+
+   ```sql
+   create database item;
+   
+   use item;
+   
+   SET NAMES utf8mb4;
+   SET FOREIGN_KEY_CHECKS = 0;
+   
+   -- ----------------------------
+   -- Table structure for tb_item
+   -- ----------------------------
+   DROP TABLE IF EXISTS `tb_item`;
+   CREATE TABLE `tb_item`  (
+     `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '商品id',
+     `title` varchar(264) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '商品标题',
+     `name` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '商品名称',
+     `price` bigint(20) NOT NULL COMMENT '价格（分）',
+     `image` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '商品图片',
+     `category` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '类目名称',
+     `brand` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '品牌名称',
+     `spec` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '规格',
+     `status` int(1) NULL DEFAULT 1 COMMENT '商品状态 1-正常，2-下架，3-删除',
+     `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+     `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+     PRIMARY KEY (`id`) USING BTREE,
+     INDEX `status`(`status`) USING BTREE,
+     INDEX `updated`(`update_time`) USING BTREE
+   ) ENGINE = InnoDB AUTO_INCREMENT = 50002 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商品表' ROW_FORMAT = COMPACT;
+   
+   -- ----------------------------
+   -- Records of tb_item
+   -- ----------------------------
+   INSERT INTO `tb_item` VALUES (10001, 'RIMOWA 21寸托运箱拉杆箱 SALSA AIR系列果绿色 820.70.36.4', 'SALSA AIR', 16900, 'https://m.360buyimg.com/mobilecms/s720x720_jfs/t6934/364/1195375010/84676/e9f2c55f/597ece38N0ddcbc77.jpg!q70.jpg.webp', '拉杆箱', 'RIMOWA', '{\"颜色\": \"红色\", \"尺码\": \"26寸\"}', 1, '2019-05-01 00:00:00', '2019-05-01 00:00:00');
+   INSERT INTO `tb_item` VALUES (10002, '安佳脱脂牛奶 新西兰进口轻欣脱脂250ml*24整箱装*2', '脱脂牛奶', 68600, 'https://m.360buyimg.com/mobilecms/s720x720_jfs/t25552/261/1180671662/383855/33da8faa/5b8cf792Neda8550c.jpg!q70.jpg.webp', '牛奶', '安佳', '{\"数量\": 24}', 1, '2019-05-01 00:00:00', '2019-05-01 00:00:00');
+   INSERT INTO `tb_item` VALUES (10003, '唐狮新品牛仔裤女学生韩版宽松裤子 A款/中牛仔蓝（无绒款） 26', '韩版牛仔裤', 84600, 'https://m.360buyimg.com/mobilecms/s720x720_jfs/t26989/116/124520860/644643/173643ea/5b860864N6bfd95db.jpg!q70.jpg.webp', '牛仔裤', '唐狮', '{\"颜色\": \"蓝色\", \"尺码\": \"26\"}', 1, '2019-05-01 00:00:00', '2019-05-01 00:00:00');
+   INSERT INTO `tb_item` VALUES (10004, '森马(senma)休闲鞋女2019春季新款韩版系带板鞋学生百搭平底女鞋 黄色 36', '休闲板鞋', 10400, 'https://m.360buyimg.com/mobilecms/s720x720_jfs/t1/29976/8/2947/65074/5c22dad6Ef54f0505/0b5fe8c5d9bf6c47.jpg!q70.jpg.webp', '休闲鞋', '森马', '{\"颜色\": \"白色\", \"尺码\": \"36\"}', 1, '2019-05-01 00:00:00', '2019-05-01 00:00:00');
+   INSERT INTO `tb_item` VALUES (10005, '花王（Merries）拉拉裤 M58片 中号尿不湿（6-11kg）（日本原装进口）', '拉拉裤', 38900, 'https://m.360buyimg.com/mobilecms/s720x720_jfs/t24370/119/1282321183/267273/b4be9a80/5b595759N7d92f931.jpg!q70.jpg.webp', '拉拉裤', '花王', '{\"型号\": \"XL\"}', 1, '2019-05-01 00:00:00', '2019-05-01 00:00:00');
+   
+   -- ----------------------------
+   -- Table structure for tb_item_stock
+   -- ----------------------------
+   DROP TABLE IF EXISTS `tb_item_stock`;
+   CREATE TABLE `tb_item_stock`  (
+     `item_id` bigint(20) NOT NULL COMMENT '商品id，关联tb_item表',
+     `stock` int(10) NOT NULL DEFAULT 9999 COMMENT '商品库存',
+     `sold` int(10) NOT NULL DEFAULT 0 COMMENT '商品销量',
+     PRIMARY KEY (`item_id`) USING BTREE
+   ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = COMPACT;
+   
+   -- ----------------------------
+   -- Records of tb_item_stock
+   -- ----------------------------
+   INSERT INTO `tb_item_stock` VALUES (10001, 99996, 3219);
+   INSERT INTO `tb_item_stock` VALUES (10002, 99999, 54981);
+   INSERT INTO `tb_item_stock` VALUES (10003, 99999, 189);
+   INSERT INTO `tb_item_stock` VALUES (10004, 99999, 974;
+   INSERT INTO `tb_item_stock` VALUES (10005, 99999, 18649);
+   
+   SET FOREIGN_KEY_CHECKS = 1;
+   ```
+
+   一张商品表，一张库存表：
+
+   - `tb_item`：商品表，包含商品的基本信息
+   - `tb_item_stock`：商品库存表，包含商品的库存信息
+
+   ![img](https://img-blog.csdnimg.cn/4642ce9ebd874d4c94f54afb2c74ad64.png)
+
+3. 数据库准备完毕接下来就是写代码了，新建一个`SpringBoot`工程`06-multi-cache-demo`，导入依赖如下：
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+       <modelVersion>4.0.0</modelVersion>
+       <parent>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-parent</artifactId>
+           <version>2.7.2</version>
+           <relativePath/> <!-- lookup parent from repository -->
+       </parent>
+       <groupId>com.kk</groupId>
+       <artifactId>multi-cache-demo</artifactId>
+       <version>0.0.1-SNAPSHOT</version>
+       <name>06-multi-cache-demo</name>
+       <description>06-multi-cache-demo</description>
+       <properties>
+           <java.version>1.8</java.version>
+       </properties>
+       <dependencies>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-web</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>mysql</groupId>
+               <artifactId>mysql-connector-java</artifactId>
+               <version>8.0.28</version>
+           </dependency>
+           <dependency>
+               <groupId>org.projectlombok</groupId>
+               <artifactId>lombok</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>com.baomidou</groupId>
+               <artifactId>mybatis-plus-boot-starter</artifactId>
+               <version>3.5.2</version>
+           </dependency>
+           <dependency>
+               <groupId>com.github.ben-manes.caffeine</groupId>
+               <artifactId>caffeine</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-test</artifactId>
+               <scope>test</scope>
+           </dependency>
+       </dependencies>
+   
+       <build>
+           <plugins>
+               <plugin>
+                   <groupId>org.springframework.boot</groupId>
+                   <artifactId>spring-boot-maven-plugin</artifactId>
+               </plugin>
+           </plugins>
+       </build>
+   </project>
+   ```
+
+4. 导入必要的静态资源`resource/static/`
+
+5. 修改配置文件`application.yml`：
+
+   ```yaml
+   server:
+     port: 8081
+   spring:
+     application:
+       name: item-service
+     datasource:
+       driver-class-name: com.mysql.cj.jdbc.Driver
+       url: jdbc:mysql://192.168.56.1:3307/item?useSSL=false&serverTimezone=Asia/Shanghai
+       username: root
+       password: 123456
+   mybatis-plus:
+     type-aliases-package: com.kk.cache.pojo
+     configuration:
+       map-underscore-to-camel-case: true
+     global-config:
+       db-config:
+         update-strategy: not_null
+         table-prefix: tb_
+         id-type: auto
+   logging:
+     level:
+       com.kk: debug
+     pattern:
+       dateformat: HH:mm:ss:SSS
+   ```
+
+6. 创建`pojo.Item`商品类
+
+   ```java
+   package com.kk.cache.pojo;
+   
+   import com.baomidou.mybatisplus.annotation.TableField;
+   import lombok.AllArgsConstructor;
+   import lombok.Data;
+   import lombok.NoArgsConstructor;
+   
+   import java.util.Date;
+   
+   @Data
+   @NoArgsConstructor
+   @AllArgsConstructor
+   public class Item {
+       private Long id;//商品id
+       private String name;//商品名称
+       private String title;//商品标题
+       private Long price;//价格（分）
+       private String image;//商品图片
+       private String category;//分类名称
+       private String brand;//品牌名称
+       private String spec;//规格
+       private Integer status;//商品状态 1-正常，2-下架
+       private Date createTime;//创建时间
+       private Date updateTime;//更新时间
+       @TableField(exist = false)
+       private Integer stock;
+       @TableField(exist = false)
+       private Integer sold;
+   }
+   ```
+
+7. 创建商品库存类`pojo.ItemStock`：
+
+   ```java
+   package com.kk.cache.pojo;
+   
+   import lombok.AllArgsConstructor;
+   import lombok.Data;
+   import lombok.NoArgsConstructor;
+   
+   @Data
+   @NoArgsConstructor
+   @AllArgsConstructor
+   public class ItemStock {
+       private Long id; //商品id
+       private Integer stock; //商品库存
+       private Integer sold; //商品销量
+   }
+   ```
+
+8. 编写`Dao`层`mapper.ItemMapper`：
+
+   ```java
+   package com.kk.cache.mapper;
+   
+   import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+   import com.kk.cache.pojo.Item;
+   
+   @Mapper
+   public interface ItemMapper extends BaseMapper<Item> {
+   }
+   ```
+
+9. 编写`Dao`层`mapper.ItemStockMapper`：
+
+   ```java
+   package com.kk.cache.mapper;
+   
+   import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+   import com.kk.cache.pojo.ItemStock;
+   
+   @Mapper
+   public interface ItemStockMapper extends BaseMapper<ItemStock> {
+   }
+   ```
+
+10. 编写`service`层接口`service.ItemService`：
+
+    ```java
+    package com.kk.cache.service;
+    
+    import com.baomidou.mybatisplus.extension.service.IService;
+    import com.kk.cache.pojo.Item;
+    
+    public interface ItemService extends IService<Item> {
+        //存放商品时，需要修改库存，所以这里需要自定义一个存储商品的方法
+        public abstract void saveItem(Item item);
+    }
+    
+    ```
+
+11. 编写`service`层接口`service.ItemStockService`：
+
+    ```java
+    package com.kk.cache.service;
+    
+    import com.baomidou.mybatisplus.extension.service.IService;
+    import com.kk.cache.pojo.ItemStock;
+    
+    public interface ItemStockService extends IService<ItemStock> {
+    }
+    ```
+
+12. 编写`service`层实现类`service.impl.ItemServiceImpl`：
+
+    ```java
+    package com.kk.cache.service.impl;
+    
+    import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+    import com.kk.cache.mapper.ItemMapper;
+    import com.kk.cache.pojo.Item;
+    import com.kk.cache.pojo.ItemStock;
+    import com.kk.cache.service.ItemService;
+    import com.kk.cache.service.ItemStockService;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.stereotype.Service;
+    import org.springframework.transaction.annotation.Transactional;
+    
+    @Service
+    public class ItemServiceImpl extends ServiceImpl<ItemMapper, Item> implements ItemService {
+    
+        @Autowired
+        private ItemStockService itemStockService;
+    
+        @Override
+        @Transactional
+        public void saveItem(Item item) {
+            //存放商品
+            this.save(item);
+            //存放商品的同时需要存放商品库存 ---> 跟 pojo 对应上
+            ItemStock itemStock = new ItemStock();
+            itemStock.setId(item.getId());
+            itemStock.setStock(item.getStock());
+            itemStock.setSold(item.getSold());
+            itemStockService.save(itemStock);
+        }
+    }
+    ```
+
+13. 编写`service`层实现类`service.impl.ItemStockServiceImpl`：
+
+    ```java
+    package com.kk.cache.service.impl;
+    
+    import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+    import com.kk.cache.mapper.ItemStockMapper;
+    import com.kk.cache.pojo.ItemStock;
+    import com.kk.cache.service.ItemStockService;
+    import org.springframework.stereotype.Service;
+    
+    @Service
+    public class ItemStockServiceImpl extends ServiceImpl<ItemStockMapper, ItemStock> implements ItemStockService {
+    }
+    ```
+
+14. 这里为了简单，将`ItemController ItemStockController`统一编写`controller`层实现类`controller.ItemController`：
+
+    ```java
+    package com.kk.cache.controller;
+    
+    import com.kk.cache.pojo.Item;
+    import com.kk.cache.pojo.ItemStock;
+    import com.kk.cache.service.ItemService;
+    import com.kk.cache.service.ItemStockService;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.web.bind.annotation.*;
+    
+    @RestController
+    @RequestMapping(value = "/item")
+    public class ItemController {
+        @Autowired
+        private ItemService itemService;
+    
+        @Autowired
+        private ItemStockService itemStockService;
+    
+        /**
+         * 获取指定的商品信息
+         * 需要先判断下商品是否已经被删除
+         *
+         * @param id
+         * @return
+         */
+        @GetMapping("/{id}")
+        public Item findById(@PathVariable("id") Long id) {
+            ItemStock itemStock = itemStockService.getById(id);
+    		if (itemStock == null) itemStock = new ItemStock(id, 0, 0);
+    		Item item = itemService.query().ne("status", 3).eq("id", id).one();
+    		if (item != null) {
+                item.setStock(itemStock.getStock());
+                item.setSold(itemStock.getSold());
+            }
+    		return item;
+        }
+    
+        /**
+         * 存储商品信息
+         *
+         * @param item
+         */
+        @PostMapping
+        public void saveItem(@RequestBody Item item) {
+            itemService.saveItem(item);
+        }
+    
+        /**
+         * 更新商品信息
+         *
+         * @param item
+         */
+        @PutMapping
+        public void updateItem(@RequestBody Item item) {
+            itemService.updateById(item);
+        }
+    
+        /**
+         * 删除商品信息
+         * 不是真的物理删除，而是逻辑删除，更新状态 3 意为删除
+         *
+         * @param id
+         */
+        @DeleteMapping("/{id}")
+        public void deleteById(@PathVariable("id") Long id) {
+            itemService.update().set("status", 3).eq("id", id).update();
+        }
+    
+        /**
+         * 更新商品库存信息
+         *
+         * @param itemStock
+         */
+        @PutMapping(value = "/stock")
+        public void updateStock(@RequestBody ItemStock itemStock) {
+            itemStockService.updateById(itemStock);
+        }
+    
+    
+        /**
+         * 查询指定的商品库存信息
+         *
+         * @param id
+         * @return
+         */
+        @GetMapping("/stock/{id}")
+        public ItemStock findStockById(@PathVariable("id") Long id) {
+            return itemStockService.getById(id);
+        }
+    
+    }
+    ```
+
+15. 由于前端展示的是商品列表，商品因为可能有好多，所以自然而然得分页展示，后端传递给前端的分页信息需要包装成一个类，这里我们创建一个分页存储类`pojo.PageDTO`，`DTO`就是数据传输对象的意思：
+
+    这样就能将`total`跟当前页的所要展示的商品返还给前端了。可以看下前端的代码，是用`vue`些的。
+
+    ```java
+    package com.kk.cache.pojo;
+    
+    import lombok.AllArgsConstructor;
+    import lombok.Data;
+    import lombok.NoArgsConstructor;
+    
+    import java.util.List;
+    
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class PageDTO {
+        private Long total; //展示商品总数
+        private List<Item> list; //展示的商品
+    }
+    ```
+
+16. 实现分页查询，在`ItemController`中添加方法：`queryItemPage()`，路由为`/list`，注意这里的逻辑判断，源代码给的是没有的。
+
+    ```java
+    /**
+     * 使用 MyBatisPlus 自带的分页功能分页查询商品
+     * 根据前端传递的 page【当前页】 + size【每页显示数量】 获取商品集合，原理就是 (page - 1) * size
+     * 这里还是用到了 stream 流操作 + lambda 表达式，这里使用 peek 表示为每个元素添加操作
+     *
+     * @param page
+     * @param size
+     * @return
+     */
+    @GetMapping(value = "/list")
+    public PageDTO queryItemPage(@RequestParam(value = "page", defaultValue = "1") Integer page, @RequestParam(value = "size", defaultValue = "5") Integer size) {
+        Page<Item> itemPage = itemService.query().ne("status", 3).page(new Page<>(page, size));
+        List<Item> list = itemPage.getRecords().stream().peek(item -> {
+            ItemStock itemStock = itemStockService.getById(item.getId());
+    		if (itemStock != null) {
+    			item.setStock(itemStock.getStock());
+                item.setSold(itemStock.getSold());
+    		} else {
+    			item.setStock(0);
+    			item.setSold(0);
+    		}
+        }).collect(Collectors.toList());
+        Long total = itemPage.getTotal();
+        return new PageDTO(total, list);
+    }
+
+17. 你以为到这里就结束了吗？其实还没有，因为每次请求页面都需要拦截看是否需要分页，所以我们得添加一个拦截器`configuration.MyConfiguration`，使用`MyBatisPlus`自带的拦截器即可，所以这里直接引用：
+
+    ```java
+    package com.kk.cache.configuration;
+    
+    import com.baomidou.mybatisplus.annotation.DbType;
+    import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+    import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+    import org.springframework.context.annotation.Bean;
+    import org.springframework.context.annotation.Configuration;
+    
+    @Configuration
+    public class MyConfiguration {
+        @Bean
+        public MybatisPlusInterceptor mybatisPlusInterceptor() {
+            MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
+            mybatisPlusInterceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+            return mybatisPlusInterceptor;
+        }
+    }
+
+18. 启动类`Application.java`如下：
+
+    ```java
+    package com.kk.cache;
+    
+    import org.springframework.boot.SpringApplication;
+    import org.springframework.boot.autoconfigure.SpringBootApplication;
+    
+    @SpringBootApplication
+    public class Application {
+        public static void main(String[] args) {
+            SpringApplication.run(Application.class, args);
+        }
+    }
+    ```
+
+19. 启动测试，检验系统是否正常，系统端口按照配置为`8081`：访问http://localhost:8081
+
+    ![img](https://img-blog.csdnimg.cn/9d5b2cffc41e4904ae218ccbe527d6b6.png)
+
+20. 商品查询会跳转到具体的购物页面，与上图商品数据管理的页面是分离的。
+
+    ![img](https://img-blog.csdnimg.cn/fb1dcbb0acb54d99b2edce755daf8cc5.png)
+
+    我们需要准备一个用于反向代理的`Nginx`服务器。如下图，将静态资源放到`Nginx`目录中，页面需要的数据通过`Ajax`技术向服务端即`Nginx`业务集群查询。
+
+    ![img](https://img-blog.csdnimg.cn/ab7dab5f0cda495a98e21e13f08748ab.png)
+
+21. 将`Ngixn`中的配置文件修改下，然后将其拷贝到一个非中文目录下，使用`Dos`命令`start nginx.exe`运行`Nginx`，然后访问：http://localhost/item.html?id=10001即可，可以看到一个假数据构成的页面展示
+
+22. 我们可以看到页面是假数据展示的，所以需要通过向服务器发送`Ajiax`请求，从而查询商品数据，打开浏览器控制台可以看到页面有发起`Ajax`请求：
+
+    ![img](https://img-blog.csdnimg.cn/ff35eb0568ad405bac0efb8d5e7ac619.png)
+
+23. 而这个请求同样是监听`80`端口，所以被当前的`Nginx`反向代理了，查看`Nginx`的`conf`目录下的`nginx.conf`文件：
+
+    ![img](https://img-blog.csdnimg.cn/4d3ae2f4acbe442ba68d9282b7405d91.png)
+
+    关键配置如下：还可以继续添加集群节点：`server 192.168.56.1:8082;server 192.168.56.1:8083 `。可以看到`Windows`的`Nginx`监听了`80`端口，所以我们可以通过`url`地址：http://localhost/item.html?id=10001访问到静态资源。
+
+    ![img](https://img-blog.csdnimg.cn/cc432359cfaf443e82f290ab3d6f44c7.png)
+
+    而当我们发送的请求为：http://localhost/api/item时，会去找`Nginx`业务集群：目标服务器为`192.168.56.1:8082`
+
+    ```nginx
+    
+    #user  nobody;
+    worker_processes  1;
+    
+    events {
+        worker_connections  1024;
+    }
+    
+    http {
+        include       mime.types;
+        default_type  application/octet-stream;
+    
+        sendfile        on;
+        #tcp_nopush     on;
+        keepalive_timeout  65;
+    
+        upstream nginx-cluster{
+            server 192.168.56.1:8082;
+        }
+        server {
+            listen       80;
+            server_name  localhost;
+    
+    		location /api {
+                proxy_pass http://nginx-cluster;
+            }
+    
+            location / {
+                root   html;
+                index  index.html index.htm;
+            }
+    
+            error_page   500 502 503 504  /50x.html;
+            location = /50x.html {
+                root   html;
+            }
+        }
+    }
+    ```
+
+    具体流程如下：
+
+    ![img](https://img-blog.csdnimg.cn/f4bc97dbcf2a4796b8b7ce7c795d6a3c.png)
+
+    上述就完成了整个架构的初步搭建，接下来要做的就是如何搭建`Nginx`业务集群、`Redis`缓存、进程缓存等等工作了。
+
+### 19.3 `Lua`语法学习
+
+这里突然插入`Lua`有点突然，不过没办法，因为要想实现`Nginx`中的业务代码我们使用的是`OpenResty`框架，它里面又很多写好的`Lua`库而且还给你自定义库，所以你得需要掌握一些关于`Lua`的基本语法。
+
+`Nginx`业务是用`Lua`来进行编写的，就像我们在`Tomcat`服务器中用`Java`去写代码，在`Nginx`服务器中我们用`Lua`去写代码。为什么要用`Lua`别的不行吗？
+
+不是不行，而是因为`Nginx`是基于`C`语言编写的，其插件扩展口不太友好，而`Lua`作为一种[语法糖](https://so.csdn.net/so/search?q=语法糖&spm=1001.2101.3001.7020)，恰好可以弥补这个缺点。所以我们可以利用`Lua`语法编写脚本充当`Nginx`插件，让部分业务在`Nginx`运行。
+
+`Lua`是一种轻量小巧的脚本语言，用标准`C`语言编写并以源代码形式开放， 其设计目的是为了嵌入应用程序中，从而为应用程序提供灵活的扩展和定制功能。官网：https://www.lua.org/，`Lua`经常嵌入到`C`语言开发的程序中，例如游戏开发、游戏插件等。`Nginx`本身也是`C`语言开发，因此也允许基于`Lua`做拓展。
+
+`CentOS`自带了`Lua`所以这里就无需安装了。
+
+![img](https://img-blog.csdnimg.cn/007f8443d6714cb58a63e702bc4212b2.png)
+
+学习使用，输出`Hello World!`：
+
+1. `Linux`环境任意位置新建`hello.lua`文件：`touch hello.lua`
+
+   ![img](https://img-blog.csdnimg.cn/0d911b32a08649a7a1004fcd89a5e070.png)
+
+2. ```lua
+   print("Hello World!");
+   ```
+
+3. 运行`lua`文件：`lua hello.lua`
+
+   ![img](https://img-blog.csdnimg.cn/87ea580dd23b405d997a17e44a32e9f5.png)
+
+**`Lua`常见数据类型：**
+
+![img](https://img-blog.csdnimg.cn/8586042e92034755a7dd690c5a477ae0.png)
+
+**`Lua`提供了`type()`函数用于判断一个变量的数据类型：**
+
+![img](https://img-blog.csdnimg.cn/a8dbb4df88594d7b9e722449ca9e139f.png)
+
+**`Lua`声明变量时要使用`local`关键字：**
+
+```lua
+-- 声明字符串，可以用单引号或双引号，
+local str = 'hello'
+-- 字符串拼接可以使用 ..
+local str2 = 'hello' .. 'world'
+-- 声明数字
+local num = 21
+-- 声明布尔类型
+local flag = true
+```
+
+`Lua`中的`table`类型既可以作为数组，又可以作为`Java`中的`map`来使用。数组就是特殊的`table`，`key`是数组角标而已：
+
+```lua
+-- 声明数组 ，key为角标的 table
+local arr = {'java', 'python', 'lua'}
+-- 声明table，类似java的map
+local map =  {name='Jack', age=21}
+```
+
+总体代码：
+
+```lua
+local str1 = "hello";
+local str2 = "hello'..'world";
+local num = 21;
+local flag = true;
+local arr = {"java", "pythone", "c", "c++", "lua"};
+local map = {name="Jack", age=21};
+print(str1);
+print(str2);
+print(num);
+print(flag);
+print(arr[1]);
+print(map["name"]);
+print(map.name);
+```
+
+**`Lua`循环：**
+
+对于`table`，我们可以利用`for`循环来遍历。不过数组和普通`table`遍历略有差异。
+
+遍历数组：
+
+```lua
+-- 声明数组 key为索引的 table
+local arr = {'java', 'python', 'lua'}
+-- 遍历数组
+for index,value in ipairs(arr) do
+    print(index, value) 
+end
+```
+
+遍历普通`table`：
+
+```lua
+-- 声明map，也就是table
+local map = {name='Jack', age=21}
+-- 遍历table
+for key,value in pairs(map) do
+   print(key, value) 
+end
+```
+
+**`Lua`条件控制：**
+
+类似`Java`的条件控制，例如`if、else`语法：
+
+```lua
+if(布尔表达式)
+then
+   --[ 布尔表达式为 true 时执行该语句块 --]
+else
+   --[ 布尔表达式为 false 时执行该语句块 --]
+end
+----------------------------------------
+local A = 123;
+local B = 321;
+if(A==123 and B==321)
+then
+    print("A == B");
+else
+    print("A != B");
+end;
+```
+
+与`Java`不同，布尔表达式中的逻辑运算是基于英文单词：
+
+![img](https://img-blog.csdnimg.cn/d96fb8278efb4b54a3c38ce3ec17a6f6.png)
+
+**`Lua`函数：**
+
+定义函数的语法：
+
+```lua
+function 函数名( argument1, argument2..., argumentn)
+    -- 函数体
+    return 返回值
+end
+```
+
+例如，定义一个函数，用来打印数组：
+
+```lua
+function printArr(arr)
+    for index, value in ipairs(arr) do
+        print(index, value)
+    end
+end
+local arr = {"java", "pythone", "c", "c++", "lua"};
+printArr(arr);
+```
+
+例如：定义一个函数，用来打印`table`：
+
+```lua
+function printArr(map)
+    if not map then
+        print("Map 不能为空！");
+    end;
+    for key, value in pairs(map) do
+        print(key, value)
+    end;
+end;
+local map = {name="Jack", age=21};
+printArr(map);
+```
+
+### 19.4 实现`Nginx`业务集群本地缓存
+
+通常做`Nginx`业务编写，并不是直接用`Lua`上去就开干，而是使用`Nginx + LuaJIT`结合出来的`OpenResty`框架。以下是关于`OpenResty`的一些介绍：
+
+`OpenResty®`是一个基于`Nginx`的高性能`Web`平台，用于方便地搭建能够处理超高并发、扩展性极高的动态 `Web`应用、`Web`服务和动态网关。具备下列特点：
+
+- 具备`Nginx`的完整功能
+- 基于`Lua`语言进行扩展，集成了大量精良的`Lua`库、第三方模块
+- 允许使用`Lua`**自定义业务逻辑**、**自定义库**
+
+官方网站： https://openresty.org/cn/
+
+![img](https://img-blog.csdnimg.cn/18214f92e64543778f3b5416c637ea6d.png)
+
+我们希望达到的多级缓存架构如图：
+
+![img](https://img-blog.csdnimg.cn/01e81019a65148998e3f5ddb7b5ca6d3.png)
+
+其中：
+
+- `windows`上的`nginx`用来做反向代理服务，将前端的查询商品的`ajax`请求代理到`OpenResty`集群
+
+- `OpenResty`集群用来编写多级缓存业务
+
+#### 19.4.1 安装`OpenResty`
+
+1. 首先要安装`OpenResty`的依赖开发库，执行命令：
+
+   ```shell
+   yum install -y pcre-devel openssl-devel gcc --skip-broken
+   ```
+
+2. 可以在你的`CentOS`系统中添加 `openresty` 仓库，这样就可以便于未来安装或更新我们的软件包（通过 `yum check-update` 命令）。运行下面的命令就可以添加我们的仓库：
+
+   ```shell
+   yum-config-manager --add-repo https://openresty.org/package/centos/openresty.repo
+   ```
+
+3. 如果提示说命令不存在，则运行：然后再重复上面的命令
+
+   ```
+   yum install -y yum-utils 
+   yum-config-manager --add-repo https://openresty.org/package/centos/openresty.repo
+   ```
+
+4. 安装`OpenResty`软件包：
+
+   ```shell
+   yum install -y openresty
+   ```
+
+   默认情况下，`OpenResty`安装的目录是：`/usr/local/openresty`，如下图，并且可以看到里面的`nginx`目录，这也恰说明了`OpenResty`就是在`Nginx`基础上集成了一些`Lua`模块。
+
+   ![img](https://img-blog.csdnimg.cn/8e213f2e907f4c829b375c0b84fbf5f2.png)
+
+5. 安装`opm`工具，`opm`是`OpenResty`的一个管理工具，可以帮助我们安装一个第三方的`Lua`模块。如果你想安装命令行工具 `opm`，那么可以像下面这样安装 `openresty-opm` 包：
+
+   ```shell
+   yum install -y openresty-opm
+   ```
+
+6. 配置`Nginx`的环境变量
+
+   ```shell
+   vim /etc/profile
+   export NGINX_HOME=/user/local/openresty/nginx
+   export PATH=${NGINX_HOME}/sbin:$PATH
+   ```
+
+   ```shell
+   source /etc/profile
+   ```
+
+7. `Nginx`的默认配置文件注释太多，影响后续我们的编辑，这里将`nginx.conf`中的注释部分删除，保留有效部分。修改`/usr/local/openresty/nginx/conf/nginx.conf`文件，内容如下：
+
+   【**<font color="red">注：此时这个文件还没有跟`Windows Nginx`反向代理过来的`/api/item`进行结合，就是原本的样子</font>**】
+
+   ```nginx
+   #user  nobody;
+   worker_processes  1;
+   error_log  logs/error.log;
+   
+   events {
+       worker_connections  1024;
+   }
+   
+   http {
+       include       mime.types;
+       default_type  application/octet-stream;
+       sendfile        on;
+       keepalive_timeout  65;
+   
+       server {
+           listen       8082;
+           server_name  localhost;
+           location / {
+               root   html;
+               index  index.html index.htm;
+           }
+           error_page   500 502 503 504  /50x.html;
+           location = /50x.html {
+               root   html;
+           }
+       }
+   }
+   ```
+
+8. 启动和运行`OpenResty`，其实就是运行`Nginx`，运行方法跟在`windows`一样：
+
+   ```shell
+   # 启动nginx
+   nginx
+   # 重新加载配置
+   nginx -s reload
+   # 停止
+   nginx -s stop
+   ```
+
+#### 19.4.2 反向代理流程
+
+现在，商品详情页使用的是假的商品数据。不过在浏览器中，可以看到页面有发起`ajax`请求查询真实商品数据。这个请求如下：请求地址为`localhost`端口为`80`，然后就会被`windows`上安装的反向代理服务器`Nginx`接收到。然后将其代理给`Linux`的`OpenResty`。
+
+![img](https://img-blog.csdnimg.cn/a2988749f08a4d0bb41830e6da841c18.png)
+
+流程是这样子的：
+
+1. `Windows`的反向代理服务器`Nginx`接收到请求，将该请求代理到`192.168.56.1`【图片是借来的，看看就好】的`8081`服务器。
+
+   ![img](https://img-blog.csdnimg.cn/5eb01fb6de51407b885972d81eb0036a.png)
+
+2. 我们需要在`OpenResty`中编写业务，查询商品数据并返回到浏览器。但是这次，我们先在`OpenResty`接收请求，返回假的商品数据。那么`OpenResty`获取到`Nginx`代理给它的请求呢？这就需要开启`OpenResty`的监听了。
+
+
+#### 19.4.3 `OpenResty`监听请求
+
+`OpenResty`的很多功能都依赖于其目录下的`Lua`库，需要在`Nginx.conf`中指定依赖库的目录，并导入依赖：
+
+1. 添加对`OpenResty`的`Lua`模块加载：
+
+   修改`/usr/local/openresty/nginx/conf/nginx.conf`文件，在其中的`http`下面，添加下面代码：
+
+   ```nginx
+   #lua 模块
+   lua_package_path "/usr/local/openresty/lualib/?.lua;;";
+   #c模块     
+   lua_package_cpath "/usr/local/openresty/lualib/?.so;;";  
+   ```
+
+2. 监听`/api/item`路径：
+
+   修改`/usr/local/openresty/nginx/conf/nginx.conf`文件，在`nginx.conf`的`server`下面，添加对`/api/item`这个路径的监听：
+
+   ```nginx
+   location  /api/item {
+       # 默认的响应类型
+       default_type application/json;
+       # 响应结果由lua/item.lua文件来决定
+       content_by_lua_file lua/item.lua;
+   }
+   ```
+
+   这个监听，就类似于`SpringMVC`中的`@GetMapping("/api/item")`做路径映射。而`content_by_lua_file lua/item.lua`则相当于调用`item.lua`这个文件，执行其中的业务，把结果返回给用户。相当于`Java`中调用`service`。其实就是嗲用了`item.lua`脚本文件。
+
+   整个的`OpenResty`整合的`Nginx`的配置文件`nginx.conf`如下：当访问`/api/item`时会访问到这里，并且调用`item.lua`脚本进行返回。
+
+   ```nginx
+   #user  nobody;
+   worker_processes  1;
+   error_log  logs/error.log;
+   
+   events {
+       worker_connections  1024;
+   }
+   
+   http {
+       include       mime.types;
+       default_type  application/octet-stream;
+       sendfile        on;
+       keepalive_timeout  65;
+       lua_package_path "/usr/local/openresty/lualib/?.lua;;";
+       lua_package_cpath "/usr/local/openresty/lualib/?.so;;";
+       server {
+           listen       8082;
+           server_name  localhost;
+           location / {
+               root   html;
+               index  index.html index.htm;
+           }
+           location  /api/item {
+               default_type application/json;
+               content_by_lua_file lua/item.lua;
+           }
+           error_page   500 502 503 504  /50x.html;
+           location = /50x.html {
+               root   html;
+           }
+       }
+   }
+   ```
+
+3. 编写`Lua`脚本文件`item.lua`
+
+   1. 在`/usr/loca/openresty/nginx`目录创建文件夹：`lua`
+
+      ![img](https://img-blog.csdnimg.cn/840e6f93f1c64141b6a6960a0c4be07f.png)
+
+   2. 在`/usr/loca/openresty/nginx/lua`文件夹下，新建文件：`item.lua`【这里制作的是假数据】
+
+      ```lua
+      ngx.say('{"id":10001,"name":"SALSA AIR","title":"RIMOWA 21寸托运箱拉杆箱 SALSA AIR系列果绿色 820.70.36.4","price":17900,"image":"https://m.360buyimg.com/mobilecms/s720x720_jfs/t6934/364/1195375010/84676/e9f2c55f/597ece38N0ddcbc77.jpg!q70.jpg.webp","category":"拉杆箱","brand":"RIMOWA","spec":"","status":1,"createTime":"2019-04-30T16:00:00.000+00:00","updateTime":"2019-04-30T16:00:00.000+00:00","stock":2999,"sold":31290}')
+      ```
+
+   3. 重新加载`Nginx`配置：
+
+      ```nginx
+      nginx -s reload
+      ```
+
+4. 记得启用服务器哦，然后重新测试访问下http://localhost/item?id=10001
+
+   **<font color="red">注：因为这里是虚拟机，而且我的网络是`NAT`所以你的也是的话记得做个端口映射，将`8082`端口映射到`Windows`中去。</font>**
+
+   确保启用了`Ngixn`业务服务器：
+
+   ```shell
+   nginx
+   ps -ef | grep nginx
+   ```
+
+   ![img](https://img-blog.csdnimg.cn/bfabd9e5f86c480da0f8584e4960ec88.png)
+
+   可以看到成功访问了！再次回顾下整个流程：
+
+   ![img](https://img-blog.csdnimg.cn/f4bc97dbcf2a4796b8b7ce7c795d6a3c.png)
+
+#### 19.4.4 请求参数处理
+
+上述做的`OpenResty`返回的是假数据， 如果要返回真实数据，就需要根据用户访问的`id`来查询商品的信息，也就是说`Nginx`业务集群得先查询到数据库中的相关数据才可以。在这之前，得先解决一个问题，就是如何获取前端传递过来的商品`id`即请求参数呢？
+
+`OpenResty`中提供了一些`API`用来获取不同类型的前端请求参数，我们通过这些`API`将其保存到`Lua`语法定义的变量之中： `ngx.req.get_headers()、ngx.req.get_uri_args()、ngx.req.get_post_args()、ngx.req.get_body_data()`
+
+![img](https://img-blog.csdnimg.cn/e8b0406d4ed84895a90b5f3290d1a1a3.png)
+
+通过发送的请求：http://localhost/api/item/id可以知道，商品`id`是通过路径占位符传递到`Nginx`的因此我们可以采用正则表达式匹配的方式来获取`id`：
+
+1. 修改`OpenResty`中的`Nginx`配置文件`nginx.conf`通过正则表达式获取到前端传递的`id`：
+
+   ```nginx
+   location ~ /api/item/(\d+) {
+       default_type application/json;
+       content_by_lua_file lua/item.lua;
+   }
+   ```
+
+2. 通过`Lua`变量获取传递进来的参数，匹配到的参数将会存放到`ngx.var`数组中，注意`Lua`中数组的下标是从`1`开始的：
+
+   ```lua
+   local id = ngx.var[1];
+   ```
+
+3. 通过`local id = ngx.var[1];`获取到的`id`将其拼接到`item.lua`中：
+
+   ```lua
+   local id = ngx.var[1];
+   ngx.say('{"id":'..id..',"name":"SALSA AIR","title":"RIMOWA 21寸托运箱拉杆箱 SALSA AIR系列果绿色 820.70.36.4","price":17900,"image":"https://m.360buyimg.com/mobilecms/s720x720_jfs/t6934/364/1195375010/84676/e9f2c55f/597ece38N0ddcbc77.jpg!q70.jpg.webp","category":"拉杆箱","brand":"RIMOWA","spec":"","status":1,"createTime":"2019-04-30T16:00:00.000+00:00","updateTime":"2019-04-30T16:00:00.000+00:00","stock":2999,"sold":31290}')
+   ```
+
+4. 重新加载`OpenResty`中的`Nginx`：
+
+   ```nginx
+   nginx -s reload
+   ```
+
+5. 测试查看效果：http://localhost/item.html?id=188888888
+
+   ![img](https://img-blog.csdnimg.cn/8b54a8e2b819443eb1cf3a629b3958f3.png)
+
+现在我们获取到了商品`id`，我们需要通过这个`id`查询数据，因为我们目前只是搭建了`OpenResty`还没有建立缓存，并且也没有建立`Redis`缓存，所以我们这里先直接访问`Tomcat`服务器获取信息。
+
+![img](https://img-blog.csdnimg.cn/2f66379c906b4193a8fe2caa2a86852f.png)
+
+那么接下来要做的就是，在`Nginx`业务服务器中发送请求给`Tomcat`，根据商品`id`获取对应的商品信息：`Nginx`提供了内部`API`用于发送`http`请求：
+
+```lua
+local resp = ngx.location.capture("/path[请求路径]", {
+	method = ngx.HTTP_GET, --请求方式
+	args = {a=1, b=2},	--get请求方式的参数
+})
+```
+
+返回的响应内容包括：
+
+- `resp.status`：响应状态码
+- `resp.header`：响应头
+- `resp.body`：响应体即响应数据
+
+因为我们需要访问的是`Tomcat`服务器，而这个`Tomcat`服务器跟`Nginx`不在同一个网络中，并且`/path`是不包含`ip、port`的所以需要编写一个`Server`来对这个路径进行反向代理。
+
+```nginx
+location /path {
+    proxy_pass http://192.168.56.1:8081
+}
+```
+
+原理类似下图：![img](https://img-blog.csdnimg.cn/35b54b8b467740cfba6b8efe460a8d73.png)
+
+接下来就具体实际操作下：
+
+1. 修改`OpenResty`中的配置文件，添加发往`Tomcat`的匹配路径：这样当调用`ngx.location.capture(/item)`就会代理到http://192.168.56.1:8081/item而不是`Nginx`自己的路径中。
+
+   ```nginx
+   location /item {
+       proxy_pass http://192.168.56.1:8081
+   }
+   ```
+
+2. 自定义发送`http`请求的工具解析返回的内容，当然你也可以直接写，只不过没那么优雅而已：我们知道在`OpenResty`启动时会加载两个目录的文件：
+
+   ![img](https://img-blog.csdnimg.cn/756ce0bf12f041719d3d123cbcb1a8fe.png)
+
+   所以我们将该工具放置到`/usr/local/openresty/lualib/common.lua`文件中：
+
+   ```lua
+   local function read_http(path, params)
+       local resp = ngx.location.capture(path,{
+           method = ngx.HTTP_GET,
+           args = params,
+       })
+       if not resp then
+           ngx.log(ngx.ERR, "http请求查询失败, path: ", path , ", args: ", args)
+           ngx.exit(404)
+       end
+       return resp.body
+   end
+   -- export method
+   local _M = {  
+       read_http = read_http
+   }  
+   return _M
+   ```
+
+   这个工具将`read_http`函数封装到`_M`这个`table`类型的变量中，并且返回，这类似于导出。使用的时候，可以利用`require('common')`来导入该函数库，这里的`common`是函数库的文件名。
+
+3. 实现商品查询，修改`item.lua`，使用刚刚的`read_http`工具类获取商品信息
+
+   ```lua
+   -- 引入自定义common工具模块，返回值是common中返回的 _M
+   local common = require("common")
+   -- 从 common中获取read_http这个函数
+   local read_http = common.read_http
+   -- 获取路径参数
+   local id = ngx.var[1]
+   -- 根据id查询商品
+   local itemJSON = read_http("/item/".. id, nil)
+   -- 根据id查询商品库存
+   local itemStockJSON = read_http("/item/stock/".. id, nil)
+   ```
+
+   获取到商品跟库存的两个`JSON`格式的字符串，我们需要将这两个`JSON`格式的字符串拼接为同一个：需要先转化为`table`合并之后再转换为`JSON`格式字符串。
+
+   ![img](https://img-blog.csdnimg.cn/7057b947e532446baf12c642dbd6aa15.png)
+
+4. 使用`CJSON`转换`JSON`或者`table`，`CJSON`是`OpenResty`提供的用来处理`JSON`的序列化和反序列化。官方地址： https://github.com/openresty/lua-cjson/，使用前先引入模块：
+
+   ```lua
+   local cjson = require "cjson";
+   ```
+
+   序列化操作案例如下：
+
+   ```lua
+   local obj = {name="Jack", age=21};
+   local json = cjson.encode(obj);
+   print(obj);
+   ```
+
+   反序列化操作案例如下：
+
+   ```lua
+   local json = '{"name":"Jack", "age":21}';
+   local obj = cjson.decode(obj);
+   print(obj);
+   ```
+
+   将上述查询到的`itemJSON`和`itemStockJSON`转化为`table`格式然后进行拼接再转化为`JSON`格式：
+
+   ```lua
+   local cjson = require('cjson')
+   local common = require(“common”)
+   local read_http = common.read_http;
+   local id = ngx.var[1];
+   local itemJSON = read_http("/item/".. id, nil);
+   local itemStockJSON = read_http("/item/stock/".. id, nil);
+   local item = cjson.decode(itemJSON);
+   local itemStock = cjson.decode(itemStockJSON);
+   item.stock = itemStock.stock;
+   item.sold = itemStock.sold;
+   ngx.say(cjson.encode(item));
+
+5. 重新加载`OpenResty Nginx`，观察效果，访问：http://localhost/item.html?id=10002，如果出错可以到`/usr/local/openresty/nginx/logs/error.log`查看错误日志，可以看到访问成功，一定要记得先配置好`nginx.conf`再写`Lua`脚本哦~
+
+   配置文件如下：
+
+   ```nginx
+   #user  nobody;
+   worker_processes  1;
+   error_log  logs/error.log;
+   
+   events {
+       worker_connections  1024;
+   }
+   
+   http {
+       include       mime.types;
+       default_type  application/octet-stream;
+       sendfile        on;
+       keepalive_timeout  65;
+       lua_package_path "/usr/local/openresty/lualib/?.lua;;";
+       lua_package_cpath "/usr/local/openresty/lualib/?.so;;";  
+       server {
+           listen       8082;
+           server_name  localhost;
+           location / {
+               root   html;
+               index  index.html index.htm;
+           }
+           location ~ /api/item/(\d+) {
+               default_type application/json;
+               content_by_lua_file lua/item.lua;
+           }
+   		location /item {
+   	   	 	proxy_pass http://192.168.56.1:8081;
+   		}
+           error_page   500 502 503 504  /50x.html;
+           location = /50x.html {
+               root   html;
+           }
+       }
+   }
+   ```
+
+   ![img](https://img-blog.csdnimg.cn/20995c22893146d29a4c0f7d63b4dacb.png)
+
+#### 19.4.5 更改`OpenResty`负载均衡策略：`iphash`改版
+
+上述已经完成了从反向代理服务器`Nginx`再到`OpenResty`的`Nginx`业务服务器中，最后向`Tomcat`服务器发送请求，上述可以看到`Tomcat`是单机部署的，但是在实际开发过程中，`Tomcat`服务器一定是集群模式的【高并发高可用嘛】：
+
+![](https://img-blog.csdnimg.cn/13d4f713ffa44aef8aa646bbfa75f64b.png)
+
+因此作为由`Nginx`构成的业务集群，我们需要做负载均衡，这样才能向`Tomcat`集群发送请求。为了避免端口混乱：
+
+1. 我这里将`Windows`跳转访问到`OpenResty`的地址的端口更改为`9091`，然后`nginx -s reload`
+2. 其次我将`Linux`中的`OpenResty`的`Nginx`监听端口更改为`9091`，然后`nginx -s reload`
+3. 完成后记得将`9091`从虚拟机`VirtualBox`开放出来否则`Windows`无法访问，将之前的`8081`改掉就行
+
+然后就是对`OpenResty`访问`Tomcat`集群做负载均衡，默认的负载均衡规则时轮询模式，轮询的效率会跟着有无`JVM`进程缓存【日后肯定是要做`JVM`进程缓存的，只是现在还没做而已】而导致命中率低下，比如当你访问`/item/10001`时：
+
+- 第一次会访问`8081`端口的`Tomcat`服务，会查询数据库，在该服务内部就形成了`JVM`进程缓存，所以就会访问`JVM`缓存【本地进程缓存】
+- 第二次会访问`8082`端口的`Tomcat`服务，该服务内部没有`JVM`缓存（因为`JVM`缓存无法共享），会查询数据库
+- ...
+
+所以可以看到，访问每个服务器的第一次都会去查询数据库，之前几个服务器中做的本地进程缓存即`JVM`缓存一点效果都没有，缓存的命中率不是低不低的问题了，压根在第一次就命中不到。
+
+那要如何解决这个本地进程缓存即`JVM`缓存没有解决的问题呢？很好办，你每次发送的请求若是同一个商品都去向同一个`Tomcat`服务器发送不就好了。这样`JVM`缓存在第二次`Tomcat`服务器被访问就一定可以访问得到了。
+
+**具体怎么做呢？我们可以通过请求路径作为负载均衡的算法，`Nginx`已经实现了这一负载均衡策略，它会根据请求路径做一个`Hash`计算，然后将其`% Tomcat`服务器的数量。那么得到的余数肯定在`[0 - (Tomcat count - 1)]`之中，如此一来我们就可以通过余数【假设得到的余数为`n`】来访问第`n + 1`个服务器了。**
+
+例如：
+
+- 我们的请求路径是`/item/10001`
+- `Tomcat`总数为`2`台`（8081、8082）`
+- 对请求路径`/item/1001`做`hash`运算求余的结果为`1`
+- 则访问第一个`Tomcat`服务，也就是`8081`
+
+因为`Hash`值是根据请求路径计算出来的，所以只要请求路径不变`Hash`就不变，`Hash`不变访问到的服务器就不变，又因为请求路径跟`id`绑定一块，`id`变请求路径才会变，所以就是说只要`id`不变，访问的服务器就不会变，还是同一个。
+
+**<font color="deepskyblue">实现：</font>**
+
+其实这跟`Nginx`的负载均衡策略之一`iphash`没有什么区别，只不过`iphash`是根据`ip`来计算哈希的，所以要想通过`id`计算请求路径`hash`需要在配置文件做一些小小的改动：
+
+修改`/usr/local/openresty/nginx/conf/nginx.conf`文件，实现基于`id`做`hash`计算，首先定义`Tomcat`集群的位置，然后将负载均衡策略设置为请求路径：
+
+```nginx
+upstream tomcat-cluster {
+    hash $request_uri;
+    server 192.168.56.1:8081;
+    server 192.168.56.1:8082;
+}
+```
+
+对整个`Tomcat`集群做反向代理，之前的代码是对一个，现在改成集群了：
+
+将：
+
+```nginx
+location /item {
+	proxy_pass http://192.168.56.1:8081;
+}
+```
+
+更改为：
+
+```nginx
+location /item {
+    proxy_pass http://tomcat-cluster;
+}
+```
+
+整个配置文件`nginx.conf`为：
+
+```nginx
+#user  nobody;
+worker_processes  1;
+error_log  logs/error.log;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile        on;
+    keepalive_timeout  65;
+    lua_package_path "/usr/local/openresty/lualib/?.lua;;";
+    lua_package_cpath "/usr/local/openresty/lualib/?.so;;";
+    upstream tomcat-cluster {
+        hash $request_uri;
+        server 192.168.56.1:8081;
+        server 192.168.56.1:8082;
+    }
+    server {
+        listen       9091;
+        server_name  localhost;
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+        location ~ /api/item/(\d+) {
+            default_type application/json;
+            content_by_lua_file lua/item.lua;
+        }
+		location /item {
+	   		proxy_pass http://tomcat-cluster;
+		}
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
+}
+```
+
+`OpenResty`重新加载配置文件`nginx.conf`：
+
+```shell
+nginx -s reload
+```
+
+拷贝一份`Tomcat`服务器将端口更改为`8082`：`VM Options: -Dserver.port=8082`，然后启动服务器。
+
+![img](https://img-blog.csdnimg.cn/4236ac7b21994812accfdc5c686283b2.png)
+
+访问：http://localhost/item/10001刷新`N`次，可以看到无论怎样都是访问的`8082`服务器：
+
+![img](https://img-blog.csdnimg.cn/17e506ab6a3b4d89976ee8aea351301c.png)
+
+访问：http://localhost/item/10002刷新`N`次，可以看到无论怎样都是访问的`8081`服务器：
+
+![img](https://img-blog.csdnimg.cn/b8051399cd8d4bc58442002d60860754.png)
+
+这样，我们就完成了让`OpenResty`的`Nginx`业务服务器基于请求路径的负载均衡策略。最终的其实就是这么一个设置：`hash $request_uri;`
+
+```nginx
+upstream tomcat-cluster {
+	hash $request_uri;
+	server 192.168.56.1:8081;
+	server 192.168.56.1:8082;
+}
+```
+
+#### 19.4.6 实现`Nginx`本地缓存
+
+上面学习了这么多只是学习了整个流程，那么到底怎么做`Nginx`本地缓存呢？这就需要使用到`OpenResty`为`Nginx`提供的`shard dict`共享词典的功能了，共享词典可以让`Nginx`多个`worker`之间共享数据，实现本地缓存功能。
+
+![img](https://img-blog.csdnimg.cn/5a27904b4acf434a866b5de004e53a9c.png)
+
+具体操作：
+
+1. 在`nginx.conf`的`http`下添加配置`lua_shared_dict`，表示开启共享词典即开启本地缓存，词典名称任意取，大小自定：
+
+   ```nginx
+   # 共享词典即本地缓存
+   lua_shared_dict item_cache 150m;
+   ```
+
+2. 如何操作共享词典？
+
+   ```lua
+   -- 获取共享词典即本地缓存对象
+   local item_cache = ngx.shared.item_cache;
+   -- 存储数据，指定键值对并指定过期时间，单位为秒比如这里为 1000s，默认为 0 表示永不过期
+   item_cache:set('key', 'value', 1000);
+   -- 读取
+   local val = item_cache:get('key');
+   ```
+
+3. 知道了如何开启共享词典并且如何操作共享词典之后，就可以在`item.lua`文件中实现本地缓存查询了，如果本地查询不到，按照架构图，将去`Redis`中查询，发送请求到`Redis`中查询我们还没有做，不过没关系，因为很简单，再然后如果`Redis`页查询不到，则会直接查询`Tomcat`服务器 ：
+
+   ```lua
+   -- 导入开启的共享词典，这里在 nginx.conf 设置的共享词典名称为：item_cache
+   local item_cache = ngx.shared.item_cache;
+   -- 封装查询函数【如果本地缓存没有就发送请求给 Redis，到 Redis 中查询】
+   -- 参数为：key 表示查询的键，path 表示要请求的 Redis 请求路径，params 表示发送请求的参数, expire 到时设置本地缓存时数据的过期时间
+   function read_data(key, expire, path, params)
+       -- 查询本地缓存
+       local val = item_cache:get(key);
+       -- 如果没有查询到即 val 为 null ，则需要记录错误日志向 Redis 发送请求
+       if not val then
+           -- 记录没有本地缓存的日志
+           ngx.log(ngx.ERR, "本地缓存查询失败，尝试查询 Redis，key: ", key);
+           -- 向 Redis 发送请求，请求查询，这里查询 Redis 已经封装到了 read_redis() 函数中，传递 ip、port、key 即可
+           val = read_redis("127.0.0.1", 6379, key);
+           -- 如果 Reids 中也没有命中缓存，则通过 http 请求通过 Tomcat 服务器查询数据库
+           if not val then
+               ngx.log(ngx.ERR, "Redis 查询失败，尝试查询 http：key: ", key);
+               val = read_http(path, params);
+           end;
+       end;
+       -- 此时获取到数据，先将数据，先将数据写入到本地缓存中，然后反水数据
+       item_cache:set(key, val, expire);
+       return val;
+   end;
+   ```
+
+4. 现在我们就写好了`read_data`查询本地缓存的业务代码了，修改`item.lua`中查询商品和库存的业务，使用刚刚写好的`read_data`函数：
+
+   ![img](https://img-blog.csdnimg.cn/dfe39eedd2974a219eeb07fc058fc1a1.png)
+
+   当进行第二次访问的时候，会更新过期时间，如果在过期时间内还没有二次访问，则`Nginx`本地缓存会将该缓存剔除，这里的缓存时间都是以`s`秒为单位的，`1800s`表示`30`分钟，`60s`表示`1`分钟，因为库存的更新频率是比较高的，如果缓存时间过程，可能会与数据库的查询较大，当然如果数据库的数据发生改变，我们需要做缓存同步，这个后面会学习到。
+
+5. 这样我们其实就完成了本地缓存的业务编写了，只需将其整合到`item.lua`中即可，注意：`read_http`和`read_redis`表示从数据库跟`Redis`查询缓存，我们将其都存放在`lualib`文件夹中，有需要时直接导入获取即可：
+
+   ```lua
+   -- 导入 common 函数库中的：read_http read_redis
+   local common = require('common');
+   local read_http = common.read_http;
+   local read_redis = common.read_redis;
+   -- 导入 cjson 库，合并查询到的 itemJSON 以及 itemStockJSON
+   local cjson = require('cjson');
+   -- 导入本地词典
+   local item_cache = ngx.shared.item_cache;
+   -- 封装查询 Nginx 本地缓存的函数
+   function read_data(key, expire, path, params)
+       --获取共享词典本地缓存的数据
+       local val = item_cache:get(key);
+       if not val then
+           ngx.log(ngx.ERR, "本地缓存查询失败，尝试查询Redis， key: ", key);
+           val = read_redis("127.0.0.1", 6379, key);
+           if not val then
+               ngx.log(ngx.ERR, "redis查询失败，尝试查询http， key: ", key)
+               val = read_http(path, params);
+           end;
+       end;
+       item_cache:set(key, val, expire);
+       return val;
+   end;
+   -- 获取请求路径传递的 id
+   local id = ngx.var[1];
+   -- 查询商品信息 key expire path params
+   local itemJSON = read_data("item:id"..id, 1800, "/item/"..id, nil);
+   -- 查询库存信息 key expire path params
+   local itemStockJSON = read_data("item:stock:id"..id, 60, "/item/stock/"..id, nil);
+   -- 将 JSON 数据转换为 table
+   local item = cjson.decode(itemJSON);
+   local itemStock = cjson.decode(itemStockJSON);
+   -- 合并 table
+   item.stock = itemStock.stock;
+   item.sold = itemStock.sold;
+   -- 将 table 转换为 JSON 数据返回
+   ngx.say(cjson.encode(item));
+   ```
+
+   到这里，`Nginx`本地缓存的功能就实现好了。我们知道，当`Nginx`本地缓存没有命中数据时，就会到下一站的`Redis`中查询数据，所以下一站 —— `Redis`查询缓存，出发！
+
+### 19.5 实现`Redis`缓存
+
+在`19.4`小节中完成了`Nginx`反向代理到`OpenResty`的`Ngxin`业务集群的缓存操作`item.lua ---> read_data()`，当在`OpenResty`即`Nginx`本地缓存没有命中时，此时就会查询`Redis`缓存，看`Redis`中是否有数据。
+
+所以我们需要整个查询`Redis`的缓存函数：`read_redis()`，我们将其编写在`lualib/common.lua`文件中，`OpenResty`已经封装好了`Redis`模块，我们直接拿来用即可：
+
+```lua
+-- 导入 Redis 因为 redis 文件在 resty 目录中，类似于 java 的包
+ local redis = require('resty.redis');
+-- 初始化 Redis 对象
+local red = redis:new();
+-- 设置 Redis 超时时间
+red.set_timeputs(1000, 1000, 1000);
+-- 查询 Redis 中的缓存
+local function read_redis(ip, port, key)
+    -- 连接 Redis
+    local ok, err = red:connect(ip, port);
+    if not ok then
+        ngx.log(ngx.ERR, "连接 Redis 失败：", err);
+        return nil;
+    end;
+    -- 连接 Redis 成功，查询缓存
+    local resp, err = red:get(key);
+    if not resp then
+        ngx.log(ngx.ERR, "查询Redis失败: ", err, ", key = " , key)
+    end;
+    -- 当得到的数据为空报告信息即发送请求成功，但是 key 不存在
+    if resp == ngx.null then
+        resp = nil;
+        ngx.log(ngx.ERR, "查询 Redis 数据为空，key = ", key);
+    end;
+    -- 断开 Redis 连接，这个是自定义的函数
+    close_redis(red);
+    return resp;
+end;    
+```
+
+关闭`Redis`的`Lua`函数如下，关闭连接不是真的去把`Redis`关闭，因为读写需求很大，所以这里的做法是将其放入到`Redis`连接池中，不过也会做一个连接池的最大空闲时间，比如这里的设置，如果大于`10s`，则真正断开连接：
+
+```lua
+local function close_redis(red)
+    -- 设置连接池连接的最大空闲时间，单位为毫秒，10s 没有人连接 Redis 则真正断开
+    local pool_max_idle_time = 10000;
+    -- 设置连接池大小
+    local pool_size = 100;
+    -- 设置保存连接
+    local ok, err = red:set_keepalive(pool_max_idle_time, pool_size);
+    if not ok then
+        ngx.log(ngx.ERR, "放回 Redis 连接池失败: ", err)
+    end;
+end;
+```
+
+写完`read_redis`还需要将其导出，到时候给`item.lua`文件使用：
+
+```lua
+local _M = {
+    read_http = read_http;
+    read_redis = read_redis;
+}
+return _M;
+```
+
+整合上述，整个`Redis`查询如下，因为是放在`common.lua`文件的，所以干脆贴出整个`common.lua`的代码将之前写的发送`http`的函数也一并带上：
+
+```lua
+-- 导入 Redis 因为 redis 文件在 resty 目录中，类似于 java 的包
+ local redis = require('resty.redis');
+-- 初始化 Redis 对象
+local red = redis:new();
+-- 设置 Redis 超时时间
+red.set_timeputs(1000, 1000, 1000);
+local function close_redis(red)
+    -- 设置连接池连接的最大空闲时间，单位为毫秒，10s 没有人连接 Redis 则真正断开
+    local pool_max_idle_time = 10000;
+    -- 设置连接池大小
+    local pool_size = 100;
+    -- 设置保存连接
+    local ok, err = red:set_keepalive(pool_max_idle_time, pool_size);
+    if not ok then
+        ngx.log(ngx.ERR, "放回 Redis 连接池失败: ", err)
+    end;
+end;
+-- 查询 Redis 中的缓存
+local function read_redis(ip, port, key)
+    -- 连接 Redis
+    local ok, err = red:connect(ip, port);
+    if not ok then
+        ngx.log(ngx.ERR, "连接 Redis 失败：", err);
+        return nil;
+    end;
+    -- 连接 Redis 成功，查询缓存
+    local resp, err = red:get(key);
+    if not resp then
+        ngx.log(ngx.ERR, "查询Redis失败: ", err, ", key = " , key)
+    end;
+    -- 当得到的数据为空报告信息即发送请求成功，但是 key 不存在
+    if resp == ngx.null then
+        resp = nil;
+        ngx.log(ngx.ERR, "查询 Redis 数据为空，key = ", key);
+    end;
+    -- 断开 Redis 连接，这个是自定义的函数
+    close_redis(red);
+    return resp;
+end;
+-- 发送 http 请求查询数据
+local function read_http(path, params)
+    -- 使用 ngx.location.capture 发送请求获取响应信息
+    local resp = ngx.location.capture(path, {
+        method = ngx.HTTP_GET;
+        args = params;
+    });
+    if not resp then
+        -- 记录错误信息，返回 404
+		ngx.log(ngx.ERR, "http查询失败, path: ", path , ", args: ", args);
+        ngx.exit(404);
+	end;
+    return resp.body;
+end;    
+-- 将 read_http 和 read_redis 方法导出
+local _M = {
+    read_http = read_http;
+    read_redis = read_redis;
+}
+return _M;
+```
+
+现在，就实现了从`Ngixn`业务服务器中查询`Redis`缓存的功能，实现了多级缓存中的一环：
+
+![img](https://img-blog.csdnimg.cn/f6e4d798752b4560a9db10f9bc8a07f5.png)
+
+当请求进入`OpenResty`之后：
+
+- 优先查询`Redis`缓存
+- 如果`Redis`缓存未命中，再查询`Tomcat`
+
+整个业务如下：
+
+```lua
+-- 导入 common 函数库中的：read_http read_redis
+local common = require('common');
+local read_http = common.read_http;
+local read_redis = common.read_redis;
+-- 导入 cjson 库，合并查询到的 itemJSON 以及 itemStockJSON
+local cjson = require('cjson');
+-- 导入本地词典
+local item_cache = ngx.shared.item_cache;
+-- 封装查询 Nginx 本地缓存的函数
+function read_data(key, expire, path, params)
+    --获取共享词典本地缓存的数据
+    local val = item_cache:get(key);
+    if not val then
+        ngx.log(ngx.ERR, "本地缓存查询失败，尝试查询Redis， key: ", key);
+        val = read_redis("127.0.0.1", 6379, key);
+        if not val then
+            ngx.log(ngx.ERR, "redis查询失败，尝试查询http， key: ", key)
+            val = read_http(path, params);
+        end;
+    end;
+    item_cache:set(key, val, expire);
+    return val;
+end;
+-- 获取请求路径传递的 id
+local id = ngx.var[1];
+-- 查询商品信息 key expire path params
+local itemJSON = read_data("item:id"..id, 1800, "/item/"..id, nil);
+-- 查询库存信息 key expire path params
+local itemStockJSON = read_data("item:stock:id"..id, 60, "/item/stock/"..id, nil);
+-- 将 JSON 数据转换为 table
+local item = cjson.decode(itemJSON);
+local itemStock = cjson.decode(itemStockJSON);
+-- 合并 table
+item.stock = itemStock.stock;
+item.sold = itemStock.sold;
+-- 将 table 转换为 JSON 数据返回
+ngx.say(cjson.encode(item));
+```
+
+#### 19.5.1 实现`Redis`缓存预热
+
+`Redis`缓存查询是实现完了，但是现在有一个问题就是，`Redis`压根就没有数据呀，没有数据那查询`Redis`缓存还有啥意义呢？
+
+当我们的整个系统刚开始运行的时候，因为还没有接收任何请求，所以`Redis`肯定是没有缓存数据的，因为这里是多级缓存的架构，能做成多级缓存那流量肯定是相当的大的了，所以如果直接启动整个系统，那么一时间大量查询商品的请求涌入过来，直奔数据库，就会给数据库造成很大的压力。这样子啥都不做，直接启动项目做我们称之为**冷启动**。
+
+所以为了避免给数据库一下子接收许多请求，从而可能导致数据库崩溃的风险，所以在实际开发中，会利用大数据统计用户访问的热点数据，在整个系统启动的时候就将这些热点数据提前查询保存到`Redis`中，这就是**`Redis`的缓存预热**。
+
+**<font color="deepskyblue">再次声明，这里是多级缓存，能够做多级缓存的肯定是流量相当大的，而且你不可能一样东西从一开始流量就非常巨大，所以在企业发展到有上亿流量的过程中，肯定会统计一些用户访问得最多的一些数据。就好比你有一家咖啡店，哪款咖啡卖得最火这个数据你作为老板你肯定是要知道也会知道的。</font>**这里也一样，在做成多级缓存的系统之后，之前统计到的哪些商品销量最好，最好的这些就是用户经常查询的，所以在系统启用时，就先将这些热点数据存储在`Redis`，这样就能防止一下子请求都打到数据库，导致出现数据库崩溃的风险。
+
+因为这里我们只是学习，数据量很少，所以我们干脆在这里把所有的数据都先放入`Redis`缓存中。这里`Reids`我安装在`Docker`中，关于`Docker`如何安装`Redis`见`18.2`小节。
+
+**<font color="red">注：这里只是模拟了单节点`Redis`的操作，实际开发中应该会将`Redis`做成集群，不过操作上没什么差别，只不过配置文件会有所变化而已。</font>**
+
+安装完毕后，我们就需要导入数据了，这么重复性的工作肯定不能手动啊，那就需要使用`Java`查询数据库然后写入`Redis`中了，具体操作如下：
+
+1. 引入依赖
+
+   ```xml
+   <dependency>
+       <groupId>org.springframework.boot</groupId>
+       <artifactId>spring-boot-starter-data-redis</artifactId>
+   </dependency>
+   ```
+
+2. 修改配置文件：
+
+   ```yaml
+   spring:
+     redis:
+       host: 192.168.150.101
+       port: 6379
+   ```
+
+3. 因为`Redis`缓存预热需要在项目启动时就完成，所以先获取到`RedisTemplate`对象然后在启动时完成预热才行，那么就需要使用`InitializingBean`接口来实现，因为`InitializingBean`可以在对象被Spring创建并且成员变量全部注入后执行。然后查询全部数据库信息：
+
+   ```java
+   package com.kk.cache.handler;
+   
+   import com.alibaba.fastjson.JSON;
+   import com.kk.cache.pojo.Item;
+   import com.kk.cache.pojo.ItemStock;
+   import com.kk.cache.service.ItemService;
+   import com.kk.cache.service.ItemStockService;
+   import org.springframework.beans.factory.InitializingBean;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.data.redis.core.RedisTemplate;
+   import org.springframework.stereotype.Component;
+   
+   import java.util.List;
+   
+   @Component
+   public class RedisHotHandler implements InitializingBean {
+   
+       @Autowired
+       private RedisTemplate redisTemplate;
+   
+       @Autowired
+       private ItemService itemService;
+   
+       @Autowired
+       private ItemStockService itemStockService;
+   
+       //private static final ObjectMapper MAPPER = new ObjectMapper();
+   
+       @Override
+       public void afterPropertiesSet() throws Exception {
+           //查询商品信息 ---> 将其放入缓存，合并的事情查询 Redis 缓存的时候就做了，这里不用重复，然后放入 Redis 缓存中
+           List<Item> itemList = itemService.list();
+           for (Item item : itemList) {
+               //转换为 JSON 数据，key 为 item:id，你使用 fastjson 或者 jackson 都可以
+               String json = JSON.toJSONString(item);
+               // String json = MAPPER.writeValueAsString(item);
+               redisTemplate.opsForValue().set("item:id" + item.getId(), json);
+           }
+           //查询库存信息，放入 Redis 缓存中
+           List<ItemStock> itemStocks = itemStockService.list();
+           for (ItemStock itemStock : itemStocks) {
+               String json = JSON.toJSONString(itemStock);
+               redisTemplate.opsForValue().set("item:stock:id" + itemStock.getId(), json);
+           }
+       }
+   }
+   ```
+
+到这里，就完成了`Redis`缓存预热。
+
+### 19.6 使用`Caffeine`实现本地进程缓存
+
+从`Ngxin`反向代理到`OpenResty`再到`Redis`，如果缓存都没有命中那么就会发送请求到`Tomcat`，为了最大化实现缓存，我们当然也可以在`Tomcat`中做本地缓存，这就是本地进程缓存也叫`JVM`缓存，即真正的缓存到本地。
+
+自己实现本地进程缓存即`JVM`缓存那是相当的麻烦，所以通常我们会借用与一些框架来实现本地进程缓存，通常我们会选择`Caffeine`框架。`Caffeine`是一个基于`Java8`开发的，提供了近乎最佳命中率的高性能的本地缓存库。目前`Spring`内部的缓存使用的就是`Caffeine`。`GitHub`地址：https://github.com/ben-manes/caffeine
+
+为什么选择使用`Caffeine`呢？
+
+原因很简单，那就是因为**`Caffeine`**的性能非常好。下面就是官方给出的性能对比图：可以看到`Caffeine`的性能是有多给力。
+
+![img](https://img-blog.csdnimg.cn/95211eeea1314035bff864547b7639a4.png)
+
+作为一款优秀的缓存框架，那肯定就具有：存储缓存数据、查看缓存数据、清除缓存数据的功能了。如何使用呢？下面是简单的存储缓存书和使用缓存数据的案例：
+
+1. 引入`Caffeine`依赖
+
+   ```xml
+   <dependency>
+       <groupId>com.github.ben-manes.caffeine</groupId>
+       <artifactId>caffeine</artifactId>
+   </dependency>
+   ```
+
+2. 使用`Caffeine`：
+
+   ```java
+   package com.kk.cache;
+   
+   import com.github.benmanes.caffeine.cache.Cache;
+   import com.github.benmanes.caffeine.cache.Caffeine;
+   import org.junit.jupiter.api.Test;
+   import org.springframework.boot.test.context.SpringBootTest;
+   
+   @SpringBootTest
+   class ApplicationTests {
+   
+       @Test
+       void contextLoads() {
+           // 构建 Cache 对象
+           Cache<String, String> cache = Caffeine.newBuilder().build();
+           // 存储缓存数据
+           cache.put("name", "Mike");
+           // 查询缓存数据, getIfPresent 代表如果有就取出，没有返回 null
+           String name = cache.getIfPresent("name");
+           System.out.println("name = " + name);
+           // 查询缓存数据还有另外一种方式：使用 get
+           // 它跟 getIfPresent 的区别就是，如果查询到 null 会默认返回 Lambda 表达式中的值
+           String defaultName = cache.get("defaultName", key -> {
+               return "default Name is null";
+           });
+           System.out.println("default name = " + defaultName);
+       }
+   
+   }
+   ```
+
+为了防止内存耗尽，所以基本上所有的缓存框架都会有清除缓存的功能，`Caffeine`也不例外，在`Caffeine`中，它提供了三种缓存清除策略：
+
+- 基于时间的清除缓存策略
+
+  这个很好理解，类比于`Redis`，在`Redis`缓存是有有效时间的，这里也是同样的意思，我们可以在创建缓存对象的时候统一设置缓存的有效时间。
+
+  ```java
+  Cache<String, String> cache = Caffeine.newBuilder().expireAfterWrite(Duration.ofSeconds(10)).build();
+  ```
+
+- 基于容量的清除缓存策略
+
+  意思就是设置缓存的数量上限，比如说只能存`1`个缓存：
+
+  ```java
+  Cache<String, String> cache = Caffeine.newBuilder().maximumSize(1).build();
+  ```
+
+- 基于引用的清除缓存策略
+
+  设置缓存为软引用或者弱引用，使用`GC`来回收缓存数据，性能较差，不建议使用。
+
+**<font color="red">在默认情况下，当一个缓存元素过期的时候，`Caffeine`不会自动立即将其清理和驱逐。而是再一次读或写操作后【因为中间会有段相隔时间】，或者在空闲时间完成对失的缓存效数据进行清除。`Redis`也是这样。</font>**
+
+```java
+Cache<String, String> cache = Caffeine.newBuilder().maximumSize(1).build();
+// 存储缓存数据
+cache.put("name1", "Mike1");
+cache.put("name2", "Mike2");
+cache.put("name3", "Mike3");
+System.out.println("name = " + cache.getIfPresent("name1"));
+System.out.println("name = " + cache.getIfPresent("name2"));
+System.out.println("name = " + cache.getIfPresent("name3"));
+```
+
+比如这里，我明明设置了`maximumSize`为`1`但是还是查出了全部，这就是因为它没有立即清除，而是得过一阵子或者再一次进行读写的时候才会清除。
+
+![img](https://img-blog.csdnimg.cn/22499789e6174180ba804f3880283a4d.png)
+
+比如我设置个睡眠，看下效果：可以看到查询的缓存为`null`
+
+![img](https://img-blog.csdnimg.cn/87768f577cb34c3f8ed4aeb044b9ccf6.png)
+
+在了解了`Caffeine`之后，就可以使用它来做本地进程缓存即`JVM`缓存了，因为某一类的`Caffeine`在整个容器中有且只能有一个，所以直接搞一个配置类将其交给容器管理即可。
+
+因为这里有商品和库存两个信息，所以我们让`Spring`管理两个`Caffeine`对象，一个存储商品缓存数据，一个存储库存缓存数据，并且让缓存的初始化大小为`100`，缓存上限为`10000`：
+
+创建`CaffeineConfiguration`类：该业务中缓存的`key`为`Long`类型即`id`
+
+```java
+package com.kk.cache.configuration;
+
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class CaffeineConfiguration {
+    @Bean
+    public Cache<Long, Item> itemCache() {
+        return Caffeine.newBuilder()
+                .initialCapacity(100)
+                .maximumSize(10_000)
+                .build();
+    }
+
+    @Bean
+    public Cache<Long, ItemStock> itemStockCache() {
+        return Caffeine.newBuilder()
+                .initialCapacity(100)
+                .maximumSize(10_000)
+                .build();
+    }
+}
+```
+
+修改表现层代码，先从缓存中取数据，没有的话再从数据库取数据，并将其存放在本地缓存中【使用`cache.get`，这些逻辑在`Lambda`表达式完成即可】：
+
+```java
+/**
+ * 查询指定的商品库存信息
+ *
+ * @param id
+ * @return
+ */
+@GetMapping("/stock/{id}")
+public ItemStock findStockById(@PathVariable("id") Long id) {
+    return itemStockCache.get(id, key -> {
+        ItemStock itemStockDataBase = itemStockService.getById(key);
+        itemStockCache.put(key, itemStockDataBase);
+        //如果查询到的数据为 null，则新建对象返回
+        return itemStockDataBase == null ? new ItemStock(id, 0, 0) : itemStockDataBase;
+    });
+}
+
+/**
+     * 获取指定的商品信息
+     * 需要先判断下商品是否已经被删除
+     *
+     * @param id
+     * @return
+     */
+@GetMapping("/{id}")
+public Item findById(@PathVariable("id") Long id) {
+    //获取缓存中 itemStock，没有的话就从数据库中查询，然后存储在本地
+    ItemStock itemStock = findStockById(id);
+    //获取缓存中的 item，没有的话就从数据库中查询，然后存储在本地
+    Item item = itemCache.get(id, key -> {
+        Item itemDatabase = itemService.query().ne("status", 3).eq("id", id).one();
+        //存储在本地缓存
+        itemCache.put(key, itemDatabase);
+        return itemDatabase;
+    });
+    if (item != null) {
+        item.setStock(itemStock.getStock());
+        item.setSold(itemStock.getSold());
+    }
+    return item;
+}
+```
+
+**到此，就是使用`Caffeine`完成本地进程缓存即`JVM`缓存的全过程。**
+
+### 19.7 缓存同步
+
+一直有这么个问题浮现在脑海中，如果数据库跟缓存中的数据不一致该怎么办，那就需要用到缓存同步，保证数据库、各个缓存的数据是一致的。
+
+一般来说有三种常见数据同步策略：
+
+1. **设置缓存有效期：**给缓存设置有效期，到期后自动查询，此时会再次查询数据库
+   - 优势：简单、方便
+   - 缺点：时效性差，自然而然的想到缓存存在到过期的这么一段时间数据不一致怎么办？本质上并没有做同步
+   - 场景：更新频率较低，时效性要求低的业务
+2. **同步双写：**在修改数据库中的数据时，直接修改缓存，这其实就是做一个分布式事务，修改的时候都修改
+   - 优势：时效性强，缓存与数据库强一致
+   - 缺点：有代码侵入，耦合度高，实现起来想想就麻烦，因为缓存的地方有多个
+   - 场景：对一致性、时效性要求较高的缓存数据
+3. **异步通知：**修改数据库时发送事件通知，相关服务监听到通知后修改缓存数据
+   - 优势：低耦合，可以同时通知多个缓存服务
+   - 缺点：时效性一般，可能存在中间不一致状态
+   - 场景：时效性要求一般，有多个服务需要同步
+
+因为异步通知用的时最多的，所以这里着重学习异步通知，异步通知的实现可以基于消息队列`MQ`或者是`Canel`来实现，`MQ`我们之前学习过，下面是基于`MQ`的逻辑图：
+
+![img](https://img-blog.csdnimg.cn/faefdb59a24f4e33ba0570e626a9a7a9.png)
+
+解读：依然有少量的代码侵入，步骤大体为：
+
+- 商品服务完成对数据的修改后，只需要发送一条消息到`MQ`中。
+- 缓存服务监听`MQ`消息，然后完成对缓存的更新
+
+基于`Canal`的逻辑图如下：
+
+![img](https://img-blog.csdnimg.cn/42a6c0a1d6fc44ef875a15ec107a1ac6.png)
+
+解读：代码零侵入
+
+- 商品服务完成商品修改后，业务直接结束，没有任何代码侵入
+- `Canal`监听的是`MySQL`变化，不用侵入业务代码，当发现变化后，立即通知缓存服务
+- 缓存服务接收到`Canal`通知，更新缓存
+
+不知道有没有觉得这张图片似曾相识，是滴~当初在做`ElasticSearch`的数据同步时，我们就有提到过可以使用`Canal`来做数据同步，只不过当时我们选择了使用`MQ`来完成异步通知。这次接这个多级缓存的机会具体学习下使用`Canal`监听`MySQL binlog`来完成数据同步。
+
+![img](https://img-blog.csdnimg.cn/e80ab9330ba54221b01a21e365bdf1b2.png)
+
+所以我们选择使用`Canal`来实现数据同步是非常不错的一种选择，要使用，你就得先安装`Canal`，在此之前先简单认识下`Canal`。
+
+#### 19.7.1 `Canal`简单介绍
+
+`Canal `，译意为水道/管道/沟渠，`Canal`是阿里巴巴旗下的一款开源项目，基于`Java`开发。基于数据库增量日志解析，提供增量数据订阅消费。`GitHub`的地址：https://github.com/alibaba/canal
+
+`Canal`是基于`MySQL`的主从同步来实现的，既然要做主从同步那就是要做`MySQL`集群了，`MySQL`主从同步的原理如下：
+
+1. `MySQL master`将数据变更写入二进制日志`( binary log)`即`binlog`，其中记录的数据叫做`binary log events`
+2. `MySQL salve`将`master`的`binary log events`拷贝到它的中继日志`(relay log)`
+3. `MySQL slave`重放`relay log`中存储的`binlog events`事件，将数据变更反映它自己的数据，这就完成了主从复制
+
+![img](https://img-blog.csdnimg.cn/6a98d1b4757741d2bd6ff42ccaa28c54.png)
+
+
+
+听说`Canal`可以同步`Mysql`数据，它并没有用什么神奇的魔法，而是混入`Msqyl Slave`的队伍中，冒充`slave`从节点，从而监听`master`的`binary log`变化。再把得到的变化信息通知给`Canal`的客户端，进而完成对其它数据库的同步。【真正的二进制间谍了属于是，想必`MySQL`老大哥其实知道的，但是为了照顾大局，让`Canel`这样搞，毕竟`Canal`只是拿`binlog`的数据，虽然有一定的安全隐患，但也默许了】
+
+![img](https://img-blog.csdnimg.cn/f0901c3122fe4af89363feb307ed9f64.png)
+
+#### 19.7.2 安装`Canal`
+
+`Canal`是基于`MySQL`的主从同步功能，因此必须先开启`MySQL`的主从功能才可以。这里用`Docker`运行的`MySQL`为例：
+
+1. 打开`mysql`容器挂载的日志文件，我的在`/tmp/mysql/conf`目录：
+
+   ![img](https://img-blog.csdnimg.cn/b1dc7d2da7204cb592d2d4599c744a3a.png)
+
+2. 修改文件：
+
+   ```sh
+   vim /tmp/mysql/conf/my.cnf
+   ```
+
+   添加内容：
+
+   ```ini
+   log-bin=/var/lib/mysql/mysql-bin
+   binlog-do-db=item
+   ```
+
+   配置解读：
+
+   - `log-bin=/var/lib/mysql/mysql-bin`：设置`binary log`文件的存放地址和文件名，叫做`mysql-bin`
+   - `binlog-do-db=heima`：指定对哪个`database`记录`binary log events`，这里记录`item`这个库
+
+   最终效果：
+
+   ```ini
+   [mysqld]
+   skip-name-resolve
+   character_set_server=utf8
+   datadir=/var/lib/mysql
+   server-id=1000
+   log-bin=/var/lib/mysql/mysql-bin
+   binlog-do-db=item
+   ```
+
+
+3. 接下来添加一个仅用于数据同步的账户，出于安全考虑，这里仅提供对`item`这个库的操作权限：
+
+   ```mysql
+   [这里你可以使用 Navicat 都可以]
+   docker exec -it mysql bash
+   mysql -u root -p
+   123456
+   use mysql;
+   select User from user;
+   
+   如果你是5.x 版本的MySQL：
+   create user canal@'%' IDENTIFIED by 'canal' ;
+   GRANT SELECT, REPLICATION SLAVE, REPLICATION CLIENT,SUPER ON *.* TO 'canal'@'%' identified by 'canal';
+   
+   如果你是8.x版本的MySQL：
+   create user canal@'%' IDENTIFIED by 'canal';
+   GRANT SELECT, REPLICATION SLAVE, REPLICATION CLIENT,SUPER ON *.* TO 'canal'@'%';
+   FLUSH PRIVILEGES;
+   ```
+
+4. 重启`MySQL`容器：
+
+   ```shell
+   docker restart mysql
+   ```
+
+5. `MySQL`中使用`show master status`命令查看是否成功设置主从功能：
+
+   ![img](https://img-blog.csdnimg.cn/02542ac2d8834e689bbf61df78d203c5.png)
+
+开启完成`MySQL`的主从功能就可以安装`Canal`了，因为这里默认使用的网络就是`docker0`所以我们就不创建网络了，有需要的可以自行创建：
+
+```shell
+docker network create item
+docker network connect item mysql
+```
+
+到`hub.docker`拉取镜像包，或者直接使用提供的资源进行加载，`800+M`还是有点大的建议直接后者搞起：
+
+```shell
+docker load -i canal.tar
+```
+
+创建`Canal`容器：
+
+```shell
+docker run -p 11111:11111 --name canal \
+-e canal.destinations=item \
+-e canal.instance.master.address=mysql:3306  \
+-e canal.instance.dbUsername=canal  \
+-e canal.instance.dbPassword=canal  \
+-e canal.instance.connectionCharset=UTF-8 \
+-e canal.instance.tsdb.enable=true \
+-e canal.instance.gtidon=false  \
+-e canal.instance.filter.regex=item\\..* \
+-d canal/canal-server:v1.1.5
+```
+
+说明:【搞错的话可以删除容器再重新来一遍`docker rm -f canal`】
+
+- `-p 11111:11111`：这是`canal`的默认监听端口，如果是`NAT`记得对外开放`11111`端口
+- `destination`：`canal`的集群名字
+- `-e canal.instance.master.address=mysql:3306`：数据库地址和端口，如果不知道`mysql`容器地址，可以通过`docker inspect 容器id`来查看
+- `-e canal.instance.dbUsername=canal`：数据库用户名
+- `-e canal.instance.dbPassword=canal` ：数据库密码
+- `-e canal.instance.filter.regex=`：要监听的表名称
+
+表名称监听支持的语法：
+
+```
+mysql 数据解析关注的表，Perl正则表达式.
+多个正则之间以逗号(,)分隔，转义符需要双斜杠(\\) 
+常见例子：
+1.  所有表：.*   or  .*\\..*
+2.  canal schema下所有表： canal\\..*
+3.  canal下的以canal打头的表：canal\\.canal.*
+4.  canal schema下的一张表：canal.test1
+5.  多个规则组合使用然后以逗号隔开：canal\\..*,mysql.test1,mysql.test2 
+```
+
+`docker ps`查看运行容器状态。到这里`Canal`就安装完毕了。
+
+#### 19.7.3 监听`Canal`
+
+`Canal`提供了各种语言的客户端，当`Canal`监听到`binlog`变化时，会通知`Canal`的客户端。我们可以利用`Canal`提供的官方`Java`客户端，监听`Canal`通知消息。当收到变化的消息时，完成对缓存的更新。
+
+![img](https://img-blog.csdnimg.cn/a19be385fae94e18963572189cf9df4e.png)
+
+不过这里使用的是`GitHub`的第三方开源的`canal-starter`客户端。`Github`地址：https://github.com/NormanGyllenhaal/canal-client，它可以与`SpringBoot`完美整合，自动装配，比官方客户端要简单好用很多。
+
+1. 引入依赖：
+
+   ```xml
+   <dependency>
+       <groupId>top.javatool</groupId>
+       <artifactId>canal-spring-boot-starter</artifactId>
+       <version>1.2.1-RELEASE</version>
+   </dependency>
+   ```
+
+2. 修改配置文件：
+
+   ```yaml
+   canal:
+     destination: item # canal的集群名字，要与安装canal时设置的名称一致
+     server: 192.168.56.1:11111 # canal服务地址
+   ```
+
+3. 编写`Canal`监听器
+
+   通过实现`EntryHandler<T>`接口编写监听器，监听`Canal`消息。注意两点：
+
+   - 实现类通过`@CanalTable("tb_item")`指定监听的表信息
+   - `EntryHandler`的泛型是与表对应的实体类
+
+   因为`Canal`推送给`canal-client`的时被修改的这一行数据`row`，而我们引入的`canal-client`则会将改行数据封装到`Item`实体类中，这个过程就需要知道数据库和实体类的映射关系：`@Transient @Id @Column【标记表中与属性名不一致的字段】`
+
+   ```java
+   package com.kk.cache.pojo;
+   
+   import com.baomidou.mybatisplus.annotation.TableField;
+   import com.baomidou.mybatisplus.annotation.TableName;
+   import lombok.AllArgsConstructor;
+   import lombok.Data;
+   import lombok.NoArgsConstructor;
+   import org.springframework.data.annotation.Id;
+   import org.springframework.data.annotation.Transient;
+   
+   import java.util.Date;
+   
+   @Data
+   @NoArgsConstructor
+   @AllArgsConstructor
+   @TableName(value = "tb_item")
+   public class Item {
+       @Id//标记表中的id字段
+       private Long id;//商品id
+       @Column(name = "name")
+       private String name;//商品名称
+       private String title;//商品标题
+       private Long price;//价格（分）
+       private String image;//商品图片
+       private String category;//分类名称
+       private String brand;//品牌名称
+       private String spec;//规格
+       private Integer status;//商品状态 1-正常，2-下架
+       private Date createTime;//创建时间
+       private Date updateTime;//更新时间
+       @TableField(exist = false)
+       @Transient//标记不属于表中的字段
+       private Integer stock;
+       @TableField(exist = false)
+       @Transient//标记不属于表中的字段
+       private Integer sold;
+   }
+   ```
+
+   当数据库执行了`增删改`时都应该更改缓存数据：本地进程缓存、`Redis`缓存
+
+   ```java
+   package com.kk.cache.handler;
+   
+   import com.github.benmanes.caffeine.cache.Cache;
+   import com.kk.cache.handler.RedisHotHandler;
+   import com.kk.cache.pojo.Item;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.stereotype.Component;
+   import top.javatool.canal.client.annotation.CanalTable;
+   import top.javatool.canal.client.handler.EntryHandler;
+   
+   @Component
+   public class ItemCanalHandler implements EntryHandler<Item> {
+       @Autowired
+       private RedisHotHandler redisHandler;
+       @Autowired
+       private Cache<Long, Item> itemCache;
+   
+       @Override
+       public void update(Item before, Item after) {
+           // 写数据到JVM进程缓存
+           itemCache.put(after.getId(), after);
+           // 写数据到redis
+           redisHandler.saveItem(after);
+       }
+   
+       @Override
+       public void delete(Item item) {
+           // 删除数据到JVM进程缓存
+           itemCache.invalidate(item.getId());
+           // 删除数据到redis
+           redisHandler.deleteItemById(item.getId());
+       }
+   }
+   ```
+
+   修改`RedisHotHandler`的代码：
+
+   ```java
+   package com.kk.cache.handler;
+   
+   import com.alibaba.fastjson.JSON;
+   import com.kk.cache.pojo.Item;
+   import com.kk.cache.pojo.ItemStock;
+   import com.kk.cache.service.ItemService;
+   import com.kk.cache.service.ItemStockService;
+   import org.springframework.beans.factory.InitializingBean;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.data.redis.core.RedisTemplate;
+   import org.springframework.stereotype.Component;
+   
+   import java.util.List;
+   
+   @Component
+   public class RedisHotHandler implements InitializingBean {
+   
+       @Autowired
+       private RedisTemplate redisTemplate;
+   
+       @Autowired
+       private ItemService itemService;
+   
+       @Autowired
+       private ItemStockService itemStockService;
+   
+       //private static final ObjectMapper MAPPER = new ObjectMapper();
+   
+       @Override
+       public void afterPropertiesSet() throws Exception {
+           //查询商品信息 ---> 将其放入缓存，合并的事情查询 Redis 缓存的时候就做了，这里不用重复，然后放入 Redis 缓存中
+           List<Item> itemList = itemService.list();
+           for (Item item : itemList) {
+               //转换为 JSON 数据，key 为 item:id，你使用 fastjson 或者 jackson 都可以
+               String json = JSON.toJSONString(item);
+               // String json = MAPPER.writeValueAsString(item);
+               redisTemplate.opsForValue().set("item:id" + item.getId(), json);
+           }
+           //查询库存信息，放入 Redis 缓存中
+           List<ItemStock> itemStocks = itemStockService.list();
+           for (ItemStock itemStock : itemStocks) {
+               String json = JSON.toJSONString(itemStock);
+               redisTemplate.opsForValue().set("item:stock:id" + itemStock.getId(), json);
+           }
+       }
+   
+       public void saveItem(Item item) {
+           String json = JSON.toJSONString(item);
+           redisTemplate.opsForValue().set("item:id:" + item.getId(), json);
+       }
+   
+       public void deleteItemById(Long id) {
+           redisTemplate.delete("item:id:" + id);
+       }
+   }
+   ```
+
+到这里，使用`Canal`完成异步缓存同步的操作就完成了。
+
+到这里，整个多级缓存也就学习完毕了：
+
+![img](https://img-blog.csdnimg.cn/c6a5318a40ac443694821e3c0c220007.png)
+
+## 20. 服务异步通讯
+
+### 20.1 传统`MQ`的问题
+
+以前学习的`MQ`感觉已经很不错了，但其实还是有一些问题我们并不明白消息队列是如何作保障的：
+
+1. **消息可靠性的问题：**如何确保发送的消息至少被消费一次
+2. **延迟消费问题：**这其实是业务上的问题了，就是如何实现消息的延迟投递即我怎么才能到点发送消息
+3. **消息堆积问题：**如何解决数百万消息堆积，无法及时消费的问题
+4. **高可用问题：**如何避免单点`MQ`故障而导致整个消息订阅模型不可用的问题
+
+![img](https://img-blog.csdnimg.cn/92ccf280e4ba499080ffe33af5eb8a82.png)
+
+### 20.2 消息可靠性
+
+我们现在来解决第一大问题，如何确保消息队列发布订阅过程是可靠的？也就是如何确保从生产者生产的消息一定到了消费者手中被他所消费呢？
+
+我们知道消息从被发送到消费者接收，中间会经历很多个过程，大体过程如下图：消息从发布者到消费者，可能丢失的地方在：
+
+1. 发布者到交换机的中途中
+2. 交换机到消息队列的中途中
+3. 消息队列宕机，因为消息对立而是基于内存的所以导致存储的消息丢失
+4. 消费者自身还没来得及消费就宕机了导致数据丢失
+
+![img](https://img-blog.csdnimg.cn/22de4b7b4d4b4d90b6834851678b9fba.png)
+
+所以消息丢失可以分为三种类型：【完全就是按消息经历过程来分类的】
+
+1. 发送时丢失**【生产者导致丢失】**
+   - 生产者`publisher`发送的消息没有送达到交换机`exchange`
+   - 消息到达交换机`exchange`却没有到达消息队列`MessageQueue`
+2. `MQ`宕机导致消息队列中的消息丢失**【`MQ`导致丢失】**
+3. 消费者`consumer`接收到消息之后还没来得及消费就宕机了导致消息丢失**【消费者导致丢失】**
+
+所以保证消息的可靠性，其本质就是解决上述可能存在的消息丢失问题即：发送过程丢失、消息队列宕机导致丢失、消费者宕机导致丢失。
+
+#### 20.2.1 `MQ`如何解决发送路上的丢失
+
+发送路上有两种情况会导致数据丢失，一是消息在发布者到达交换机的路上丢失，二是消息在交换机到达队列的路上丢失。它们都可以使用`RabbitMQ`提供的**生产者确认机制**即`publisher confirm`来确保消息传递的可靠性，该机制就可以避免消息发送到交换机的过程中丢失。
+
+- **我们先来看生产确认机制如何解决第一种：<font color="red">生产者到交换机路上的丢失</font>** `publisher-confirm`
+
+  当消息发送到交换机之后会返回一个结果给发送者，表示消息是否处理成功，因为交换机是属于`MQ`的一部分，所以返回处理结果给发送者这一工作会交给`MQ`来完成，`MQ`在发送者到交换机的这一过程返回`publisher-confirm`发送者确认，这其中发送者确认又分两种情况：
+
+  - 消息成功投递到投递到了交换机，返回`ACK`确认信号[`acknowledge`]
+  - 消息没有投递到交换机，返回`NACK`不确认信号
+
+- **然后再来看生产确认机制如何解决第二种：<font color="red">交换机到达队列路上的丢失</font>** `publisher-return`
+
+  在消息从交换机推送到队列的这一过程失败后，说明路由失败，生产确认机制就会返回发送者回执`publisher-return`
+
+  - 消息投递到了交换机但是没有路由到队列。返回`ACK` + 路由失败原因。
+
+![img](https://img-blog.csdnimg.cn/47ad3a2943a94304be22ac54ec624d90.png)
+
+上面确实可以让生产者知道有消息在发送到队列`Queue`的过程中丢失的问题，但问题是，生产者怎么知道丢失或者确认收到的是哪条消息呢？所以我们要在生产者确认机制发送的确认消息即`MQ`发送的`publisher-confirm/publisher-return`里面设置一个唯一的标识即全局唯一`id`，以区分不同消息，避免`ack`冲突。
+
+总结起来就是一句话：**`MQ`会通过生产确认机制确保消息发送过程的可靠性。**
+
+为了演示生产者确认机制，需要先搭建一个`demo`项目，因为这学习的正是`MQ`高级部分，所以项目名称取名为：`mq-advanced-demo`。直接导入即可。然后需要在`docker`安装`rabbitmq`，记得对外开放端口：`5672 15672`。
+
+```
+docker run --name rabbitmq -p 15672:15672 -p 5672:5672 -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=admin -v /var/lib/docker/volumes/mq-plugins/_data:/usr/local/src -d rabbitmq:3.8-management
+```
+
+1. 开启消息队列的生产者确认机制 ---> 修改配置文件：
+
+   ```yaml
+   spring:
+     rabbitmq:
+       publisher-confirm-type: correlated
+       publisher-returns: true
+       template:
+         mandatory: true
+   ```
+
+   配置信息说明如下：
+
+   - `publisher-confirm-type`：开启`publisher-confirm`，有两种类型：
+     - `simple`：意思就是生产者发送完消息以后**同步等待**消息队列`MQ`的`publisher-confirm`结果，直到等到为止，如果没等到就一直等到超时，这种方式会导致代码的阻塞
+     - `correlated`：**异步回调**，自定义`ConfirmCallback`，`MQ`返回结果时会调用这个回调类`ConfirmCallback`，这样生产者就不用一直等待了，发完这条消息就继续干它的事情比如发送下一条消息，有结果了就拿来看看，然后做处理。
+   - `publisher-return`：**开启`publisher-return`功能**，同样是基于`callback`回调机制，不过定义的回调类实现的接口为`ReturnCallback`。
+   - `template.mandatory`：定义消息路由失败时的策略，`publisher-return`只是告知发送者说这个消息丢失了，但是发送者要怎么处理消息路由失败还没说，这个就是用来说明策略的，如果为`true`就会调用`ReturnCallback`实现方法，如果为`false`则会直接丢弃消息
+
+2. 编写`publisher-confirm`回调函数：`ConfirmCallback`
+
+   `ConfirmCallback`可以在发送消息时指定，因为每个业务处理`confirm`成功或失败的逻辑不一定相同。
+
+   在`publisher`服务的`com.kk.mq.spring.SpringAmqpTest`类中，定义一个单元测试方法：
+
+   **<font color="red">注：我这里跟源代码提供的`log`等级不一样，他的是`debug error`，我这里是`info`，因为我要显示后续效果，否则打印不出来。</font>**
+
+   ```java
+   @Test
+   public void testPublisherConfirm() throws InterruptedException {
+       String message = "Hello, Spring AMQP!";
+       //这里的 UUID.randomUUID().toString() 的意思是定义唯一全局 ID
+       CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
+       //添加回调函数
+       correlationData.getFuture().addCallback(result -> {
+           if (result.isAck()) {
+               log.info("消息从发送者到交换机的过程成功，ID:{}", correlationData.getId());
+           } else {
+               log.info("发送者到交换机的过程消息丢失，消息发送到路由器失败, ID:{}, 原因{}", correlationData.getId(), result.getReason());
+           }
+       }, throwable -> {
+           log.error("消息从发送者到交换机的过程中发生异常, ID:{}, 原因{}", correlationData.getId(), throwable.getMessage());
+       });
+       rabbitTemplate.convertAndSend("task.direct", "task", message, correlationData);
+       //等待 ACK 回执
+       Thread.sleep(2000);
+   }
+   ```
+
+3. 编写`ReturnCallback`回调函数，用于`publisher-return`发送回执，如果在消息要从交换机到达队列的过程消息丢失，就会调用这个`ReturnCallback`回调函数 ---> 该回调函数需要通过`RabbitTemplate`来设置，所以需要在应用启动式，`Bean`工厂创建好之后创建好回调函数`ReturnCallback`：
+
+   ```java
+   package com.kk.mq.config;
+   
+   import lombok.extern.slf4j.Slf4j;
+   import org.springframework.amqp.rabbit.core.RabbitTemplate;
+   import org.springframework.beans.BeansException;
+   import org.springframework.context.ApplicationContext;
+   import org.springframework.context.ApplicationContextAware;
+   import org.springframework.context.annotation.Configuration;
+   
+   @Slf4j
+   @Configuration
+   public class CommonConfig implements ApplicationContextAware {
+       @Override
+       public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+           RabbitTemplate rabbitTemplate = applicationContext.getBean(RabbitTemplate.class);
+           rabbitTemplate.setReturnCallback((message, replyCode, replyText, exchange, routingKey) -> {
+               log.info("交换第到队列的过程消息丢失，发送失败，应答码{}，原因{}，交换机{}，路由键{}，消息{}", replyCode, replyText, exchange, routingKey, message);
+           });
+       }
+   }
+   ```
+
+4. 先来测试下`ConfirmCallback`中消息在发送者到交换机之间丢失的情况，浏览器输入http://192.168.56.1:15672登录`RabbitMQ`的`Web`管理界面【后面都是这样，不再赘述】，可以看到没有`task.direct`的交换机，所以消息是到达不了交换机的，我们此时点击发送：
+
+   ![img](https://img-blog.csdnimg.cn/9e662aef88c141dfbc02b57ac427acf9.png)
+
+   观察`IDEA`中返回的情况：可以发现确实触发了生产确认机制调用了`ConfirmCallback`，然后发送了丢失的消息
+
+   ![img](https://img-blog.csdnimg.cn/9286a9472d004882a5006c7d75a8624c.png)
+
+5. 再来看下如果有交换机，但是没有队列的情况：
+
+   ![img](https://img-blog.csdnimg.cn/e3664376f306496fb9345e1ace995b9c.png)
+
+   发送消息，查看结果：可以看到调用了发送消息时`CorrelationData`设置的`ConfrimCallback`回调函数以及在`CommonConfig`中应用启动时设置的`ReturnCallback`回调函数。可以看到消息到达了交换机但是在交换机到队列中的过程丢失了。
+
+   ![img](https://img-blog.csdnimg.cn/90d65cdbd4164b90b3dc3252d1f2e95d.png)
+
+6. 再继续创建好队列，绑定交换机`direct.task`以及路由`task`：
+
+   ![img](https://img-blog.csdnimg.cn/2418e9508c4442f6a04f44610fbaca3c.png)
+
+   ![img](https://img-blog.csdnimg.cn/3f82fe8b5d14472f9f0fbf3fd7f6f0c2.png)
+
+   然后发送消息查看结果：可以看到控制台没有返回任何信息，查看队列可以看到队列中已经有消息了。
+
+   ![img](https://img-blog.csdnimg.cn/73036919f58d4c3589cb89206dffe7b0.png)
+
+   点击`Queue`界面中的`Get Message`，可以看到确实是我们在`Java`中所发送的消息：`Hello, Spring AMQP!`
+
+   ![img](https://img-blog.csdnimg.cn/c9e24c7d5caa4e44900c9a88499c99c4.png)
+
+**<font color="deepskyblue">到这里，确保消息在发送过程中：包括从发送者到交换机、交换机到队列不会丢失就已经学习完成了 ---> 使用的是</font><font color="red">发送者确认机制</font>。**
+
+总结：
+
+- `SpringAMQP`中处理消息确认的几种情况：
+  - `publisher-confirm`
+    1. 消息成功从发送者手中发送到交换机，返回`ACK`
+    2. 消息从发送者手发送给交换机的过程失败，返回`NACK`
+    3. 消息在发送过程中发生异常没有收到任何回执返回异常处理
+  - `publisher-return`
+    1. 消息从交换机发送给队列的过程失败，返回`ACK + 路由失败原因`
+
+#### 20.2.2 `MQ`如何解决`MQ`宕机导致数据丢失
+
+上一小节我们学习了如何避免消息在发送过程丢失的问题，此时消息就会到达本站`RabbitMQ`手中，准确地说是已经投递到了消费者要消费的队列中，那如果此时`RabbitMQ`宕机了咋办，我们知道`MQ`中的数据是存储在内存中，那这样岂不是数据都丢失了？
+
+想想还有什么跟`MQ`很像，数据也是存储在内存之中的呢？没错，就是`Redis`，当时我们是如何解决`Redis`数据丢失的问题的呢？没错，正是那个宝贝 —— 持久化！！！
+
+所以针对消息队列为了避免消息丢失，我们需要做**<font color="red">消息持久化</font>font>**。
+
+创建的消息队列和交换机的时候，创建的时候默认它们就是持久的这个也可以在创建的是否，若是`Java`代码可以通过设置`true / false`来设置是否`Durable`即持久化，若是`Web`管理界面可设置`Durability`中`Transient`是否是短暂的还是`Durable`持久的来设置交换机或者队列的持久化。
+
+重点是消息的持久化，`SpringAMQP`默认会将消息持久化，所以就算我们重启`RabbitMQ`也可以在队列中照常看到消息。
+
+可以通过`MessageBuidler`创建`Message`对象，使得该消息不被持久化：
+
+```java
+Message msg = MessageBuilder.withBody(message.getBytes(StandardCharsets.UTF_8)).setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT).build();
+```
+
+点击`IDEA`发送消息然后：可以看到此时队列是有消息的：
+
+![img](https://img-blog.csdnimg.cn/b72557138f824fb48e0e8e63598160b5.png)
+
+然后重启`Docker rabbitmq`：
+
+```shell
+docker restart rabbitmq
+docker logs -f rabbitmq
+```
+
+可以发现这时队列中的消息不见了，正是因为消息没有做持久化：
+
+![img](https://img-blog.csdnimg.cn/4825626e15374f47b0f6d8e6c9a0fbad.png)
+
+如果将`MessageBuilder`中的`setDeliveryMode`更改为`MessageDeliveryMode.PERSISTENT`或者干脆直接发送`message`而不是`msg`【通过`MessageBuilder`创建】因为默认`SpringAMQP`就已经实现了消息持久化了：
+
+![img](https://img-blog.csdnimg.cn/b72557138f824fb48e0e8e63598160b5.png)
+
+#### 20.2.3 `MQ`如何解决消费者宕机导致数据丢失
+
+通过前面两个小节的学习就知道了消息队列通过发送者确认机制以及交换机、队列、消息的持久化实现了消息发送过程【发送者--->交换机，交换机--->队列】、队列的可靠性。
+
+到了这一步就是消息从队列发送到消费者，消费者消费消息了。那么在这里，`MQ`又该如何在消费者这里完成它的可靠性呢？如何防止在消费者消费之前的那一刻消费者宕机了导致消息丢失呢？这就需要使用到**<font color="red">阅后即焚机制</font>**。
+
+阅后即焚机制：消费者会向`RabbitMQ`发送`ACK`回执，表明自己已经处理了消息，然后`RabbitMQ`接收到该`ACK`回执后会删除队列中的消息。
+
+但是什么时候发送`ACK`回执呢？
+
+- 是在消息还没到消费者手里就发送吗？显然不是
+- 那是在消息到了消费者手中就立马发送吗？当然也不是，万一还没消费消息就删除了，不也无法实现可靠性嘛
+- 那是在消息到了消费者手中并被消费了然后发送吗？没错就是这个了
+
+`SpringAMQP`提供了三种消费者确认模式：
+
+1. `manual`：**手动**`ACK`，在业务代码运行完毕之后调用`API`发送`ACK`，自己根据业务需求，判断消费者什么时候返回`ack`。
+2. `auto`：**自动**`ACK`，由`Spring`检测`Listener`代码是否出现异常，若正常返回`ack`，若出现异常则抛出异常返回`nack`。该模式类似事务机制。
+3. `none`：**关闭**`ack`，`MQ`假定消费者获取消息后会成功处理，因此消息投递后立即被删除，这种模式无法保证消息的可靠性。
+
+通常使用的消费者确认消息的机制为：`auto`模式。
+
+##### 20.2.3.1 阅后即焚机制之`none`模式
+
+在消费者`consumer`的配置文件`application.yaml`中即可配置消费者消费返回`ack`的模式：
+
+```yaml
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        acknowledge-mode: none/auto/manual
+```
+
+在`Consumer`模块下中的`CommonConfig`配置类声明`consumer.exchange`交换机、`consumer.queue`队列以及绑定该交换机跟队列，`Routing Key`设置为：`consumer.confirm`：
+
+```java
+package com.kk.mq.config;
+
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Queue;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class CommonConfig {
+    @Bean
+    public DirectExchange directExchange() {
+        return new DirectExchange("consumer.exchange");
+    }
+
+    @Bean
+    public Queue directQueue() {
+        return new Queue("consumer.queue");
+    }
+
+    @Bean
+    public Binding bindingDirectExchangeAndDirectQueue() {
+        return BindingBuilder.bind(directQueue()).to(directExchange()).with("consumer.confirm");
+    }
+}
+```
+
+消费者监听该消息进行消费：
+
+```java
+package com.kk.mq.listener;
+
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+@Component
+public class SpringRabbitListener {
+    @RabbitListener(queues = "consumer.queue")
+    public void listenSimpleQueue(String msg) {
+        System.out.println("消费者接收到 consumer.queue 的消息：【" + msg + "】");
+    }
+}
+```
+
+生产者发送消息：
+
+```java
+@Test
+public void testPublisherConfirm() throws InterruptedException {
+    String message = "Hello, Consumer Queue!";
+    //这里的 UUID.randomUUID().toString() 的意思是定义唯一全局 ID
+    CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
+    //添加回调函数
+    correlationData.getFuture().addCallback(result -> {
+        if (result.isAck()) {
+            log.info("消息从发送者到交换机的过程成功，ID:{}", correlationData.getId());
+        } else {
+            log.info("发送者到交换机的过程消息丢失，消息发送到路由器失败, ID:{}, 原因{}", correlationData.getId(), result.getReason());
+        }
+    }, throwable -> {
+        log.error("消息从发送者到交换机的过程中发生异常, ID:{}, 原因{}", correlationData.getId(), throwable.getMessage());
+    });
+    Message msg = MessageBuilder.withBody(message.getBytes(StandardCharsets.UTF_8)).setDeliveryMode(MessageDeliveryMode.PERSISTENT).build();
+    rabbitTemplate.convertAndSend("consumer.exchange", "consumer.confirm", msg, correlationData);
+    //等待 ACK 回执
+    Thread.sleep(2000);
+}
+```
+
+现在模拟下`none`模式，在消费者还没处理消费就抛出异常，代码如下：
+
+```java
+package com.kk.mq.listener;
+
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
+
+@Component
+public class SpringRabbitListener {
+    @RabbitListener(queues = "consumer.queue")
+    public void listenSimpleQueue(String msg) {
+        System.out.println(1 / 0);
+        System.out.println("消费者接收到 consumer.queue 的消息：【" + msg + "】");
+    }
+}
+```
+
+此时先运行消费者模块，然后发送者发送消息：可以看到虽然抛出了异常但是队列中的消息依然被删除了，这是因为我们设置了`none`模式，所以消息从队列被投递出去之后，消息队列就立马将该消息从队列中删除了。
+
+![img](https://img-blog.csdnimg.cn/6f423671e92e4d3ba6c57e778c741970.png)
+
+![img](https://img-blog.csdnimg.cn/2050d7aa264f40bc9f66956cf5461f88.png)
+
+##### 20.2.3.2 阅后即焚机制之`auto`模式
+
+将上述配置文件中的`spring.rabbitmq.listener.simple.acknowledge-mode`设置为`auto`
+
+```yaml
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        acknowledge-mode: none/auto/manual
+```
+
+然后在异常处打断点，观察`RabbitMQ Web`页面的效果：可以看到因为出现异常，所以消费者返回了`nack`给消息队列
+
+![img](https://img-blog.csdnimg.cn/e32f5ef7aada4cff852ccbd2345ba44c.png)
+
+继续执行，因为出现了异常，所以消息队列中的消息没有被删除，而是又一次等待直到被正常消费：
+
+![img](https://img-blog.csdnimg.cn/8af1e09bc01a41fd93d373c3ce8b5842.png)
+
+##### 20.2.3.3 消费失败重传机制
+
+在上述`auto`模式的测试时【不使用`debug`模式】，不知道有无有人发现，当消费者出现异常后，消息会不断`requeue`（重入队）到队列，再重新发送给消费者，然后再次异常，再次`requeue`，无限循环，导致`mq`的消息处理飙升，带来不必要的压力，你完全可以在`IDEA`控制栏中看到这一情况，一直不断不断地报错：
+
+![img](https://img-blog.csdnimg.cn/e220a3a42bbd46dca7e14e77c7efb20f.png)
+
+这该如何解决呢？这就涉及到消费失败重试机制了。
+
+**消息本地重试：**
+
+我们可以利用`Spring`的`retry`机制，在消费者出现异常时利用本地重试，而不是无限制的`requeue`到`mq`队列。然后会发送`ACK`确认消息给`MQ`，`MQ`会将该消息删除。
+
+修改配置文件即可：
+
+```yaml
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        retry:
+          enabled: true # 开启消费者失败重试
+          initial-interval: 1000 # 初识的失败等待时长为1秒
+          multiplier: 1 # 失败的等待时长倍数，下次等待时长 = multiplier * last-interval
+          max-attempts: 3 # 最大重试次数
+          stateless: true # true无状态；false有状态。如果业务中包含事务，这里改为false
+```
+
+重启`consumer`服务，重复之前的测试。可以发现：
+
+- 在重试`3`次后【按照上面设置地`max-attempts`来】，`SpringAMQP`会抛出异常`AmqpRejectAndDontRequeueException`，说明本地重试触发了
+- 查看`RabbitMQ`控制台，发现消息被删除了，说明最后`SpringAMQP`返回的是`ack`，`mq`删除了消息
+
+**消息本地重试结论：达到最大重试次数后，消息会被丢弃，由Spring内部机制决定的。**
+
+- 开启本地重试时，消息处理过程中抛出异常，不会`requeue`到队列，而是在消费者本地重试
+- 重试达到最大次数后，`Spring`会返回`ack`，消息会被丢弃
+
+当重试达到最大次数之后还是失败后会让实现了`MessageRecovery`的实现类来处理，实现`MessageRecovery`接口有三种方式：
+
+- **`RejectAndDontRequeueRecoverer`：重试耗尽后，直接reject，丢弃消息。默认就是这种方式**
+
+- `ImmediateRequeueMessageRecoverer`：重试耗尽后，返回`nack`，消息重新入队
+
+- `RepublishMessageRecoverer`：重试耗尽后，将失败消息投递到指定的交换机
+
+我们来尝试将重试之后的操作改为第三种，将消息投递到指定的交换机：
+
+```java
+@Bean
+public DirectExchange errorMessageExchange(){
+    return new DirectExchange("error.direct");
+}
+
+@Bean
+public Queue errorQueue(){
+    return new Queue("error.queue", true);
+}
+
+@Bean
+public Binding errorBinding(Queue errorQueue, DirectExchange errorMessageExchange){
+    return BindingBuilder.bind(errorQueue).to(errorMessageExchange).with("error");
+}
+
+@Bean
+public MessageRecoverer messageRecoverer() {
+    return new RepublishMessageRecoverer(rabbitTemplate, "error.exchange", "error");
+}
+```
+
+![img](https://img-blog.csdnimg.cn/4b036138f1b946c5a388996e8ddafc8b.png)
+
+**总结：**
+
+- 如何确保消息在消费者这里的可靠性？
+  1. 开启阅后即焚机制，模式有`manual/auto/none`，手动、自动、关闭，将其设置为自动以后消费者会向消息队列发送`uack`然后一直重试
+  2. 消息重试机制，默认为`RejectAndDontRequeueRecoverer`就是当最大的重试次数耗尽后，会发送`ACK`给消息队列，然后消息队列会将该消息删除，也可以编写`Bean ---> MessageRecover`覆盖`RejectAndDontRequeueRecoverer`，可以使用：`ImmediateRequeueMessageRecoverer`或者`RepublishMessageRecoverer`，分别表示返回重试最大次数后`nack`重新入队、重试最大次数后将消息发送给指定队列。
+
+#### 20.2.4 消息可靠性总结
+
+1. 发送过程这里：使用**发送者确认机制**
+
+   - 消息从发送者到交换机：`publisher-confirm`
+
+     1. 会使用发送者确认机制，从生产者到交换机，若丢失返回`publisher-confirm-nack`
+
+     2. 如果没有丢失则消息队列【交换机】发送`publisher-confirm-ack`
+
+        - 如果在配置文件中设置的是`publisher-confrim:simple`则表示消息从发送方到交换机开始发送后一直等待交换机即消息队列返回结果，直到超时才肯罢休，可能造成代码阻塞
+
+        - 如果在配置文件中设置的是`publisher-confirm:correlated`则表示异步嗲用，即消息从发送方到交换机开始发送后，发发送者就可以自己干自己的事情去了，不用等待返回结果，当交换机接收到或者没接收到都会去调用`ConfirmCallback`回调函数
+
+   - 消息从交换机到队列：`publisher-return`
+     - 设置`spring.rabbitmq.publisher-returns:true`表示开启`publisher-return`功能，不开启则无法保证消息从交换机到队列的可靠性，然后需要进一步设置该功能开启后如果数据真的在交换机到队列这一过程丢失该怎么办，有两种选择：`true or false`，如果为`true`，则会调用`RabbitTemplate`在创建后设置的回调函数即`rabbitTemplate.setReturnCallback`。如果为`false`，则消息队列会直接将该消息丢弃。
+
+2. 到了消息队列这里：使用**持久化**
+
+   - 默认`SpringAMQP`创建的交换机、队列、消息都是持久化的，其中消息可以通过设置`MessageBuidler..setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT)`来设置消息是否持久化。
+
+3. 到了消费者这里：使用**阅后即焚机制+消息重试机制**
+
+   1. 需手动开启阅后即焚机制：`spring.rabbitmq.listener.simple.acknowledge-mode: none/auto/maunal`
+      - 如果为`none`，当消费者消费时出现异常，照样会返回`ack`，然后消息队列丢弃该消息
+      - 如果为`auto`，则会一直尝试重新接收该消息，很消耗消息队列资源，所以需要开启消息重试机制
+
+   2. 需要手动开启**重试机制**：
+
+      重试机制需要在配置文件中`application.yml`中配置，一般在达到最大重试次数就会触发处理消息处理器：有三种消息处理器模式可选，通过定义`Bean ---> MessageConver`即可覆盖，分别是：
+
+      1. `RejectAndDontRequeueRecoverer`：重试耗尽后，不再接收该消息，消息被消息队列删除
+      2. `ImmediateRequeueMessageRecoverer`：重试耗尽后，消费者返回`UACK`给消息队列，消息队列将消息再次入队
+      3. `RepublishMessageRecoverer`：重试耗尽后，将消息返还给跟指定的交换机绑定的队列
+
+```java
+package com.kk.mq.config;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Configuration;
+
+@Slf4j
+@Configuration
+public class CommonConfig implements ApplicationContextAware {
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        RabbitTemplate rabbitTemplate = applicationContext.getBean(RabbitTemplate.class);
+        rabbitTemplate.setReturnCallback((message, replyCode, replyText, exchange, routingKey) -> {
+            log.info("交换机到队列的过程消息丢失，发送失败，应答码{}，原因{}，交换机{}，路由键{}，消息{}", replyCode, replyText, exchange, routingKey, message);
+        });
+    }
+}
+
+@Test
+public void testPublisherConfirm() throws InterruptedException {
+    String message = "Hello, Consumer Queue!";
+    //这里的 UUID.randomUUID().toString() 的意思是定义唯一全局 ID
+    CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
+    //添加回调函数
+    correlationData.getFuture().addCallback(result -> {
+        if (result.isAck()) {
+            log.info("消息从发送者到交换机的过程成功，ID:{}", correlationData.getId());
+        } else {
+            log.info("发送者到交换机的过程消息丢失，消息发送到路由器失败, ID:{}, 原因{}", correlationData.getId(), result.getReason());
+        }
+    }, throwable -> {
+        log.error("消息从发送者到交换机的过程中发生异常, ID:{}, 原因{}", correlationData.getId(), throwable.getMessage());
+    });
+    Message msg = MessageBuilder.withBody(message.getBytes(StandardCharsets.UTF_8)).setDeliveryMode(MessageDeliveryMode.PERSISTENT).build();
+    rabbitTemplate.convertAndSend("consumer.exchange", "consumer.confirm", msg, correlationData);
+    //等待 ACK 回执
+    Thread.sleep(2000);
+}
+```
+
+```yaml
+spring:
+  rabbitmq:
+      listener:
+      simple:
+        prefetch: 1
+        acknowledge-mode: none/auto/manual
+        retry:
+          enabled: true # 开启消费者失败重试
+          initial-interval: 1000 # 初识的失败等待时长为1秒
+          multiplier: 1 # 失败的等待时长倍数，下次等待时长 = multiplier * last-interval
+          max-attempts: 3 # 最大重试次数
+          stateless: true # true无状态；false有状态。如果业务中包含事务，这里改为false
+```
+
+到这里，我们就解决了`MQ`的第一个问题：消息可靠性问题。接下来我们将处理：延迟消息问题。
+
+### 20.3 死信队列和延迟队列
+
+#### 20.3.1 什么是死信队列？
+
+要谈死信队列首先得谈死信，那什么是死信呢？
+
+当一个队列中的消息满足下列情况之一时，可以成为死信`（dead letter）`：
+
+1. 消费者使用`basic.reject`【拒绝】或`basic.nack`声明消费失败，并且消息的`requeue`参数设置为`false`
+
+2. 消息是一个过期消息，超时无人消费
+3. 要投递的队列消息满了，无法投递
+
+即**消费失败、消息过期、队列满了**就会造成死信，说白了就是要被删除的消息就是死信。
+
+如果这个包含死信的队列配置了`dead-letter-exchange`属性，指定了一个交换机，那么队列中的死信就会投递到这个交换机中，而这个交换机称为**死信交换机**（`Dead Letter Exchange`，检查`DLX`）。所以死信交换机就是专门路由给死信队列的，而死信队列专门存放死信消息。
+
+如图，一个消息被消费者拒绝了，变成了死信：
+
+![img](https://img-blog.csdnimg.cn/29a7eabf9c6e4163867eedaea710a367.png)
+
+因为`simple.queue`绑定了死信交换机`dl.direct`，因此死信会投递给这个交换机：
+
+![img](https://img-blog.csdnimg.cn/f9654756cbf64f128d4b10d7095e0605.png)
+
+一般这个死信交换机会绑定了一个队列，则消息最终会进入这个存放死信的队列：
+
+![img](https://img-blog.csdnimg.cn/8feaabb444954576b2015b8302560da7.png)
+
+另外，队列将死信投递给死信交换机时，必须知道两个信息才能确保投递的消息能到达死信交换机，并且正确的路由到死信队列。：
+
+- 死信交换机的名称
+- 死信交换机与死信队列绑定的`RoutingKey`
+
+**<font color="red">【吐槽：这不跟实现消息可靠性消费者那里尝试消息重试设置的策略为：`RepublishMessageRecoverer`一样么，将消息投递给指定队列】</font>**
+
+#### 20.3.2 利用死信交换机接收死信
+
+在失败重试策略中，默认的`RejectAndDontRequeueRecoverer`会在本地重试次数耗尽后，发送`reject`给`RabbitMQ`，消息变成死信被丢弃掉。
+
+能不能不丢弃掉这个死信呢？当然可以，我们可以添加一个死信交换机，然后将一个交换机和一个队列绑定在一块。这样消息变成死信后也不会丢弃，而是最终投递到死信交换机，路由到与死信交换机绑定的队列。
+
+![img](https://img-blog.csdnimg.cn/8feaabb444954576b2015b8302560da7.png)
+
+演示下，使用`SpringAMQP`定义死信交换机、死信队列：
+
+```java
+// 声明普通的 simple.queue队列，并且为其指定死信交换机：dl.direct
+@Bean
+public Queue simpleQueue2(){
+    return QueueBuilder.durable("simple.queue") // 指定队列名称，并持久化
+        .deadLetterExchange("dl.direct") // 指定死信交换机
+        .build();
+}
+
+// 声明死信交换机 dl.direct
+@Bean
+public DirectExchange dlExchange(){
+    return new DirectExchange("dl.direct", true, false);
+}
+// 声明存储死信的队列 dl.queue
+@Bean
+public Queue dlQueue(){
+    return new Queue("dl.queue", true);
+}
+// 将死信队列 与 死信交换机绑定
+@Bean
+public Binding dlBinding(){
+    return BindingBuilder.bind(dlQueue()).to(dlExchange()).with("simple");
+}
+```
+
+#### 20.3.3 小结
+
+- 什么样的消息会成为死信？
+  - 被消费者`reject`/`nack`的
+  - 消息超时未消费的
+  - 队列已满无法投递
+- 死信交换机的使用场景是什么？
+  - 某队列只要绑定了死信交换机，死信会投递到死信交换机，没有绑的不会
+  - 可以利用死信交换机收集所有消费者处理失败的消息（死信），交由人工处理，进一步提高消息队列的可靠性【集中统一管理死信，很棒的`IDEA`】
+
+#### 20.3.4 过期时间`TTL`
+
+一个队列中的某消息如果超时未消费，则会变为死信，超时分为两种情况【整体 + 局部】：
+
+- 消息所在的队列设置了超时时间
+- 消息本身设置了超时时间
+
+![img](https://img-blog.csdnimg.cn/5042c6e643094c7ca3427638b8f3fbf5.png)
+
+可以定义一个接收超时死信的死信交换机，`Routing Key`设置为`ttl`：
+
+```java
+@RabbitListener(bindings = @QueueBinding(
+    value = @Queue(name = "dl.ttl.queue", durable = "true"),
+    exchange = @Exchange(name = "dl.ttl.direct"),
+    key = "ttl"
+))
+public void listenDlQueue(String msg){
+    log.info("接收到 dl.ttl.queue的延迟消息：{}", msg);
+}
+```
+
+当声明一个队列时，可以给将来存储在该队列的所有消息一个`TTL`：
+
+```java
+@Bean
+public Queue ttlQueue(){
+    return QueueBuilder.durable("ttl.queue") // 指定队列名称，并持久化
+        .ttl(10000) // 单位为毫秒 ms，设置队列的超时时间，10秒
+        .deadLetterExchange("dl.ttl.direct") // 指定死信交换机
+        .build();
+}
+```
+
+注：该队列绑定的死信交换机为`dl.ttl.direct`，成为死信的消息会被投递到死信交换机绑定的队列
+
+声明交换机，将上面定义的`ttl.queue`队列跟`ttl.direct`交换机绑定：
+
+```java
+@Bean
+public DirectExchange ttlExchange(){
+    return new DirectExchange("ttl.direct");
+}
+@Bean
+public Binding ttlBinding(){
+    return BindingBuilder.bind(ttlQueue()).to(ttlExchange()).with("ttl");
+}
+```
+
+##### 20.3.4.1 指定队列的`TTL`
+
+发送消息给`ttl.direct`交换机，然后到了`ttl.queue`，等待`10s`以上，然后观察死信交换机绑定的死信队列`dl.queue`，可以看到该队列会得到`ttl.queue`过期的消息：
+
+```java
+@Test
+public void testTTLQueue() {
+    // 创建消息
+    String message = "hello, ttl queue";
+    // 消息ID，需要封装到CorrelationData中
+    CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
+    // 发送消息
+    rabbitTemplate.convertAndSend("ttl.direct", "ttl", message, correlationData);
+    // 记录日志
+    log.debug("发送消息成功");
+}
+```
+
+查看发送消息到`ttl.queue`的日志：
+
+![img](https://img-blog.csdnimg.cn/4dce1b7397404f45bf3255993d7b722f.png)
+
+查看过期的消息被投递到`dl.queue`死信队列的日志：
+
+![img](https://img-blog.csdnimg.cn/1fa49614e87e48cc8b6e025f5d0b8f5a.png)
+
+同时你也可以看到时间刚好是`10s`说明过期时间`TTL = 10s`。
+
+##### 20.3.4.2 指定消息的`TTL`
+
+跟设置持久化一样，同样可以通过`MessageBuilder`创建`Message`对象的时候给该消息设置过期时间：`5000`表示`5s`，这里单位是`ms`
+
+```java
+@Test
+public void testTTLMsg() {
+    // 创建消息
+    Message message = MessageBuilder
+        .withBody("hello, ttl message".getBytes(StandardCharsets.UTF_8))
+        .setExpiration("5000")
+        .build();
+    // 消息ID，需要封装到CorrelationData中
+    CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
+    // 发送消息
+    rabbitTemplate.convertAndSend("ttl.direct", "ttl", message, correlationData);
+    log.debug("发送消息成功");
+}
+```
+
+查看发送消息到`ttl.queue`的日志：
+
+![img](https://img-blog.csdnimg.cn/d64887c75435403bb3ef3a9c8d2a7488.png)
+
+查看过期的消息被投递到`dl.queue`死信队列的日志：
+
+![img](https://img-blog.csdnimg.cn/8012e70753454ae6a16a088ce9bdf4f4.png)
+
+同时你也可以看到时间刚好是`5s`说明该消息过期时间`TTL = 5s`。
+
+##### 20.3.4.3 过期时间
+
+- 消息超时的两种方式是？
+
+  - 给队列设置`TTL`属性，进入队列后超过`TTL`时间的消息变为死信
+
+  - 给消息设置`TTL`属性，队列接收到消息超过`TTL`时间后变为死信
+
+- 如何实现发送一个消息`20`秒后消费者才收到消息？
+
+  - 给消息的目标队列指定死信交换机
+  - 将消费者监听的队列绑定到死信交换机
+  - 发送消息时给消息设置超时时间为`20`秒
+
+#### 20.3.5 延迟队列
+
+前面学习了死信队列跟`TTL`，试想下，如果`TTL`到了我们将其发送给一个死信队列，这样不就构成了延迟消费吗？！没错！这就是延迟队列`Delay Queue`模式！
+
+**多久之后要做什么事情而且用户量很大的，都可以考虑使用延迟队列！**
+
+延迟队列的使用场景包括：
+
+- 延迟发送短信
+- 用户下单，如果用户在`15`分钟内未支付，则自动取消
+- 预约工作会议，`20`分钟后自动通知所有参会人员
+
+**<font color="red">而且关于延迟队列有个非常`NICE`的东西：</font>**
+
+因为延迟队列的需求非常多，所以`RabbitMQ`的官方也推出了一个插件，原生支持延迟队列效果。
+
+这个插件就是`DelayExchange`插件。参考`RabbitMQ`的插件列表页面：https://www.rabbitmq.com/community-plugins.html
+
+![img](https://img-blog.csdnimg.cn/ac0ebc344064441e9df0165ac0aede86.png)
+
+使用方式可以参考官网地址：https://blog.rabbitmq.com/posts/2015/04/scheduling-messages-with-rabbitmq
+
+#### 20.3.6 安装`DelayExchange`插件实现延迟队列效果
+
+去对应的`GitHub`页面下载`3.8.9`版本的插件，地址为https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/releases/tag/3.8.9这个对应`RabbitMQ`的`3.8.5`以上版本。
+
+因为我们是基于`Docker`安装，所以需要先查看`RabbitMQ`的插件目录对应的数据卷，使用如下命令可以查看数据卷，然后将已经下载好的插件，上传到`Linux`中即可。
+
+进入到`rabbitmq`安装插件即可：
+
+```shell
+docker exec -it rabbitmq bash
+```
+
+因为这个插件我上传到的是`/usr/local/src/`目录中，所以先移动到`/plugins`中：
+
+```shell
+mv rabbitmq_delayed_message_exchange-3.8.9-0199d11c.ez /plugins
+```
+
+然后开启延迟队列插件：
+
+```shell
+rabbitmq-plugins enable rabbitmq_delayed_message_exchange
+```
+
+![img](https://img-blog.csdnimg.cn/aa73c5dd34774761b8ad7c0f523d2a60.png)
+
+#### 20.3.7 `DelayExchange`的原理
+
+`DelayExchange`需要将一个交换机声明为`delayed`类型。当我们发送消息到`delayExchange`时，流程如下：
+
+- 接收消息
+- 判断消息是否具备`x-delay`属性
+- 如果有`x-delay`属性，说明是延迟消息，持久化到硬盘，读取`x-delay`值，作为延迟时间
+- 返回`routing not found`结果给消息发送者
+- `x-delay`时间到期后，重新投递消息到指定队列
+
+本质上还是：消息/队列设置`TTL`，到点就投送到指定死信队列。
+
+#### 20.3.8 延迟发送消息的具体操作
+
+插件让延迟队列变得异常简单：声明一个交换机，交换机的类型可以是任意类型，只需要设定`delayed`属性为`true`即可，然后声明队列与其绑定即可。
+
+1. 声明`DelayExchange`交换机
+
+   1. 基于注解方式
+
+      ```java
+      @RabbitListener(bindings = @QueueBinding(value = @Queue(value = "delay.queue", durable = "true"), exchange = @Exchange(name = "delay.direct", durable = "true", delayed = "true"), key = "delay"))
+      public void listenDelayedQueue(String msg) {
+      	log.info("接收到 delay.queue 的延迟消息：{}", msg);
+      }
+      ```
+
+   2. 基于`@Bean`配置类的方式
+
+      ```java
+      @Bean
+      public DirectExchange delayedExchange() {
+          return ExchangeBuilder.directExchange("delay.direct").delayed().durable(true).build();
+      }
+      ```
+
+2. 基于配置类的的声明队列方式【注解的在声明交换机的时候已经做了】：
+
+   ```
+   @Bean
+   public Queue delayedQueue() {
+       return new Queue("delay.queue");
+   }
+   ```
+
+3. 绑定交换机跟队列：
+
+   ```java
+   @Bean
+   public Binding delayedBinding() {
+       return BindingBuilder.bind(delayedQueue()).to(delayedExchange()).with("delay");
+   }
+   ```
+
+4. 发送消息，因为是延迟队列需要带`x-delay`属性，本质就是声明`TTL`，要不之前我们需要`MessageBuilder.setExpiration(ms)`来做`TTL`，然后还要声明：存储的交换机、存储的队列，死信交换机、死信队列，如果是给整个存储队列设置`TTL`此时还需要在声明存储队列的时设置`ttl`。因为存储队列绑定私信交换机，所以需要用到`QueueBuilder.durable("存储队列名称").deadLetterExchange("死信交换机名称").build();`
+
+   现在有了延迟队列的插件，直接声明交换机、队列，交换机带上`delayed()[true]`，然后发送的消息设置`Header x-delay`其实就是过期时间，然后就可以实现延迟队列的效果了，非常简单。
+
+   ```java
+   @Test
+   public void testPublisherConfirm() throws InterruptedException {
+       String message = "Hello, Consumer Queue!";
+       //这里的 UUID.randomUUID().toString() 的意思是定义唯一全局 ID
+       CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
+       //添加回调函数
+       correlationData.getFuture().addCallback(result -> {
+           if (result.isAck()) {
+               log.info("消息从发送者到交换机的过程成功，ID:{}", correlationData.getId());
+           } else {
+               log.info("发送者到交换机的过程消息丢失，消息发送到路由器失败, ID:{}, 原因{}", correlationData.getId(), result.getReason());
+           }
+       }, throwable -> {
+           log.error("消息从发送者到交换机的过程中发生异常, ID:{}, 原因{}", correlationData.getId(), throwable.getMessage());
+       });
+       Message msg = MessageBuilder.withBody(message.getBytes(StandardCharsets.UTF_8)).setDeliveryMode(MessageDeliveryMode.PERSISTENT).setHeader("x-delay", 10000).build();
+       rabbitTemplate.convertAndSend("delay.direct", "delay", msg, correlationData);
+       log.debug("消息发送成功！");
+   }
+   ```
+
+#### 20.3.9 总结
+
+- 延迟队列插件的使用步骤包括哪些？
+  - 声明一个交换机，添加`delayed`属性为`true`
+  - 发送消息时，添加`x-delay`头，值为超时时间
+
+**到这里就解决了消息延迟发送的问题，满足了特定业务上的需求，接下来就需要解决下一个问题了 —— 消息堆积问题：可能一下子有太多的请求导致可能有几百万的消息还没来得及消费，就堆积在了消息队列中，这个问题是怎么产生的呢？又该如何解决呢？**
+
+### 20.5 解决消息堆积问题的惰性队列
+
+当生产者发送消息的速度超过了消费者处理消息的速度，就会导致队列中的消息堆积，直到队列存储消息达到上限。我们前面说过，队列满了之后再投递的消息就会变成死信，死信如果没有转到死信队列绑定的队列，可能就会被丢弃，这就是**消息堆积问题**。
+
+![img](https://img-blog.csdnimg.cn/12f4ab0b5a194360be1903ab40b0ee58.png)
+
+这些消息不是因为没用才被丢，而是因为客观原因：生产者速度太快了，队列满了导致的，所以这些消息很可能还是有价值的，因此我们要想办法解决消息堆积问题。
+
+- 第一个思路：我们知道是消费者跟不上生产者的生产速度，那增加消费者，提高消费速度不就好了。
+- 第二个思路：能不能想办法吧消息队列的容量扩大，这样能存放的消息就更多了。
+
+虽然两个思路都有各自的缺陷，但承认都是解决消息堆积问题的好办法！但是还有没有更好的办法呢？
+
+我们知道消息堆积问题本质就是因为容量不够导致的，而且我们还知道消息队列是将消息存放在内存中的，这下我们就发现了华点，内存的容量小但是还有磁盘啊，我磁盘的容量肯定比内存大得多得多啊。所以我们就引出了第三个思路。
+
+- 第三个思路：对于容量满的消息队列，还要存放的消息，将其放到磁盘当中而非内存，当消费者需要消费该消息时就从磁盘中读取。磁盘很大，可以支持上百万条的消息存储。
+
+第三个思路虽然舍弃了速度和性能上的追求，但是但是！相比于无价的数据可言是值得的！！
+
+而实现了第三个思路的，正是从`RabbitMQ`的`3.6.0`版本开始推出的：`Lazy Queues`的概念！即惰性队列！
+
+惰性队列的特点就是我们上面提到的，我们整理一下：
+
+- 接收到消息后直接存入磁盘而非内存
+- 消费者要消费消息时才会从磁盘中读取并加载到内存
+- 支持数百万条的消息存储
+
+#### 20.5.1 使用命令方式设置惰性队列
+
+可以在`RabbitMQ`内部中使用命令的方式设置惰性队列，要设置一个队列为惰性队列，只需要在声明队列时，指定`x-queue-mode`属性为`lazy`即可。可以通过命令行将一个运行中的队列修改为惰性队列：
+
+```shell
+rabbitmqctl set_policy Lazy "^lazy-queue$" '{"queue-mode":"lazy"}' --apply-to queues
+```
+
+命令解读：
+
+- `rabbitmqctl` ：`RabbitMQ`的命令行工具
+- `set_policy` ：添加一个策略
+- `Lazy` ：策略名称，可以自定义
+- `"^lazy-queue$"` ：用正则表达式匹配队列的名字
+- `'{"queue-mode":"lazy"}'` ：设置队列模式为lazy模式
+- `--apply-to queues  `：策略的作用对象，是所有的队列
+
+#### 20.5.2 基于注解方式设置惰性队列
+
+```java
+@RabbitListener(queuesToDeclare = @Queue(value = "lazy.queue", durable = "true", arguments = @Argument(name = "x-queue-mode", value = "lazy")))
+public void listenLazyQueue(String msg) {
+    log.info("接收到 lazy.queue 的延迟消息：{}", msg);
+}
+```
+
+#### 20.5.3 基于`Bean`方式设置惰性队列
+
+```java
+@Bean
+public Queue lazyQueue() {
+    return QueueBuilder.durable("lazy.queue").lazy().build();
+}
+```
+
+可以看到基于配置类的方式设置惰性队列是最简单的。
+
+#### 20.5.4 惰性队列总结
+
+- 消息堆积问题的解决方案？
+  - 第一种思路：交换机再绑定多个消费者或者给消费者开线程池，提高消费速度
+  - 第二种思路：扩大消息队列的容量，本质就是扩大内存【不现实】
+  - 第三种思路：使用惰性队列，将消息存储到硬盘中
+- 惰性队列的优点有哪些？
+  - 基于硬盘存储消息，消息存储上限高
+  - 没有间歇性的`page-out`直接写磁盘，而不是先写内存再到磁盘，性能比较高
+- 惰性队列的缺点有哪些？
+  - 速度肯定是没有内存那么快的，受限于硬盘`I/O`
+  - 基于磁盘存储所以消息时效性比较低
+
+到这里就就觉了消息可靠性问题、消息延迟推送问题、消息堆积问题，只剩下了最后一个问题即高可用的问题。
+
+### 20.6 `MQ`集群
+
+一想到高并发高可用，就想到做集群，没错这样的思路非常正确，`MQ`也可以做集群，因为`RabbitMQ`是基于`Erlang`这门语言编写的而`Erlang`这门语言拥有跟原生`Socket`一样的延迟，效率非常高，而且进程间上下文切换效率远高于`C`语言，天然支持集群模式。`RabbitMQ`的集群有两种模式：
+
+- **普通集群：**是一种分布式集群，将队列分散到集群的各个节点，从而提高整个集群的并发能力。
+- **镜像集群：**是一种主从集群，再普通集群的基础上，添加了主从备份的功能，提高了集群的数据可用性。
+
+镜像集群虽然支持主从备份，但是从主从同步不是强一致的，某些情况下可能具有丢失数据的风险。因此`RabbitMQ`在`3,8`版本之后，推出了全新的功能：**仲裁队列**。用于替代镜像集群，底层采用`Raft`协议确保主从节点的数据一致性。
+
+#### 20.6.1 普通集群
+
+普通集群，也叫标准集群`classic cluster`，具备以下特征：
+
+1. 会在集群的各个节点间共享部分数据，包括：交换机、队列元信息。不包含队列中的消息。
+
+2. 当访问集群某节点时，如果队列不在该节点，会从数据所在节点传递到当前节点并返回。
+
+3. 队列所在节点宕机，队列中的消息就会丢失。
+
+   **<font color="red">比如有两个消息队列`MQ1、MQ2`，如果你的消息在`MQ1`但是你连接的交换机绑定的队列是`MQ2`，此时`MQ2`就会去`MQ1`队列拉取消息然后返回消息。如果`MQ1`宕机消息就会丢失。</font>**
+
+普通集群的结构如下：
+
+![img](https://img-blog.csdnimg.cn/281966932a2645209e4324951c0d5e17.png)
+
+#### 20.6.2 安装普通集群
+
+计划部署如下：
+
+| 主机名 | `WEB`控制台端口   | `AMQP`通信端口    |
+| ------ | ----------------- | ----------------- |
+| `mq1`  | `8081 ---> 15672` | `8071 ---> 5672`  |
+| `mq2`  | `8082 ---> 15672` | `8072 ---> 5672`  |
+| `mq3`  | `8083 ---> 15672` | `8073  ---> 5672` |
+
+`RabbitMQ`底层依赖于`Erlang`，而`Erlang`虚拟机就是一个面向分布式的语言，默认就支持集群模式。
+
+**<font color="red">集群模式中的每个`RabbitMQ`节点使用`cookie`来确定它们是否被允许相互通信。</font>**
+
+这里的`cookie`是什么意思呢？其实啊，要使两个`MQ`节点能够通信，它们必须具有相同的共享秘密，称为**`Erlang cookie`**。`cookie`只是一串最多`255`个字符的字母数字字符。
+
+因为在同一个集群中的节点肯定是需要相互通信的，也正因此它们就需要相同的`Cookie`，有了它才可以通信。
+
+可以通过获取某个节点的`cookie`值作为整个集群的`cookie`。执行下面的命令：
+
+```shell
+docker exec -it rabbitmq cat /var/lib/rabbitmq/.erlang.cookie
+```
+
+可以看到cookie值如下：
+
+```shell
+UPSROPMOTDLBSLLQEPBO
+```
+
+接下来，停止并删除当前的所有`RabbitMQ`容器，搭建集群。
+
+```sh
+docker rm -f rabbitmq
+```
+
+在`/tmp`目录新建一个配置文件`rabbitmq.conf`：
+
+```sh
+cd /tmp
+# 创建文件
+touch rabbitmq.conf
+```
+
+文件内容如下：
+
+```nginx
+loopback_users.guest = false
+listeners.tcp.default = 5672
+cluster_formation.peer_discovery_backend = rabbit_peer_discovery_classic_config
+cluster_formation.classic_config.nodes.1 = rabbit@mq1
+cluster_formation.classic_config.nodes.2 = rabbit@mq2
+cluster_formation.classic_config.nodes.3 = rabbit@mq3
+```
+
+再创建一个文件，记录cookie
+
+```sh
+cd /tmp
+# 创建cookie文件
+touch .erlang.cookie
+# 写入cookie
+echo "UPSROPMOTDLBSLLQEPBO" > .erlang.cookie
+# 修改cookie文件的权限
+chmod 600 .erlang.cookie
+```
+
+准备三个目录，`mq1、mq2、mq3`：
+
+```sh
+cd /tmp
+# 创建目录
+mkdir mq1 mq2 mq3
+```
+
+然后拷贝`rabbitmq.conf、cookie`文件到`mq1、mq2、mq3`：
+
+```sh
+# 进入/tmp
+cd /tmp
+# 拷贝
+cp rabbitmq.conf mq1
+cp rabbitmq.conf mq2
+cp rabbitmq.conf mq3
+cp .erlang.cookie mq1
+cp .erlang.cookie mq2
+cp .erlang.cookie mq3
+```
+
+启动集群，需要为`RabbitMQ`创建一个网络【因为是集群】，否则集群不可用，创建一个网络的命令如下：
+
+```sh
+docker network create mq-net
+```
+
+创建节点容器：
+
+```sh
+docker run -d --net mq-net \
+-v ${PWD}/mq1/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
+-v ${PWD}/mq1/.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie \
+-e RABBITMQ_DEFAULT_USER=admin \
+-e RABBITMQ_DEFAULT_PASS=admin \
+--name mq1 \
+--hostname mq1 \
+-p 8071:5672 \
+-p 8081:15672 \
+rabbitmq:3.8-management
+```
+
+```sh
+docker run -d --net mq-net \
+-v ${PWD}/mq2/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
+-v ${PWD}/mq2/.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie \
+-e RABBITMQ_DEFAULT_USER=admin \
+-e RABBITMQ_DEFAULT_PASS=admin \
+--name mq2 \
+--hostname mq2 \
+-p 8072:5672 \
+-p 8082:15672 \
+rabbitmq:3.8-management
+```
+
+```sh
+docker run -d --net mq-net \
+-v ${PWD}/mq3/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
+-v ${PWD}/mq3/.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie \
+-e RABBITMQ_DEFAULT_USER=admin \
+-e RABBITMQ_DEFAULT_PASS=admin \
+--name mq3 \
+--hostname mq3 \
+-p 8073:5672 \
+-p 8083:15672 \
+rabbitmq:3.8-management
+```
+
+我这里`CentOS`的做的网络是`NAT`地址转换，如果你也一样的话记得做一个端口映射：`8081 8082 8083`
+
+可以登录`RabbitMQ`的`Web`控制页面，可以看到集群中的节点信息：
+
+![img](https://img-blog.csdnimg.cn/dc4abce2a7cc4a1ea20e2524df2f61ee.png)
+
+在`mq1`节点上添加一个队列，然后观察`mq2 mq3`控制台：
+
+![img](https://img-blog.csdnimg.cn/8bac5a00e8ed46cba830e9cc2fdd79b2.png)
+
+可以看到在`mq2 mq3`这两个控制台都可以看到`mq1`控制台创建的队列：
+
+![img](https://img-blog.csdnimg.cn/aff03f14693c4ed0af37f1b1f204a1d7.png)
+
+还可以进行数据共享的测试：
+
+点击刚刚在`mq1`创建的`simple.queue`队列，进入管理页面：
+
+![img](https://img-blog.csdnimg.cn/88b6389d2a3a49fbbe19b82312ae39c8.png)
+
+给这个`simple.queue`队列发送一个消息：
+
+![img](https://img-blog.csdnimg.cn/7bf71f1af80e4881b693d199f7c6e0d2.png)
+
+结果在`mq2`、`mq3`上都能看到这条消息：
+
+![img](https://img-blog.csdnimg.cn/3e480f411c4a455b824693c70cceb0e7.png)
+
+如果此时让`mq1`宕机，此时通过`mq2 mq3`是访问不到`simple.queue`的，因为在普通集群中，`mq2 mq3`会去拉取`mq1`中的`simple.queue`队列。但此时`mq1`已经宕机，所以就拉取不到了，自然也就无法访问了。
+
+![img](https://img-blog.csdnimg.cn/4d88abd34c664668b0d91859f1210dc8.png)
+
+这也恰恰说明了不同节点上的队列是不会将本节点的消息拷贝给其它节点的。会造成业务数据上的损失，若宕机，可用性丢失。
+
+#### 20.6.3 镜像集群
+
+在刚刚的普通集群中，一旦创建队列的主机宕机，队列就会不可用。不具备高可用能力。如果要解决这个问题，可以使用镜像集群，镜像集群本质是主从模式，具备下面的特征：
+
+1. 交换机、队列、队列中的消息会在各个`mq`的镜像节点之间同步备份。
+2. 创建队列的节点被称为该队列的**主节点，**备份到的其它节点叫做该队列的**镜像**节点。
+3. 一个队列的主节点可能是另一个队列的镜像节点。
+4. 所有操作都是主节点完成，然后同步给镜像节点。用户发送给队列的一切请求，例如发送消息、消息回执默认都会在主节点完成，如果是从节点接收到请求，也会路由到主节点去完成。**镜像节点仅仅起到备份数据作用**。当主节点接收到消费者的`ACK`时，所有镜像都会删除节点中的数据。
+5. 主宕机后，镜像节点会替代成新的主。
+
+![img](https://img-blog.csdnimg.cn/6db7c93810324f5d9a3fdec88d9e03a3.png)
+
+镜像模式的配置有3种模式：
+
+| `ha-mode`         | `ha-params`         | 效果                                                         |
+| :---------------- | :------------------ | :----------------------------------------------------------- |
+| 准确模式`exactly` | 队列的副本量`count` | 集群中队列副本（主服务器和镜像服务器之和）的数量。`count`如果为`1`意味着单个副本：即队列主节点。`count`值为`2`表示`2`个副本：`1`个队列主和`1`个队列镜像。换句话说：`count = 镜像数量 + 1`。如果群集中的节点数少于`count`，则该队列将镜像到所有节点。如果有集群总数大于`count+1`，并且包含镜像的节点出现故障，则将在另一个节点上创建一个新的镜像。 |
+| `all`             | `(none)`            | 队列在群集中的所有节点之间进行镜像。队列将镜像到任何新加入的节点。镜像到所有节点将对所有群集节点施加额外的压力，包括网络`I / O`，磁盘`I / O`和磁盘空间使用情况。推荐使用`exactly`，设置副本数为`（N / 2 +1）`。 |
+| `nodes`           | *`node names`*      | 指定队列创建到哪些节点，如果指定的节点全部不存在，则会出现异常。如果指定的节点在集群中存在，但是暂时不可用，会创建节点到当前客户端连接到的节点。 |
+
+这里我们以`rabbitmqctl`命令作为案例来讲解配置语法。
+
+**`exactly`模式：**
+
+```
+rabbitmqctl set_policy ha-two "^two\." '{"ha-mode":"exactly","ha-params":2,"ha-sync-mode":"automatic"}'
+```
+
+- `rabbitmqctl set_policy`：固定写法
+- `ha-two`：策略名称，自定义
+- `"^two\."`：匹配队列的正则表达式，符合命名规则的队列才生效，这里是任何以`two.`开头的队列名称
+- `'{"ha-mode":"exactly","ha-params":2,"ha-sync-mode":"automatic"}'`: 策略内容
+  - `"ha-mode":"exactly"`：策略模式，此处是`exactly`模式，指定副本数量
+  - `"ha-params":2`：策略参数，这里是`2`，就是副本数量为`2`，`1`主`1`镜像
+  - `"ha-sync-mode":"automatic"`：同步策略，默认是`manual`【手动的】，即新加入的镜像节点不会同步旧的消息。如果设置为`automatic`【自动的】，则新加入的镜像节点会把主节点中所有消息都同步，会带来额外的网络开销
+
+**`all`模式：**
+
+```
+rabbitmqctl set_policy ha-all "^all\." '{"ha-mode":"all"}'
+```
+
+- `ha-all`：策略名称，自定义
+- `"^all\."`：匹配所有以`all.`开头的队列名
+- `'{"ha-mode":"all"}'`：策略内容
+  - `"ha-mode":"all"`：策略模式，此处是`all`模式，即所有节点都会称为镜像节点
+
+**`nodes`模式：**
+
+```
+rabbitmqctl set_policy ha-nodes "^nodes\." '{"ha-mode":"nodes","ha-params":["rabbit@nodeA", "rabbit@nodeB"]}'
+```
+
+- `rabbitmqctl set_policy`：固定写法
+- `ha-nodes`：策略名称，自定义
+- `"^nodes\."`：匹配队列的正则表达式，符合命名规则的队列才生效，这里是任何以`nodes.`开头的队列名称
+- `'{"ha-mode":"nodes","ha-params":["rabbit@nodeA", "rabbit@nodeB"]}'`: 策略内容
+  - `"ha-mode":"nodes"`：策略模式，此处是`nodes`模式
+  - `"ha-params":["rabbit@mq1", "rabbit@mq2"]`：策略参数，这里指定副本所在节点名称
+
+#### 20.6.4 安装镜像集群
+
+需求：使用`exactly`模式的镜像，因为集群节点数量为`3`，因此镜像数量就设置为`2`。
+
+```shell
+docker exec -it mq1 rabbitmqctl set_policy ha-two "^two\." '{"ha-mode":"exactly","ha-params":2,"ha-sync-mode":"automatic"}'
+```
+
+在`mq1`节点中创建一个新的队列，然后查看`mq1 mq2`控制台：
+
+![img](https://img-blog.csdnimg.cn/54daa85685734d019af52adfa544e521.png)
+
+可以看到无论是在`mq1`还是`mq2`都可以看到队列，到这里为止，跟普通集群没什么差别，看起来差别在于`Features`特征上有个`ha-two`：
+
+![img](https://img-blog.csdnimg.cn/4fb2e16af079493d9472ee787d023e36.png)
+
+同样的，跟普通集群一样，也可以进行数据共享，关键是看某个节点宕机的时候，比如`mq1`宕机，但此时仍然可以消费`two.queue`中的消息：
+
+```shell
+docker stop mq1
+```
+
+![img](https://img-blog.csdnimg.cn/5510e1b2290940c5be35e98c9337ba16.png)
+
+查看`two.queue`队列状态，可以发现依然是健康的，因为主节点从`rabbit@mq1`切换到了`rabbit@mq2`：
+
+![img](https://img-blog.csdnimg.cn/6d09c2426e3745ca961978db41575375.png)
+
+#### 20.6.5 仲裁队列
+
+仲裁队列是`RabbitMQ3.8`版本以后才有的新功能，用来替代镜像队列，具备下列特征：
+
+- 与镜像队列一样，都是主从模式，支持主从数据同步，之前的镜像集群主从之间的数据备份存在一定的间隔性所以不是强一致性的。
+- 使用非常简单，没有复杂的配置
+- 主从同步基于`Raft`协议，强一致
+
+简单地说就是仲裁队列是为了强一致性新推出的，而且操作简单。
+
+#### 20.6.6 添加仲裁队列
+
+在任意控制台添加一个队列，一定要选择队列类型为`Quorum`类型：
+
+![img](https://img-blog.csdnimg.cn/10c2a20cf74049d292998c2d4110ca2d.png)
+
+在任意控制台查看队列：
+
+![img](https://img-blog.csdnimg.cn/5a1dc2943c014fe78d02ceac9cc49fa0.png)
+
+可以看到，仲裁队列的 + 2字样。代表这个队列有2个镜像节点。
+
+若要测试，可以参照之前的普通集群、镜像集群做测试，查看数据共享以及宕机后队列是否可用。
+
+#### 20.6.7 集群扩容
+
+因为仲裁队列默认的镜像数为`5`。如果你的集群有`7`个节点，那么镜像数肯定是`5`，而我们集群只有`3`个节点，因此镜像数量就是`3`。为了达到这个效果，我们需要先做集群扩容然后进行仲裁队列副本扩容即可，先做集群节点扩容：
+
+1. 开启一个新的`MQ`容器，不用指定配置文件，等等可以使用`rabbitmqctl`将其拉入集群，但是前提是得在同一个网络，所以这里需要使用`--net`，除此之外还要配置下`cookie`，否则无法跟家族成员进行通信
+
+   ```
+   docker run -d --net mq-net \
+   -v ${PWD}/.erlang.cookie:/var/lib/rabbitmq/.erlang.cookie \
+   -e RABBITMQ_DEFAULT_USER=admin \
+   -e RABBITMQ_DEFAULT_PASS=admin \
+   --name mq4 \
+   --hostname mq4 \
+   -p 8074:5672 \
+   -p 8084:15672 \
+   rabbitmq:3.8-management
+   ```
+
+2. 进入`mq4`控制台
+
+   ```shell
+   docker exec -it mq4 bash
+   ```
+
+3. 停止`mq4`进程
+
+   ```sh
+   rabbitmqctl stop_app
+   ```
+
+4. 重置RabbitMQ中的数据：
+
+   ```sh
+   rabbitmqctl reset
+   ```
+
+
+5. 加入`mq`集群：【记得之前要是进行了让`mq1`宕机的测试，需要先启动`mq1`，否则会一直启动报错】
+
+   ```sh
+   rabbitmqctl join_cluster rabbit@mq1
+   ```
+
+6. 启动`mq4`
+
+   ```
+   rabbitmqctl start_app
+   ```
+
+7. 观察`mq1 web`控制台：可以看到扩容成功
+
+   ![img](https://img-blog.csdnimg.cn/065a6985336342e897a28567fa63c196.png)
+
+#### 20.6.8 仲裁队列副本扩容
+
+我们先查看下`quorum.queue`这个队列目前的副本情况，进入`mq1`容器：
+
+```sh
+docker exec -it mq1 bash
+```
+
+执行命令：
+
+```sh
+rabbitmq-queues quorum_status "quorum.queue"
+```
+
+结果，可以看到只有`mq1 mq2 mq3`，没有刚刚新加入的节点`mq4`作为镜像副本：
+
+![img](https://img-blog.csdnimg.cn/83361db1250346fcbaf969d69e6a8fb3.png)
+
+现在，我们让`mq4`也加入进来：
+
+```sh
+rabbitmq-queues add_member "quorum.queue" "rabbit@mq4"
+```
+
+结果：
+
+![img](https://img-blog.csdnimg.cn/22ea761cb255440da56b87892921d961.png)
+
+再次查看：
+
+```sh
+rabbitmq-queues quorum_status "quorum.queue"
+```
+
+![img](https://img-blog.csdnimg.cn/0130618fdd6f40c197f0b9dacb6e5e40.png)
+
+查看控制台，发现`quorum.queue`的镜像数量也从原来的` +2 `变成了` +3`：
+
+![img](https://img-blog.csdnimg.cn/f2e5290383a449a7936a426479853eaa.png)
+
+在`Java`中也同样可以创建仲裁队列，使用`quorum()`即可。
+
+```java
+@Bean
+public Queue quorumQueue() {
+    return QueueBuilder
+        .durable("quorum.queue") // 持久化
+        .quorum() // 仲裁队列
+        .build();
+}
+```
+
+需要连接时，在配置文件进行如下配置即可
+
+```yaml
+spring:
+  rabbitmq:
+    addresses: 192.168.56.1:8071, 192.168.56.1:8072, 192.168.56.1:8073
+    username: admin
+    password: admin
+    virtual-host: /
+```
+
+到这里，整个`MQ`集群就学习完毕啦~:smiley:
